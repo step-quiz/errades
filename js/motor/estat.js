@@ -35,9 +35,9 @@ export function nouEstat() {
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
 
-/** Es pot assenyalar la línia i? (l'enunciat sí: dona un avís, sense comptar com a error) */
+/** Es pot assenyalar la línia i? L'enunciat (línia 0) mai: no hi pot haver cap errada (el David, 25/11/2026). */
 export const seleccionable = (S, ex, i) =>
-    !S.fi && S.fase === 'busca' && i >= 0 && i < ex.linies.length && !S.trobades.includes(i) && !S.revisades.includes(i);
+    !S.fi && S.fase === 'busca' && i >= 1 && i < ex.linies.length && !S.trobades.includes(i) && !S.revisades.includes(i);
 
 export function selecciona(S, ex, i) {
     if (!seleccionable(S, ex, i)) return S;
@@ -66,18 +66,14 @@ function ensenya(S, ex, cfg, k, text) {
 /** «Comprova» amb la línia seleccionada. */
 export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const i = S.sel;
-    if (i === null || S.fase !== 'busca' || S.fi) return S;
+    if (i === null || i < 1 || S.fase !== 'busca' || S.fi) return S;
     S.sel = null;
-    if (i === 0) {
-        S.msg = { tipus: 'info', text: "Aquesta és l'equació de l'enunciat: aquí no hi pot haver cap errada." };
-        return S;
-    }
     if (ex.errades[i]) {
         S.trobades.push(i);
         S.actual = i;
         if (cfg.perque) {
             S.fase = 'perque';
-            S.msg = { tipus: 'encert', text: "Sí! L'errada és aquí. Per què és una errada?" };
+            S.msg = { tipus: 'encert', text: "Sí! L'errada és aquí." };
         } else if (cfg.corregeix) {
             S.fase = 'corregeix';
             S.msg = { tipus: 'encert', text: `Sí! L'errada és aquí. ${ex.errades[i].expl}` };

@@ -23,10 +23,10 @@ igual([S.fase, S.msg.tipus], ['corregeix', 'noEncert'], '«Per què?» equivocat
 triaCorreccio(S, EX, cfg, 2);
 igual([S.fi, punts(S), S.corregides[1]], [true, 10, true], 'corregida → fi amb 10 punts');
 
-// L'enunciat no compta com a error
+// L'enunciat no es pot assenyalar
 S = nouEstat();
-tria(S, 0);
-igual([S.errors, S.msg.tipus, S.fase], [0, 'info', 'busca'], "l'enunciat dona un avís sense comptar");
+selecciona(S, EX, 0);
+igual([S.sel, S.errors], [null, 0], "l'enunciat no es pot assenyalar");
 
 // Escala: 1r error explica, 2n afegeix la direcció, 3r ensenya l'errada i val 0
 S = nouEstat();

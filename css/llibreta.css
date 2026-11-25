@@ -121,16 +121,54 @@ button.ln:hover {
     outline-offset: 3px;
     border-radius: 50%;
 }
-.tat .ex .t {
-    text-decoration: line-through;
-    text-decoration-color: var(--errada);
-    text-decoration-thickness: 2px;
+/* La línia equivocada es ratlla en diagonal, cada membre: una ratlla horitzontal taparia els signes «−» */
+.tat > .ex:not(.corr) > .ma,
+.tat > .ex:not(.corr) > .mb {
+    position: relative;
 }
+.tat > .ex:not(.corr) > .ma::after,
+.tat > .ex:not(.corr) > .mb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top right, transparent calc(50% - 1.2px), var(--errada) calc(50% - 1.2px), var(--errada) calc(50% + 1.2px), transparent calc(50% + 1.2px));
+    pointer-events: none;
+}
+/* La correcció del professor, sota, amb el «=» a la mateixa vertical (mateixa columna i mateixa graella) */
 .corr {
-    grid-column: 2 / -1;
+    grid-column: 2;
     font: 24px/1.3 var(--lletra-correccio);
     color: var(--errada);
-    padding-left: 1.2em;
+}
+/* Les línies que vénen d'una errada ja corregida: esvaïdes i dins d'un gran parèntesi */
+.arrossega {
+    position: relative;
+    padding-right: 34px;
+}
+.arrossega .ln {
+    opacity: 0.4;
+}
+.parent {
+    position: absolute;
+    right: 6px;
+    top: 4px;
+    bottom: 4px;
+    width: 22px;
+    border-right: 4px solid var(--errada);
+    border-radius: 0 100% 100% 0 / 0 50% 50% 0;
+}
+.nota-arr {
+    position: absolute;
+    right: 38px;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 8rem;
+    font: 17px/1.15 var(--lletra-correccio);
+    color: var(--errada);
+    text-align: right;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2px 4px;
+    border-radius: 6px;
 }
 .tags {
     display: flex;
@@ -242,6 +280,13 @@ i {
     }
     .corr {
         font-size: 20px;
-        padding-left: 0;
+    }
+    .nota-arr {
+        position: static;
+        display: block;
+        transform: none;
+        max-width: none;
+        font-size: 15px;
+        background: none;
     }
 }

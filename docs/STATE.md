@@ -42,6 +42,19 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
   distractors would give the answer away. The specific explanation (`expl`) is shown after the choice.
 - `package.json` exists only for `"type": "module"` (Node tests). Cloudflare Pages must have no build command.
 
+## Corrections after David's first test (2026-11-25, ZIP 2)
+
+1. **No explanation gives the answer away.** `expl` of every mal-rule says *why* it is wrong, never the correct
+   line or value (it is shown before «Corregeix-la»). `valida()` rejects an `expl` that contains `bona` or its
+   right-hand side.
+2. **The wrong line is crossed out diagonally**, one stroke per member: a horizontal line-through hid the «−» signs.
+3. **The teacher's correction is aligned at «=»**: it is a `.corr.ex` in the same grid column as the lines.
+4. **Lines that come from a corrected error** (after it, once no error is pending) are faded to 40 % inside a big
+   red parenthesis labelled «Ve d'una errada: no té sentit». This **replaces E4 = No** (David asked for it).
+5. **The statement (line 1) can no longer be selected** (`seleccionable` needs i ≥ 1).
+6. **The message goes before the phase question** («Sí! L'errada és aquí.» then «Per què és una errada?»), and the
+   page scrolls so both are visible.
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

@@ -273,8 +273,7 @@ export const REGLES = {
         },
         expl(d) {
             const t = d.t;
-            const bo = sumaTx([X(t.c), N(t.c * t.b)]);
-            return `El ${menys(t.c)} multiplica tots els termes del parèntesi: $${pTx(t)} = ${bo}$. Només ha multiplicat la $x$.`;
+            return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi, també el $${menys(t.b)}$. Només ha multiplicat la $x$.`;
         },
     },
     DIST_SIGNE: {
@@ -293,10 +292,9 @@ export const REGLES = {
         },
         expl(d) {
             const t = d.t;
-            const bo = sumaTx([X(t.c), N(t.c * t.b)]);
             if (t.c === -1)
-                return `El signe $−$ de davant del parèntesi canvia el signe de tots els termes de dins: $${pTx(t)} = ${bo}$.`;
-            return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi, amb el seu signe: $${pTx(t)} = ${bo}$.`;
+                return `El signe $−$ de davant del parèntesi canvia el signe de tots els termes de dins, també el del $${menys(t.b)}$.`;
+            return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi amb el seu signe: el $${menys(t.b)}$ també havia de canviar de signe.`;
         },
     },
     SIGNE_TRANSPOSAR: {
@@ -315,7 +313,7 @@ export const REGLES = {
             return { linia: linia(L, buit(R)), dades: { t: qui } };
         },
         expl(d, bona) {
-            return `El $${ambSigne(d.t)}$ passa a l'altre membre canviant de signe: havia de ser $${text(bona)}$.`;
+            return `El $${ambSigne(d.t)}$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe.`;
         },
     },
     TERMES_NO_SEMBLANTS: {
@@ -331,7 +329,7 @@ export const REGLES = {
             return { linia: linia([X(c.suma(b))], l.R), dades: { x: xs[0], n: ns[0] } };
         },
         expl(d, bona) {
-            return `$${pTx(d.x)}$ i $${pTx(d.n)}$ no són termes semblants: no es poden sumar. Havia de passar el $${ambSigne(d.n)}$ a l'altre membre: $${text(bona)}$.`;
+            return `$${pTx(d.x)}$ i $${pTx(d.n)}$ no són termes semblants: no es poden sumar. El $${ambSigne(d.n)}$ havia de passar a l'altre membre.`;
         },
     },
     CALCUL: {
@@ -364,7 +362,7 @@ export const REGLES = {
             };
         },
         expl(d) {
-            return `$${d.expr} = ${d.bo}$, no $${d.mal}$.`;
+            return `$${d.expr}$ no fa $${d.mal}$.`;
         },
     },
     OPERACIO_INVERSA: {
@@ -393,7 +391,7 @@ export const REGLES = {
             return { linia: linia(L, [A === -1 ? N(B) : F(B, -A)]), dades: { A, B } };
         },
         expl(d) {
-            return `El coeficient de la $x$ és $${menys(d.A)}$: s'ha de dividir entre $${menys(d.A)}$, amb el signe: $x = {${menys(d.B)}|${menys(d.A)}}$.`;
+            return `El coeficient de la $x$ és $${menys(d.A)}$: s'ha de dividir entre $${menys(d.A)}$, amb el seu signe.`;
         },
     },
     QUOCIENT_INVERTIT: {
@@ -407,7 +405,7 @@ export const REGLES = {
             return { linia: linia([X(1)], [F(A, B)]), dades: { A, B } };
         },
         expl(d) {
-            return `Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient: $x = {${menys(d.B)}|${menys(d.A)}}$, i no $x = {${menys(d.A)}|${menys(d.B)}}$.`;
+            return `Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés.`;
         },
     },
 };
@@ -730,6 +728,7 @@ export function valida(ex) {
         if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
         if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);
         if (e.bona === ex.linies[j].join(' ')) p.push(`errada ${j}: la línia bona és igual que la dolenta`);
+        if (e.expl.includes(e.bona) || e.expl.includes(e.bona.split(' = ')[1] + '$')) p.push(`errada ${j}: l'explicació ja diu com havia de quedar la línia`);
         if (!(e.terme >= 0 && e.terme < ex.linies[j].length) || ex.linies[j][e.terme] === '=') p.push(`errada ${j}: terme equivocat fora de lloc`);
     }
     const tot = JSON.stringify({ ...ex, _linies: undefined });

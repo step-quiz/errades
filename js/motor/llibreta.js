@@ -60,6 +60,20 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         return `<span class="ex"><span class="ma">${a}</span><span class="t">=</span><span class="mb">${b}</span></span>`;
     }
 
+    /** La línia bona, amb la lletra del professor i el «=» a la mateixa vertical que els altres (R4). */
+    function correccio(bona) {
+        const k = bona.indexOf(' = ');
+        return `<span class="corr ex" aria-label="Havia de ser: ${esc(bona)}"><span class="ma">${fm(bona.slice(0, k))}</span><span class="t">=</span><span class="mb">${fm(bona.slice(k + 3))}</span></span>`;
+    }
+
+    /** Des de quina línia les següents arrosseguen una errada ja corregida (null si encara no toca). */
+    function inicArrossega() {
+        const corregides = S.trobades.filter(k => S.corregides[k]);
+        if (!corregides.length || errades(ex).some(k => !S.trobades.includes(k))) return null;
+        const j = Math.min(...corregides);
+        return j < ex.linies.length - 1 ? j + 1 : null;
+    }
+
     function liniaHTML(i) {
         const trobada = S.trobades.includes(i),
             revisada = S.revisades.includes(i);
@@ -71,7 +85,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (i === 0) marques += '<span class="tag">enunciat</span>';
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
         else if (revisada) marques += '<span class="mk c" title="Línia correcta">✓</span>';
-        const corr = trobada && S.corregides[i] ? `<span class="corr">${fm(ex.errades[i].bona)}</span>` : '';
+        const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
         const dins = `<span class="n">${i + 1}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
         if (seleccionable(S, ex, i))
             return `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i + 1}">${dins}</button>`;
@@ -83,8 +97,17 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         let h = `<div class="cap-ex"><p class="ins">${esc(consigna())}</p><div class="chips">`;
         if (cfg.anuncia && n > 0) h += `<span class="chip">Errades trobades: ${S.trobades.length} de ${n}</span>`;
         h += `<span class="chip">Punts: ${punts(S)}</span></div></div><div class="linies">`;
-        for (let i = 0; i < ex.linies.length; i++) h += liniaHTML(i);
+        const arr = inicArrossega();
+        for (let i = 0; i < ex.linies.length; i++) {
+            if (i === arr) h += '<div class="arrossega">';
+            h += liniaHTML(i);
+        }
+        if (arr !== null)
+            h += `<span class="parent" aria-hidden="true"></span><span class="nota-arr">Ve d'una errada:<br>no té sentit</span></div>`;
         h += '</div>';
+        // El missatge, abans de la pregunta de la fase: així «Sí! L'errada és aquí.» i la pregunta es veuen junts
+        const m = S.msg;
+        h += `<div class="msg${m ? ' ' + m.tipus : ''}" role="status" aria-live="polite">${m ? txt(m.text) : ''}</div>`;
         if (S.fase === 'perque') {
             const e = ex.errades[S.actual];
             h += `<div class="fase"><h3>Per què és una errada?</h3><div class="opc">${e.perque
@@ -103,13 +126,19 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
                 a += `<button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button>`;
             h += `<div class="acc">${a}</div>`;
         }
-        const m = S.msg;
-        h += `<div class="msg${m ? ' ' + m.tipus : ''}" role="status" aria-live="polite">${m ? txt(m.text) : ''}</div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
         contenidor.innerHTML = h;
         if (teniaFocus && !S.fi) {
             const b = contenidor.querySelector('.fase .b');
             (b || contenidor).focus({ preventScroll: true });
+        }
+        // Amb una fase oberta, el missatge i la pregunta han de quedar a la vista
+        const fase = contenidor.querySelector('.fase');
+        if (fase) {
+            const msg = contenidor.querySelector('.msg'),
+                a = msg.getBoundingClientRect(),
+                b = fase.getBoundingClientRect();
+            if (a.top < 0 || b.bottom > innerHeight) msg.scrollIntoView({ block: 'start', behavior: 'smooth' });
         }
         if (S.fi && !acabat) {
             acabat = true;
