@@ -8,21 +8,37 @@
     "nom": "Signe davant d'un parèntesi",
     "descripcio": "El signe negatiu de davant del parèntesi no canvia el signe de tots els termes de dins."
   },
+  "DIST_SUMA": {
+    "nom": "Suma en lloc de multiplicar",
+    "descripcio": "El nombre de fora del parèntesi se suma al coeficient de la x de dins en lloc de multiplicar-s'hi: −2·(3x + 6) → −5x − 12."
+  },
   "SIGNE_TRANSPOSAR": {
     "nom": "Signe en passar un terme",
-    "descripcio": "Un terme passa a l'altre membre sense canviar-ne el signe."
+    "descripcio": "Un terme (o tots els que passen) canvia de membre sense canviar de signe."
+  },
+  "SIGNE_COPIAT": {
+    "nom": "Signe copiat malament",
+    "descripcio": "Un o dos termes que en aquest pas només s'havien de copiar surten amb el signe canviat."
   },
   "TERMES_NO_SEMBLANTS": {
     "nom": "Termes no semblants",
-    "descripcio": "Suma un terme amb x i un terme sense x com si fossin semblants."
+    "descripcio": "Suma termes amb x i termes sense x com si fossin semblants (2x + 3 → 5x; 2x + 3 + 4x → 9x)."
+  },
+  "COEFICIENT_U": {
+    "nom": "La x sola no es compta",
+    "descripcio": "En sumar termes en x, oblida la x que no porta coeficient (x vol dir 1x): 3x + x + 6x → 9x."
   },
   "CALCUL": {
-    "nom": "Error de càlcul",
-    "descripcio": "L'estratègia és bona, però s'equivoca en una suma o una resta."
+    "nom": "Error de càlcul amb signes",
+    "descripcio": "L'estratègia és bona, però en sumar dos termes amb algun signe negatiu s'equivoca en el signe del resultat, o suma els valors quan s'havien de restar (o al revés)."
   },
   "OPERACIO_INVERSA": {
     "nom": "Operació inversa",
-    "descripcio": "Per aïllar la x resta el coeficient en lloc de dividir-hi els dos membres."
+    "descripcio": "Per aïllar la x no divideix entre el coeficient: resta (3x = 12 → x = 9 o x = −9), multiplica (x = 36) o suma (x = 15)."
+  },
+  "COEFICIENT_OBLIDAT": {
+    "nom": "Coeficient oblidat",
+    "descripcio": "En aïllar la x, el coeficient desapareix sense dividir: 3x = 12 → x = 12."
   },
   "DIVISIO_SIGNE": {
     "nom": "Signe en dividir",

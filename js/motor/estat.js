@@ -126,14 +126,16 @@ function faseSeguent(S, ex, cfg, text) {
 export function triaTerme(S, ex, cfg, j) {
     if (S.fase !== 'terme') return S;
     const i = S.actual,
-        bo = ex.errades[i].terme;
-    if (j === bo) {
+        bo = ex.errades[i].terme,
+        bons = ex.errades[i].termes || [bo];
+    if (bons.includes(j)) {
         S.termes[i] = true;
-        return faseSeguent(S, ex, cfg, 'Exacte: aquest és el terme equivocat.');
+        return faseSeguent(S, ex, cfg, bons.length > 1 ? 'Exacte: aquest és un dels termes equivocats. Hi ha un altre terme equivocat a la mateixa línia, i ara tots dos estan encerclats.' : 'Exacte: aquest és el terme equivocat.');
     }
     S.intentsTerme++;
     if (S.intentsTerme >= 2) {
         S.termes[i] = true;
+        if (bons.length > 1) return faseSeguent(S, ex, cfg, `No: els termes equivocats són els que ara estan encerclats, ${bons.map(k => `$${ex.linies[i][k]}$`).join(' i ')}.`);
         return faseSeguent(S, ex, cfg, `No: el terme equivocat és el que ara està encerclat, $${ex.linies[i][bo]}$.`);
     }
     S.msg = { tipus: 'noEncert', text: 'Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.' };

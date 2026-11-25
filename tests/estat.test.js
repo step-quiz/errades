@@ -125,4 +125,25 @@ escriuCorreccio(S, EXE, ce, '4');
 escriuCorreccio(S, EXE, ce, '6');
 ok(S.fi && /Havia de ser/.test(S.msg.text), "al segon intent fallit s'ensenya el terme bo");
 ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria)');
+// Dos termes equivocats (SIGNE_TRANSPOSAR amb els dos termes): a la fase del terme valen tots dos
+{
+    const ex2 = JSON.parse(JSON.stringify(EX));
+    ex2.linies[2] = ['2x', '− 7x', '=', '13', '+ 4'];
+    ex2.errades = { 2: { ...EX.errades[1], tipus: 'SIGNE_TRANSPOSAR', terme: 1, termes: [1, 4] } };
+    for (const j of [1, 4]) {
+        const S = nouEstat();
+        const cfg = { ...CONFIG_PER_DEFECTE, terme: true };
+        selecciona(S, ex2, 2);
+        comprova(S, ex2, cfg);
+        triaTerme(S, ex2, cfg, j);
+        ok(S.fase === 'perque' && /un dels termes equivocats/.test(S.msg.text), `dos termes: el terme ${j} també és bo`);
+    }
+    const S = nouEstat();
+    const cfg = { ...CONFIG_PER_DEFECTE, terme: true };
+    selecciona(S, ex2, 2);
+    comprova(S, ex2, cfg);
+    triaTerme(S, ex2, cfg, 0);
+    triaTerme(S, ex2, cfg, 3);
+    ok(S.fase === 'perque' && /els termes equivocats són/.test(S.msg.text), 'dos termes: després de dos intents, es diuen tots dos');
+}
 informe('estat');

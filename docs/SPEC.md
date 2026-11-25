@@ -139,13 +139,21 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 | `DIST_SIGNE` | minus before a bracket changes only the first sign | `−(x−3) → −x−3` |
 | `SIGNE_TRANSPOSAR` | term moved across without changing sign | `3x−6 = x+4 → 3x−x = 4−6` |
 | `OPERACIO_INVERSA` | subtracts/adds the coefficient instead of dividing | `2x = −2 → x = −4` |
+| `COEFICIENT_OBLIDAT` | the coefficient vanishes without dividing | `3x = 12 → x = 12` |
 | `DIVISIO_SIGNE` | divides by the absolute value of a negative coefficient | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | divides the wrong way round | `9x = 5 → x = 9/5` |
-| `TERMES_NO_SEMBLANTS` | adds unlike terms | `2x + 3 → 5x` |
-| `CALCUL` | arithmetic slip in a correct strategy | `13 − 4 = 8` |
+| `DIST_SUMA` | outer factor added to the inner coefficient | `−2·(3x + 6) → −5x − 12` |
+| `COEFICIENT_U` | a lone x is not counted | `3x + x + 6x → 9x` |
+| `SIGNE_COPIAT` | a term only copied in this step changes sign | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` |
+| `TERMES_NO_SEMBLANTS` | adds unlike terms | `2x + 3 → 5x`; `2x + 3 + 4x → 9x` |
+| `CALCUL` | sign slip adding two terms (one negative) | `−3 + 15 → −12` or `−18` |
 
 `TERMES_NO_SEMBLANTS` replaces the `tra` step and the pupil then transposes what is left
-(`2x + 6 = x + 10 → 8x = x + 10 → 8x − x = 10 …`). The README has the generator's real rule table.
+(`2x + 6 = x + 10 → 8x = x + 10 → 8x − x = 10 …`); its red1 variant merges a whole side with ≥ 2 x-terms
+and a number into one x-term (`2x + 3 + 4x = 18 → 9x = 18`, David's comment on B16). `SIGNE_COPIAT`
+(comments on B05 and B15) and the realistic `CALCUL` values (comment on B07: a pupil writes −12 or −18 for
+−3 + 15, never 10) were added after bank batch 1; `DIST_SUMA` and `COEFICIENT_U` come from the real errors David wrote in batch 2
+(with the level-2 statement form H, a coefficient inside the bracket). The README has the generator's real rule table.
 
 ### 5.3 Generation algorithm (pure, seeded — fixed sessions must be reproducible)
 
@@ -163,7 +171,7 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 
 | nivell | Content (R5 applied) |
 |---|---|
-| 1 | one error, announced, 4–5 lines (stage 1) |
+| 1 | one error, announced, 4–6 lines, no brackets (forms A, B, G) |
 | 2 | one error, announced, 6–8 lines, brackets (stage 1) |
 | 3 | one error, not announced (with `noerrors=1`: zero or one) |
 | 4 | two errors, announced |

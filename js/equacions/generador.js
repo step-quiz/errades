@@ -83,7 +83,8 @@ const Q0 = q(0);
 // ---------- Termes i línies ----------
 const X = c => ({ k: 'x', c: c instanceof Q ? c : q(c) });
 const N = v => ({ k: 'n', v: v instanceof Q ? v : q(v) });
-const P = (c, b) => ({ k: 'p', c, b });
+/** c·(mx + b); m (el coeficient de dins) és 1 si no es diu (el David, errades reals: −2·(3x + 6)). */
+const P = (c, b, m = 1) => ({ k: 'p', c, b, m });
 const F = (num, den) => ({ k: 'f', num, den });
 const linia = (L, R) => ({ L, R });
 
@@ -104,7 +105,7 @@ function cos(t) {
             return [t.v.n < 0, nombre(t.v)];
         case 'p': {
             const ac = Math.abs(t.c);
-            const dins = `x ${t.b < 0 ? '−' : '+'} ${Math.abs(t.b)}`;
+            const dins = `${t.m === 1 ? '' : t.m}x ${t.b < 0 ? '−' : '+'} ${Math.abs(t.b)}`;
             return [t.c < 0, (ac === 1 ? '' : ac + '·') + `(${dins})`];
         }
         case 'f':
@@ -135,7 +136,7 @@ function lineal(ts) {
         if (t.k === 'x') a = a.suma(t.c);
         else if (t.k === 'n') b = b.suma(t.v);
         else if (t.k === 'p') {
-            a = a.suma(q(t.c));
+            a = a.suma(q(t.c * t.m));
             b = b.suma(q(t.c * t.b));
         } else if (t.k === 'f') b = b.suma(q(t.num, t.den));
     }
@@ -162,12 +163,13 @@ const esN = t => t.k === 'n';
 const negT = t => (t.k === 'x' ? X(t.c.neg()) : N(t.v.neg()));
 const buit = ts => (ts.length ? ts : [N(0)]);
 
-function expandeix(ts, quin = null, mal = null) {
+function expandeix(ts, quin = null, mal = null, malX = null) {
+    // mal(t): el nombre equivocat; malX(t): el coeficient de la x equivocat (al parèntesi número quin)
     const out = [];
     ts.forEach((t, i) => {
         if (t.k !== 'p') return out.push(t);
-        out.push(X(t.c));
-        const v = i === quin && mal ? mal(t) : t.c * t.b;
+        out.push(X(i === quin && malX ? malX(t) : t.c * t.m));
+        const v = i === quin && mal ? mal(t) : t.c * t.b; // (sense mal, el nombre es multiplica bé)
         if (v !== 0) out.push(N(v));
     });
     return out;
@@ -252,6 +254,55 @@ export function resol(l, des = 0) {
     return passos;
 }
 
+/**
+ * Els termes de la línia bona (aplica(op, l)) que en aquest pas només es copien
+ * de la línia de sobre: [[costat, posició], ...]. Serveix per a SIGNE_COPIAT.
+ */
+function copiats(op, l, bo) {
+    const out = [];
+    if (op === 'exp') {
+        for (const c of ['L', 'R']) {
+            let k = 0;
+            for (const t of l[c]) {
+                if (t.k !== 'p') out.push([c, k++]);
+                else k += t.c * t.b !== 0 ? 2 : 1;
+            }
+        }
+    } else if (op === 'red1') {
+        // agrupa(): cada tipus de terme surt al lloc del primer; si n'hi havia un de sol, es copia
+        for (const c of ['L', 'R']) {
+            let k = 0;
+            const vist = {};
+            for (const t of l[c]) {
+                if ((t.k !== 'x' && t.k !== 'n') || vist[t.k]) continue;
+                vist[t.k] = true;
+                const mateixos = l[c].filter(u => u.k === t.k);
+                const suma = mateixos.reduce((s, u) => s.suma(u.k === 'x' ? u.c : u.v), Q0);
+                if (suma.zero) continue;
+                if (mateixos.length === 1) out.push([c, k]);
+                k++;
+            }
+        }
+    } else if (op === 'tra') {
+        const queden = l.R.filter(t => esN(t) && !t.v.zero).length;
+        l.L.filter(esX).forEach((t, k) => out.push(['L', k]));
+        for (let k = 0; k < queden; k++) out.push(['R', k]);
+    }
+    // només els que es poden copiar amb el signe equivocat: un signe que es veu
+    return out.filter(([c, i]) => {
+        const t = bo[c][i];
+        if (!t || (t.k !== 'x' && t.k !== 'n') || (t.k === 'x' ? t.c : t.v).zero) return false;
+        return i > 0 || (t.k === 'x' ? t.c : t.v).n < 0;
+    });
+}
+
+/** «El $+3$ i el $+2x$» (amb majúscula) o «el $+3$ i el $+2x$». */
+const llistaTermes = (ts, maj = false) => {
+    const t = ts.map(u => `el $${ambSigne(u)}$`);
+    const txt = t.length > 1 ? t.slice(0, -1).join(', ') + ' i ' + t[t.length - 1] : t[0];
+    return maj ? txt[0].toUpperCase() + txt.slice(1) : txt;
+};
+
 // ---------- Regles errònies ----------
 // Cada regla substitueix el pas `op` (a partir de la línia anterior) per una línia equivocada.
 // Torna { linia, dades } o null si no es pot aplicar.
@@ -273,7 +324,7 @@ export const REGLES = {
         },
         expl(d) {
             const t = d.t;
-            return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi, també el $${menys(t.b)}$. Només ha multiplicat la $x$.`;
+            return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi, també el $${menys(t.b)}$. Només ha multiplicat ${t.m === 1 ? 'la $x$' : `el $${t.m}x$`}.`;
         },
     },
     DIST_SIGNE: {
@@ -297,29 +348,94 @@ export const REGLES = {
             return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi amb el seu signe: el $${menys(t.b)}$ també havia de canviar de signe.`;
         },
     },
+    DIST_SUMA: {
+        // El nombre de fora i el coeficient de dins se sumen (el David, errades reals:
+        // x − 2·(3x + 6) = 3x + 7  →  x − 5x − 12 = 3x + 7). Només amb un coeficient a dins.
+        op: 'exp',
+        pes: 1,
+        fes(l, r) {
+            const tots = [...l.L.map((t, i) => ['L', i, t]), ...l.R.map((t, i) => ['R', i, t])].filter(
+                ([, , t]) => t.k === 'p' && t.m >= 2 && Math.abs(t.c) >= 2 && Math.abs(t.c) !== t.m // 4·(4x…): no se sap què ha sumat
+            );
+            if (!tots.length) return null;
+            const [c, i, t] = tria(r, tots);
+            const malX = u => Math.sign(u.c) * (Math.abs(u.c) + u.m);
+            const L = c === 'L' ? expandeix(l.L, i, null, malX) : expandeix(l.L);
+            const R = c === 'R' ? expandeix(l.R, i, null, malX) : expandeix(l.R);
+            return { linia: linia(L, buit(R)), dades: { t, mal: X(malX(t)) } };
+        },
+        expl(d) {
+            const t = d.t;
+            return `$${menys(t.c)} · ${t.m}x$ no fa $${pTx(d.mal)}$: el nombre de fora del parèntesi multiplica el $${t.m}x$, no s'hi suma.`;
+        },
+    },
     SIGNE_TRANSPOSAR: {
         op: 'tra',
-        pes: 3,
+        pes: 4,
         fes(l, r) {
             const movN = l.L.filter(t => esN(t) && !t.v.zero),
                 movX = l.R.filter(esX);
             const tots = [...movN, ...movX];
             if (!tots.length) return null;
+            // Erbaş et al. (2009), YK26: tots els termes que passen es queden amb el seu signe (el 35 % de les vegades que en passen dos o més)
+            const doble = tots.length >= 2 && r() < 0.35;
             const qui = tria(r, tots);
-            const canvia = t => (t === qui ? t : negT(t));
+            const canvia = t => (doble || t === qui ? t : negT(t));
             const L = [...l.L.filter(esX), ...movX.map(canvia)];
             const R = [...l.R.filter(t => esN(t) && !(t.v.zero && (l.R.length > 1 || movN.length))), ...movN.map(canvia)];
             if (!L.length) return null;
+            if (doble) return { linia: linia(L, buit(R)), dades: { t: tots[0], tots } };
             return { linia: linia(L, buit(R)), dades: { t: qui, altres: tots.filter(t => t !== qui) } };
         },
         expl(d, bona) {
+            if (d.tots) return `${llistaTermes(d.tots, true)} han passat a l'altre membre sense canviar de signe, i en passar-hi havien de canviar de signe.`;
             return `El $${ambSigne(d.t)}$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe.`;
         },
     },
-    TERMES_NO_SEMBLANTS: {
-        op: 'tra',
+    SIGNE_COPIAT: {
+        // Un terme que en aquest pas només s'havia de copiar surt amb el signe canviat
+        // (el David, lot 1, B05 i B15): 9x + 7 = 3x − 23  →  9x − 3x = 23 − 7.
+        op: ['exp', 'red1', 'tra'],
         pes: 2,
-        fes(l) {
+        fes(l, r, op) {
+            const bo = aplica(op, l);
+            if (!bo) return null;
+            const llista = copiats(op, l, bo);
+            if (!llista.length) return null;
+            // amb dos signes copiats malament el 30 % de les vegades que es pot (el David, B15: −3x + 8 = −7x + 36)
+            const quins = llista.length >= 2 && r() < 0.3 ? barreja(r, llista).slice(0, 2) : [tria(r, llista)];
+            const nou = { L: bo.L.slice(), R: bo.R.slice() };
+            for (const [c, i] of quins) nou[c][i] = negT(bo[c][i]);
+            const ts = quins.map(([c, i]) => bo[c][i]),
+                mals = quins.map(([c, i]) => nou[c][i]);
+            return { linia: linia(nou.L, nou.R), dades: { t: ts[0], mal: mals[0], ts, mals, op } };
+        },
+        expl(d) {
+            if (d.ts.length > 1) return `Ha escrit ${d.mals.map(m => `$${ambSigne(m)}$`).join(' i ')}, però aquests termes no intervenien en aquest pas: s'havien de copiar tal com eren a la línia de sobre.`;
+            return `Ha escrit $${ambSigne(d.mal)}$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre.`;
+        },
+    },
+    TERMES_NO_SEMBLANTS: {
+        op: ['tra', 'red1'],
+        pes: 5,
+        fes(l, r, op = 'tra') {
+            if (op === 'red1') {
+                // 2x + 3 + 4x = 18  →  9x = 18 (el David, lot 1, B16): ho suma tot com si fossin x
+                const costats = ['L', 'R'].filter(c => {
+                    const ts = l[c];
+                    return ts.filter(esX).length >= 2 && ts.filter(t => esN(t) && !t.v.zero).length >= 1 && ts.every(t => esX(t) || esN(t));
+                });
+                if (!costats.length) return null;
+                const c = tria(r, costats);
+                const xs = l[c].filter(esX),
+                    ns = l[c].filter(t => esN(t) && !t.v.zero);
+                const tot = [...xs.map(t => t.c), ...ns.map(t => t.v)].reduce((s, v) => s.suma(v), Q0);
+                // amb nombres grans (−48) l'errada ja no és versemblant
+                if (tot.zero || !tot.enter || ns.some(t => Math.abs(t.v.n) > 15)) return null;
+                const mal = [X(tot)];
+                const altre = agrupa(l[c === 'L' ? 'R' : 'L']);
+                return { linia: c === 'L' ? linia(mal, altre) : linia(altre, mal), dades: { tres: true, xs, ns } };
+            }
             const xs = l.L.filter(esX),
                 ns = l.L.filter(t => esN(t) && !t.v.zero);
             if (xs.length !== 1 || ns.length !== 1 || l.L.length !== 2) return null;
@@ -329,66 +445,139 @@ export const REGLES = {
             return { linia: linia([X(c.suma(b))], l.R), dades: { x: xs[0], n: ns[0] } };
         },
         expl(d, bona) {
+            if (d.tres) {
+                const xs = `$${pTx(d.xs[0])}$ i $${ambSigne(d.xs[1])}$`;
+                if (d.ns.length === 1) return `El $${ambSigne(d.ns[0])}$ no té $x$: no és un terme semblant a ${xs}, i no s'hi pot sumar.`;
+                return `Els nombres no tenen $x$: no són termes semblants a ${xs}, i no s'hi poden sumar.`;
+            }
             return `$${pTx(d.x)}$ i $${pTx(d.n)}$ no són termes semblants: no es poden sumar. El $${ambSigne(d.n)}$ havia de passar a l'altre membre.`;
         },
     },
-    CALCUL: {
+    COEFICIENT_U: {
+        // La x sola no es compta (el David, errades reals: 3x + x + 6x = 4 − 2x  →  9x = 4 − 2x).
         op: ['red1', 'red2'],
-        pes: 1,
+        pes: 2,
         fes(l, r, op) {
             const bo = aplica(op, l);
             if (!bo) return null;
-            // costats on s'ha sumat de veritat (abans hi havia més d'un terme del mateix tipus)
+            const u1 = t => esX(t) && t.c.abs().igual(q(1));
+            const costats = ['L', 'R'].filter(c => l[c].filter(esX).length >= 2 && l[c].some(u1));
+            if (!costats.length) return null;
+            const c = tria(r, costats);
+            const xs = l[c].filter(esX);
+            const u = tria(r, xs.filter(u1));
+            const S = xs.reduce((s, t) => s.suma(t.c), Q0);
+            const w = S.resta(u.c);
+            const k = bo[c].findIndex(esX);
+            if (w.zero || k < 0) return null;
+            const nou = bo[c].slice();
+            nou[k] = X(w);
+            return { linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou), dades: { expr: sumaTx(xs), u, mal: X(w) } };
+        },
+        expl(d) {
+            const neg = d.u.c.n < 0;
+            return `La $${neg ? '−x' : 'x'}$ vol dir $${neg ? '−1x' : '1x'}$: també s'havia de comptar en fer $${d.expr}$.`;
+        },
+    },
+    CALCUL: {
+        // Errades de signe versemblants (el David, lot 1, B07): amb −3 + 15, l'alumne
+        // escriu −12 (s'equivoca en el signe) o −18 (els suma com si tinguessin el
+        // mateix signe); amb −3 − 15, escriu +18 (signe) o −12 (els resta). Només
+        // sumes de dos termes on n'hi ha algun de negatiu.
+        op: ['red1', 'red2'],
+        pes: 4,
+        fes(l, r, op) {
+            const bo = aplica(op, l);
+            if (!bo) return null;
             const opcions = [];
             for (const c of ['L', 'R'])
                 for (const k of ['x', 'n']) {
                     const abans = l[c].filter(t => t.k === k);
-                    if (abans.length > 1) opcions.push([c, k, abans]);
+                    const vs = abans.map(t => (k === 'x' ? t.c : t.v));
+                    if (abans.length === 2 && vs.some(v => v.n < 0) && vs.every(v => !v.zero)) opcions.push([c, k, abans, vs]);
                 }
             if (!opcions.length) return null;
             const triada = tria(r, opcions);
-            const [c, k, abans] = triada;
-            const delta = tria(r, [-2, -1, 1, 2]);
+            const [c, k, abans, [v1, v2]] = triada;
+            const S = v1.suma(v2);
+            const neg1 = v1.n < 0,
+                neg2 = v2.n < 0;
+            const absos = [v1.abs(), v2.abs()];
+            const amb = (v, negatiu) => (negatiu ? v.neg() : v);
+            const tipus =
+                neg1 !== neg2
+                    ? [['signe', S.neg()], ['suma', amb(absos[0].suma(absos[1]), neg1)]]
+                    : [['signe', S.neg()], ['resta', amb(absos[0].resta(absos[1]).abs(), neg1)]];
+            const possibles = tipus.filter(([, v]) => !v.zero && !v.igual(S));
+            if (!possibles.length) return null;
+            const [quin, v] = tria(r, possibles);
+            const fet = k === 'x' ? X(v) : N(v);
+            let posat = false;
             const nou = bo[c].map(t => {
-                if (t.k !== k) return t;
-                const v = (k === 'x' ? t.c : t.v).suma(q(delta));
-                return k === 'x' ? X(v) : N(v);
+                if (t.k !== k || posat) return t;
+                posat = true;
+                return fet;
             });
-            const fet = nou.find(t => t.k === k);
-            if (!fet || (k === 'x' ? fet.c : fet.v).zero) return null;
+            if (!posat) nou.push(fet); // la suma bona era 0 i no s'havia escrit
             const resultat = bo[c].find(t => t.k === k);
             return {
                 linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou),
                 dades: {
+                    tipus: quin,
                     expr: sumaTx(abans),
-                    bo: pTx(resultat),
+                    a: ambSigne(abans[0]),
+                    b: ambSigne(abans[1]),
+                    bo: resultat ? pTx(resultat) : '0',
                     mal: pTx(fet),
                     altres: opcions.filter(o => o !== triada).map(o => sumaTx(o[2])),
-                    signe: (k === 'x' ? fet.c : fet.v).igual((k === 'x' ? resultat.c : resultat.v).neg()),
                 },
             };
         },
         expl(d) {
+            if (d.tipus === 'suma') return `$${d.expr}$ no fa $${d.mal}$: quan els dos termes tenen signes diferents, no se sumen els seus valors.`;
+            if (d.tipus === 'resta') return `$${d.expr}$ no fa $${d.mal}$: quan els dos termes tenen el mateix signe, els seus valors se sumen.`;
             return `$${d.expr}$ no fa $${d.mal}$.`;
         },
     },
     OPERACIO_INVERSA: {
+        // Erbaş et al. (2009): x = N − M o M − N (YK06), x = M·N (YK03), x = M + N (YK05)
         op: 'div',
-        pes: 1,
-        fes(l) {
+        pes: 4,
+        fes(l, r) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
                 B = l.R[0].v.n;
             if (Math.abs(A) < 2) return null;
-            return { linia: linia([X(1)], [N(B - A)]), dades: { A, B } };
+            // la resta al revés, sobretot quan el coeficient és més gran (l'alumne evita la fracció)
+            const variants = ['resta', 'resta', 'producte', 'suma', ...(Math.abs(A) > Math.abs(B) ? ['inversa', 'inversa'] : ['inversa'])];
+            const v = tria(r, variants);
+            const W = { resta: B - A, inversa: A - B, producte: A * B, suma: A + B }[v];
+            if (W === 0) return null;
+            return { linia: linia([X(1)], [N(W)]), dades: { A, B, v, W } };
         },
         expl(d) {
-            return `El $${menys(d.A)}$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $${menys(d.A)}$. Ha restat $${menys(d.A)}$.`;
+            const fet = { resta: 'Ha restat', inversa: 'Ha restat', producte: 'Ha multiplicat', suma: 'Ha sumat' }[d.v || 'resta'];
+            return `El $${menys(d.A)}$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $${menys(d.A)}$. ${fet}.`;
+        },
+    },
+    COEFICIENT_OBLIDAT: {
+        // Erbaş et al. (2009), YK01: 3x = 12 → x = 12 (51 observacions)
+        op: 'div',
+        pes: 3,
+        fes(l) {
+            if (!aplica('div', l)) return null;
+            const A = l.L[0].c.n,
+                B = l.R[0].v.n;
+            if (Math.abs(A) < 2 || B === 0) return null;
+            return { linia: linia([X(1)], [N(B)]), dades: { A, B } };
+        },
+        expl(d) {
+            return `El $${menys(d.A)}$ multiplica la $x$: per deixar-la sola s'han de dividir els dos membres entre $${menys(d.A)}$, i el $${menys(d.A)}$ ha desaparegut sense dividir.`;
         },
     },
     DIVISIO_SIGNE: {
         op: 'div',
-        pes: 2,
+        pes: 1,
         fes(l) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -403,7 +592,7 @@ export const REGLES = {
     },
     QUOCIENT_INVERTIT: {
         op: 'div',
-        pes: 2,
+        pes: 1,
         fes(l) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -423,11 +612,12 @@ const ambS = n => (n > 0 ? '+' + n : menys(n));
 const PERQUE = {
     DISTRIBUTIVA(d) {
         const c = menys(d.t.c),
-            b = menys(d.t.b);
+            b = menys(d.t.b),
+            x = d.t.m === 1 ? 'la $x$' : `$${d.t.m}x$`;
         return {
-            bona: `Ha multiplicat el $${c}$ per la $x$, però no pel $${b}$.`,
+            bona: `Ha multiplicat el $${c}$ per ${x}, però no pel $${b}$.`,
             dolentes: [
-                `Ha multiplicat el $${c}$ pel $${b}$, però no per la $x$.`,
+                `Ha multiplicat el $${c}$ pel $${b}$, però no per ${x}.`,
                 `El $${c}$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.`,
                 `Ha canviat el signe del $${b}$, i no l'havia de canviar.`,
             ],
@@ -435,26 +625,38 @@ const PERQUE = {
     },
     DIST_SIGNE(d) {
         const c = menys(d.t.c),
-            b = menys(d.t.b);
+            b = menys(d.t.b),
+            x = d.t.m === 1 ? 'la $x$' : `$${d.t.m}x$`,
+            delX = d.t.m === 1 ? 'de la $x$' : `del $${d.t.m}x$`;
         if (d.t.c === -1)
             return {
                 bona: `El signe $−$ de davant del parèntesi havia de canviar el signe del $${b}$, i no l'ha canviat.`,
                 dolentes: [
-                    `El signe $−$ de davant del parèntesi no ha canviat el signe de la $x$.`,
-                    `El signe $−$ de davant del parèntesi només havia de canviar el signe de la $x$.`,
+                    `El signe $−$ de davant del parèntesi no ha canviat el signe ${delX}.`,
+                    `El signe $−$ de davant del parèntesi només havia de canviar el signe ${delX}.`,
                     `Havia de canviar el signe de tots els termes de l'equació.`,
                 ],
             };
         return {
             bona: `Ha multiplicat el $${c}$ pel $${b}$ i s'ha equivocat en el signe del resultat.`,
             dolentes: [
-                `Ha multiplicat el $${c}$ per la $x$ i s'ha equivocat en el signe.`,
-                `No havia de multiplicar el $${b}$: només es multiplica la $x$.`,
+                `Ha multiplicat el $${c}$ per ${x} i s'ha equivocat en el signe.`,
+                `No havia de multiplicar el $${b}$: només es multiplica ${x}.`,
                 `Havia de canviar el signe de tots els termes de l'equació.`,
             ],
         };
     },
     SIGNE_TRANSPOSAR(d) {
+        if (d.tots)
+            return {
+                bona: `Ha passat ${llistaTermes(d.tots)} a l'altre membre sense canviar-los el signe.`,
+                dolentes: [
+                    `Ha canviat el signe dels termes que es quedaven al seu membre.`,
+                    `Els termes havien de passar a l'altre membre dividint.`,
+                    `Havia de passar tots els termes, també els nombres, al membre de l'esquerra.`,
+                    `Havia de sumar els termes de cada membre abans de passar-los a l'altre.`,
+                ],
+            };
         const t = ambSigne(d.t);
         const u = d.altres && d.altres[0];
         return {
@@ -469,7 +671,72 @@ const PERQUE = {
             ],
         };
     },
+    DIST_SUMA(d) {
+        const c = menys(d.t.c),
+            b = menys(d.t.b),
+            mx = `${d.t.m}x`;
+        return {
+            bona: `Ha sumat el $${Math.abs(d.t.c)}$ i el $${d.t.m}$ de $${mx}$, i els havia de multiplicar.`,
+            dolentes: [
+                `Ha multiplicat el $${c}$ per $${mx}$, però no pel $${b}$.`,
+                `S'ha equivocat en el signe del terme en $x$.`,
+                `S'ha equivocat multiplicant el $${c}$ pel $${b}$.`,
+                `Havia de sumar el $${c}$ a cada terme del parèntesi.`,
+            ],
+        };
+    },
+    COEFICIENT_U(d) {
+        const neg = d.u.c.n < 0,
+            ux = neg ? '−x' : 'x';
+        return {
+            bona: `No ha comptat la $${ux}$: la $${ux}$ vol dir $${neg ? '−1x' : '1x'}$.`,
+            dolentes: [
+                `Ha calculat $${d.expr}$ i s'ha equivocat en el signe del resultat.`,
+                `Ha sumat termes que no són semblants.`,
+                neg ? `Ha sumat la $x$ en lloc de restar-la.` : `Ha restat la $x$ en lloc de sumar-la.`,
+                `Ha comptat la $${ux}$ dues vegades.`,
+            ],
+        };
+    },
+    SIGNE_COPIAT(d) {
+        if (d.ts && d.ts.length > 1)
+            return {
+                bona: `Ha copiat ${llistaTermes(d.ts)} de la línia de sobre amb el signe canviat.`,
+                dolentes: [
+                    `Ha passat ${llistaTermes(d.ts)} a l'altre membre sense canviar-los el signe.`,
+                    `${llistaTermes(d.ts, true)} havien de canviar de signe, i els ha deixat igual.`,
+                    `S'ha equivocat sumant dos nombres d'aquesta línia.`,
+                ],
+            };
+        const t = ambSigne(d.t);
+        const propi = {
+            exp: `El $${t}$ també quedava multiplicat pel nombre de davant del parèntesi.`,
+            red1: `Ha sumat el $${t}$ amb un terme que no era semblant.`,
+            tra: `El $${t}$ havia de passar a l'altre membre.`,
+        }[d.op];
+        return {
+            bona: `Ha copiat el $${t}$ de la línia de sobre amb el signe canviat.`,
+            dolentes: [
+                `Ha passat el $${t}$ a l'altre membre sense canviar-li el signe.`,
+                `El $${t}$ havia de canviar de signe, i l'ha deixat igual.`,
+                propi,
+                `S'ha equivocat sumant dos nombres d'aquesta línia.`,
+            ],
+        };
+    },
     TERMES_NO_SEMBLANTS(d) {
+        if (d.tres) {
+            const n = d.ns.length === 1 ? ambSigne(d.ns[0]) : null;
+            return {
+                bona: n ? `Ha sumat el $${n}$ amb els termes en $x$, però el $${n}$ no té $x$.` : `Ha sumat els nombres amb els termes en $x$, però els nombres no tenen $x$.`,
+                dolentes: [
+                    `Ha passat ${n ? `el $${n}$` : 'els nombres'} a l'altre membre sense canviar-${n ? 'li' : 'los'} el signe.`,
+                    `Havia de multiplicar els termes en $x$, i no sumar-los.`,
+                    `Els termes en $x$ no es podien sumar perquè no són l'un al costat de l'altre.`,
+                    `${n ? `El $${n}$` : 'Cada nombre'} s'havia de multiplicar per la $x$.`,
+                ],
+            };
+        }
         const x = pTx(d.x),
             n = pTx(d.n),
             c = d.x.c.n,
@@ -484,19 +751,46 @@ const PERQUE = {
         };
     },
     CALCUL(d) {
-        const dolentes = [`En lloc de sumar, havia de multiplicar: $${d.expr}$ és un producte.`, `Ha sumat termes que no són semblants.`];
+        const frases = {
+            signe: `Ha calculat $${d.expr}$ i s'ha equivocat en el signe del resultat.`,
+            suma: `Els termes $${d.a}$ i $${d.b}$ tenen signes diferents, però els ha sumat com si tinguessin el mateix signe.`,
+            resta: `Els termes $${d.a}$ i $${d.b}$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.`,
+        };
+        const dolentes = Object.entries(frases)
+            .filter(([k]) => k !== d.tipus)
+            .map(([, f]) => f);
+        dolentes.push(`Ha sumat termes que no són semblants.`, `En lloc de sumar, havia de multiplicar: $${d.expr}$ és un producte.`);
         for (const a of d.altres || []) dolentes.push(`S'ha equivocat en el càlcul de $${a}$.`);
-        if (!d.signe) dolentes.push(`Només s'ha equivocat en el signe del resultat.`);
-        return { bona: `Ha calculat $${d.expr}$ i no fa $${d.mal}$.`, dolentes };
+        return { bona: frases[d.tipus], dolentes };
     },
     OPERACIO_INVERSA(d) {
-        const W = d.B - d.A;
+        const v = d.v || 'resta';
+        const A = d.A < 0 ? '(' + menys(d.A) + ')' : String(d.A);
+        const fet = {
+            resta: resta(d.B, d.A),
+            inversa: `${menys(d.A)} − ${d.B < 0 ? '(' + menys(d.B) + ')' : d.B}`,
+            producte: `${menys(d.B)} · ${A}`,
+            suma: `${menys(d.B)} + ${A}`,
+        }[v];
+        const W = d.W ?? d.B - d.A;
+        const nom = { resta: 'una resta', inversa: 'una resta', producte: 'un producte', suma: 'una suma' }[v];
         return {
-            bona: `Ha decidit fer $${resta(d.B, d.A)}$, però hauria d'haver fet ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
+            bona: `Ha decidit fer $${fet}$, però hauria d'haver fet ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
             dolentes: [
-                `Ha decidit fer una resta, però havia de fer una suma.`,
-                `Havia de fer $${resta(d.B, d.A)}$, però el resultat és $${ambS(-W)}$.`,
+                v === 'suma' ? `Ha decidit fer una suma, però havia de fer una resta.` : `Ha decidit fer ${nom}, però havia de fer una suma.`,
+                `Havia de fer $${fet}$, però el resultat és $${ambS(-W)}$.`,
                 `El resultat és $${Math.abs(d.A)}${Math.abs(d.B)}$.`,
+            ],
+        };
+    },
+    COEFICIENT_OBLIDAT(d) {
+        const A = menys(d.A);
+        return {
+            bona: `Ha tret el $${A}$ de davant de la $x$ sense dividir-hi.`,
+            dolentes: [
+                `Ha dividit al revés: ${'$'}{${A}|${menys(d.B)}}$.`,
+                `Havia de restar el $${A}$ als dos membres.`,
+                `Ha multiplicat el $${menys(d.B)}$ pel $${A}$.`,
             ],
         };
     },
@@ -532,7 +826,7 @@ function perQueBona(op, abans, despres) {
         case 'exp':
             escrit = [...abans.L, ...abans.R]
                 .filter(t => t.k === 'p')
-                .map(t => sumaTx([X(t.c), N(t.c * t.b)].filter((u, k) => k === 0 || !u.v.zero)));
+                .map(t => sumaTx([X(t.c * t.m), N(t.c * t.b)].filter((u, k) => k === 0 || !u.v.zero)));
             break;
         case 'red1':
         case 'red2':
@@ -559,28 +853,51 @@ function perQueBona(op, abans, despres) {
 }
 
 // ---------- Enunciats ----------
-// nivell 1: ax + b = c, ax + b = dx + e (4–5 línies)
-// nivell 2: amb parèntesis (6–8 línies)
+// nivell 1: ax + b = c, ax + b = dx + e, ax + b + cx = e (4–6 línies)
+// nivell 2: amb parèntesis (6–8 línies); la forma H porta un coeficient a dins: x − 2·(3x + 6)
 function enunciat(r, nivell) {
     const s = r() < (nivell === 1 ? 0.75 : 0.8) ? signe(r) * enter(r, 1, 9) : null; // solució entera o fraccionària
     if (nivell === 1) {
-        const forma = tria(r, ['A', 'A', 'B']);
+        const forma = tria(r, ['A', 'A', 'B', 'G']);
         const a = enter(r, 2, 9);
+        if (forma === 'G') {
+            // dos termes en x al mateix membre (el David, lot 1, B16: 2x + 3 + 4x = 18)
+            // un 30 % amb una x sola (x vol dir 1x: COEFICIENT_U)
+            const c = (r() < 0.3 ? 1 : enter(r, 1, 9)) * signe(r);
+            const A = a + c;
+            if (Math.abs(A) < 2) return null;
+            const b = signe(r) * enter(r, 1, 15);
+            const B = s !== null ? A * s : fraccionari(r, A);
+            if (B + b === 0) return null;
+            return linia([X(a), N(b), X(c)], [N(B + b)]);
+        }
         if (forma === 'A') {
             const b = signe(r) * enter(r, 1, 15);
             const B = s !== null ? a * s : fraccionari(r, a);
             return linia([X(a), N(b)], [N(B + b)]);
         }
-        const d = enter(r, 1, 9) * signe(r);
+        const d = (r() < 0.3 ? 1 : enter(r, 1, 9)) * signe(r); // un 30 % amb una x sola
         const A = a - d;
         if (Math.abs(A) < 2) return null;
         const b = signe(r) * enter(r, 1, 15);
         const B = s !== null ? A * s : fraccionari(r, A);
         return linia([X(a), N(b)], [X(d), N(B + b)]);
     }
-    const forma = tria(r, ['C', 'D', 'E', 'F']);
+    const forma = tria(r, ['C', 'D', 'E', 'F', 'H']);
     const c = enter(r, 2, 6),
         b = signe(r) * enter(r, 1, 9);
+    if (forma === 'H') {
+        // ax + c·(mx + b) = dx + e, amb un coeficient a dins del parèntesi (el David, errades reals:
+        // x − 2·(3x + 6) = 3x + 7)
+        const m = enter(r, 2, 4),
+            k = signe(r) * enter(r, 2, 5),
+            a = tria(r, [1, 1, -1, 2, 3, -2]),
+            d = signe(r) * enter(r, 1, 6);
+        const A = a + k * m - d;
+        if (Math.abs(A) < 2) return null;
+        const B = s !== null ? A * s : fraccionari(r, A);
+        return linia([X(a), P(k, b, m)], [X(d), N(B + k * b)]);
+    }
     if (forma === 'C') {
         const d = enter(r, 0, 9) * signe(r);
         const A = c - d;
@@ -625,14 +942,17 @@ function fraccionari(r, A) {
     return A * 2 + 1;
 }
 
-const LIMITS = { 1: [4, 5], 2: [6, 8] };
+const LIMITS = { 1: [4, 6], 2: [6, 8] };
 const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol'];
 const dinsMarge = l => [...l.L, ...l.R].every(t => {
     if (t.k === 'x') return Math.abs(t.c.n) <= 40 && t.c.d === 1;
     if (t.k === 'n') return Math.abs(t.v.n) <= 120 && t.v.d <= 40;
-    if (t.k === 'p') return Math.abs(t.c) <= 9 && Math.abs(t.b) <= 20;
+    if (t.k === 'p') return Math.abs(t.c) <= 9 && Math.abs(t.b) <= 20 && t.m <= 5;
     return Math.abs(t.num) <= 120 && Math.abs(t.den) <= 40;
 });
+
+/** Un «+ 0» en un membre amb més termes (dx + 0): l'enunciat no s'escriuria així. */
+const zeroSobrer = l => [l.L, l.R].some(ts => ts.length > 1 && ts.some(t => t.k === 'n' && t.v.zero));
 
 // ---------- Injecció ----------
 function candidates(r, linies, ops, des = 1) {
@@ -676,14 +996,17 @@ function injecta(linies, ops, c) {
  * @param {number} [o.nivell]    1 o 2 (etapa 1)
  * @param {number} [o.errades]   0, 1 o 2
  * @param {boolean} [o.compensades] amb 2 errades: la solució final és la bona (N4)
+ * @param {object} [o.e0]        (eines del banc) un enunciat fix, fet amb T.linia(...)
+ * @param {function} [o.filtre]  (eines del banc) quines injeccions s'accepten: c => bool,
+ *                               amb c = { j, id, op, res: { linia, dades } }
  * @param {object} TIPUS         data/errors.json (textos genèrics de «Per què?»)
  */
-export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false }, TIPUS) {
+export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }, TIPUS) {
     const r = creaAtzar(llavor);
     const [mn, mx] = LIMITS[nivell] || LIMITS[1];
     for (let intent = 0; intent < 400; intent++) {
-        const e0 = enunciat(r, nivell);
-        if (!e0 || !solucio(e0) || !dinsMarge(e0)) continue;
+        const e0 = fix || enunciat(r, nivell);
+        if (!e0 || !solucio(e0) || !dinsMarge(e0) || zeroSobrer(e0)) continue;
         const passos = resol(e0);
         let linies = [e0, ...passos.map(p => p.linia)];
         let ops = [null, ...passos.map(p => p.op)];
@@ -692,9 +1015,10 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
         let ok = true;
         if (compensades && errades === 2) {
             const parells = [];
-            for (const c1 of candidates(r, linies, ops)) {
+            const passa = c => !filtre || filtre(c);
+            for (const c1 of candidates(r, linies, ops).filter(passa)) {
                 const p1 = injecta(linies, ops, c1);
-                for (const c2 of candidates(r, p1.linies, p1.ops, c1.j + 1)) {
+                for (const c2 of candidates(r, p1.linies, p1.ops, c1.j + 1).filter(passa)) {
                     const p2 = injecta(p1.linies, p1.ops, c2);
                     if (solucio(p2.linies[p2.linies.length - 1]).igual(solucio(e0))) parells.push([c1, c2, p2]);
                 }
@@ -707,6 +1031,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
             for (let k = 0; k < errades; k++) {
                 const des = marques.length ? marques[marques.length - 1].j + 1 : 1;
                 let cs = candidates(r, linies, ops, des);
+                if (filtre) cs = cs.filter(filtre);
                 if (k === errades - 1)
                     cs = cs.filter(c => {
                         const n = injecta(linies, ops, c).linies.length;
@@ -728,6 +1053,8 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
     }
     throw new Error(`No s'ha pogut generar cap exemple (llavor ${llavor}, nivell ${nivell})`);
 }
+/** Per fer enunciats fixos (eines del banc): T.linia([T.X(8), T.N(-15)], [T.X(-4), T.N(-3)]). */
+export const T = { X, N, P, linia };
 
 function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TIPUS) {
     const ex = {
@@ -749,6 +1076,8 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
             malF = fitxes(linies[c.j]);
         let terme = malF.findIndex((t, i) => t !== '=' && t !== bonaF[i]);
         if (terme < 0) terme = malF.findIndex(t => t !== '=');
+        // dos termes equivocats (SIGNE_TRANSPOSAR o SIGNE_COPIAT amb dos termes): a la fase del terme valen tots dos
+        const termes = bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
         // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia
         const fr = PERQUE[c.id](c.res.dades);
         const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, 3).map(t => [t, false])]);
@@ -774,6 +1103,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         ex.errades[c.j] = {
             tipus: c.id,
             terme,
+            ...(termes.length > 1 ? { termes } : {}),
             expl: regla.expl(c.res.dades, bona),
             bona: text(bona),
             fitxesBona: bonaF,
@@ -825,7 +1155,9 @@ export function valida(ex) {
         if (!err.includes(i) && !ex.correctes[i]) p.push(`línia ${i + 1}: falta el text de per què és correcta`);
     }
     const ult = ls[ls.length - 1];
-    if (!(ult.L.length === 1 && esX(ult.L[0]) && ult.L[0].c.n === 1 && ult.L[0].c.d === 1 && ult.R.length === 1 && esN(ult.R[0])))
+    // x = valor: un nombre, o una fracció que ja no se simplifica (x = 4/11 no té pas «simp»)
+    const valorFinal = t => esN(t) || (t.k === 'f' && t.den > 1 && mcd(Math.abs(t.num), t.den) === 1);
+    if (!(ult.L.length === 1 && esX(ult.L[0]) && ult.L[0].c.n === 1 && ult.L[0].c.d === 1 && ult.R.length === 1 && valorFinal(ult.R[0])))
         p.push("l'última línia no és «x = valor»");
     for (const [j, e] of Object.entries(ex.errades)) {
         if (e.perque.length !== 4 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir 4 opcions i una de bona`);
@@ -834,7 +1166,7 @@ export function valida(ex) {
         if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
         if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);
         if (e.bona === ex.linies[j].join(' ')) p.push(`errada ${j}: la línia bona és igual que la dolenta`);
-        if (e.expl.includes(e.bona) || e.expl.includes(e.bona.split(' = ')[1] + '$')) p.push(`errada ${j}: l'explicació ja diu com havia de quedar la línia`);
+        if (e.expl.includes(e.bona) || e.expl.includes('$' + e.bona.split(' = ')[1] + '$')) p.push(`errada ${j}: l'explicació ja diu com havia de quedar la línia`);
         if (!(e.terme >= 0 && e.terme < ex.linies[j].length) || ex.linies[j][e.terme] === '=') p.push(`errada ${j}: terme equivocat fora de lloc`);
     }
     const tot = JSON.stringify({ ...ex, _linies: undefined });

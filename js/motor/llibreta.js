@@ -12,7 +12,9 @@
  *   (encert lila / no encert gris, sempre amb text). La correcció del professor
  *   va amb una altra lletra (R2, Permanent Marker).
  * - Totes les línies alineades pel «=» (R4): cada línia és una graella
- *   «membre esquerre | = | membre dret».
+ *   «membre esquerre | = | membre dret», i alinea() dona a totes les línies
+ *   l'ample del membre més llarg (--ma, --mb): el «=» no es mou ni quan una
+ *   línia no hi cap.
  * - Teclat (G6): ↑/↓ i 1–9 trien la línia, Enter = «Comprova», Esc = desfés.
  * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos).
  *   Tot el que s'escriu passa per esc(): el contingut és nostre, però així no
@@ -43,6 +45,23 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         valorEscrit = ''; // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
     const n = errades(ex).length;
 
+    /**
+     * Totes les línies (i les correccions) amb el mateix ample de membre esquerre i de membre dret:
+     * així el «=» queda a la mateixa vertical encara que un membre no hi càpiga (pantalles estretes).
+     */
+    function alinea() {
+        const lin = contenidor.querySelector('.linies');
+        if (!lin) return;
+        lin.style.removeProperty('--ma');
+        lin.style.removeProperty('--mb');
+        let a = 0,
+            b = 0;
+        lin.querySelectorAll('.ex > .ma').forEach(e => (a = Math.max(a, e.getBoundingClientRect().width)));
+        lin.querySelectorAll('.ex > .mb').forEach(e => (b = Math.max(b, e.getBoundingClientRect().width)));
+        lin.style.setProperty('--ma', Math.ceil(a) + 'px');
+        lin.style.setProperty('--mb', Math.ceil(b) + 'px');
+    }
+
     /** La consigna en dues files: què ha fet l'alumne fictici i, a sota, què ha de fer l'alumne (el David, 25/11/2026). */
     function consigna() {
         const qui = `${maj(ex.alumne)} ha resolt aquesta equació`;
@@ -62,7 +81,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const terme = (t, j) =>
             tria
                 ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(t)}">${fm(t)}</button>`
-                : `<span class="t${cercle && e.terme === j ? ' mal' : ''}">${fm(t)}</span>`;
+                : `<span class="t${cercle && (e.termes || [e.terme]).includes(j) ? ' mal' : ''}">${fm(t)}</span>`;
         const a = L.slice(0, q).map((t, j) => terme(t, j)).join(''),
             b = L.slice(q + 1).map((t, j) => terme(t, j + q + 1)).join('');
         // Corregida: només es ratlla el membre que no coincideix amb el de la línia bona (el David, 25/11/2026)
@@ -183,6 +202,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button></div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
         contenidor.innerHTML = h;
+        alinea();
         const escrit = contenidor.querySelector('#escrit');
         if (escrit) {
             escrit.value = valorEscrit;
@@ -294,6 +314,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     contenidor.addEventListener('click', clic);
     contenidor.addEventListener('keydown', tecla);
     document.addEventListener('keydown', teclaDocument);
+    // la mida de la lletra canvia amb l'amplada (560px) i quan s'acaben de carregar les lletres
+    addEventListener('resize', alinea);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(alinea);
     pinta();
     return {
         estat: S,
@@ -303,6 +326,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             contenidor.removeEventListener('input', escriuInput);
             contenidor.removeEventListener('keydown', tecla);
             document.removeEventListener('keydown', teclaDocument);
+            removeEventListener('resize', alinea);
         },
     };
 }

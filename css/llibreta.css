@@ -190,9 +190,16 @@ button.ln:hover {
 .ex {
     display: grid;
     /* el «=» al mig a totes les línies; un membre més ample que la meitat no es parteix mai */
-    grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
-    column-gap: 0.35em;
+    /* --ma i --mb: l'ample del membre més llarg de totes les línies (alinea() a llibreta.js) */
+    /* la columna del «=» té un ample fix en rem: el «=» de la lletra d'impremta, el de l'alumne i el del
+       professor no fan el mateix ample, i així el centre de tots queda a la mateixa vertical */
+    grid-template-columns: minmax(var(--ma, max-content), 1fr) 1.6rem minmax(var(--mb, max-content), 1fr);
+    column-gap: 0.4rem;
     align-items: center;
+}
+.ex > .t {
+    justify-self: center;
+    margin: 0;
 }
 .ex .ma {
     justify-self: end;

@@ -8,7 +8,7 @@
  * ARQUITECTURA:
  * - parametres(nivell, noerrors, llavor) és pur i determinista: la mateixa
  *   llavor dona el mateix nombre d'errades.
- *   1: una errada anunciada, sense parèntesis (4–5 línies)
+ *   1: una errada anunciada, sense parèntesis (4–6 línies)
  *   2: una errada anunciada, amb parèntesis (6–8 línies)
  *   3: una errada, sense dir quantes n'hi ha
  *   4: dues errades anunciades (a vegades es compensen) i fase del terme

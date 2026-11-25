@@ -1,4 +1,3940 @@
 {
-  "_que_es": "Exemples revisats pel David (R6). Cada element és un exemple tal com el torna perPagina() de js/equacions/generador.js. pagina.js en fa sortir més o menys 1 de cada 3, si encaixa amb el nivell (nivells.js, encaixaBanc).",
-  "exemples": []
+ "_que_es": "Exemples revisats pel David (R6). Cada element és un exemple tal com el torna perPagina() de js/equacions/generador.js, amb «banc» = l'identificador de la revisió (lot1-B01…). pagina.js en fa sortir més o menys 1 de cada 3, si encaixa amb el nivell (nivells.js, encaixaBanc).",
+ "exemples": [
+  {
+   "llavor": 6,
+   "nivell": 2,
+   "alumne": "en Marc",
+   "linies": [
+    [
+     "4·(x − 1)",
+     "=",
+     "9x",
+     "+ 26"
+    ],
+    [
+     "4x",
+     "− 1",
+     "=",
+     "9x",
+     "+ 26"
+    ],
+    [
+     "4x",
+     "− 9x",
+     "=",
+     "26",
+     "+ 1"
+    ],
+    [
+     "−5x",
+     "=",
+     "27"
+    ],
+    [
+     "x",
+     "=",
+     "{27|−5}"
+    ],
+    [
+     "x",
+     "=",
+     "−{27|5}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DISTRIBUTIVA",
+     "terme": 1,
+     "expl": "El $4$ multiplica tots els termes del parèntesi, també el $−1$. Només ha multiplicat la $x$.",
+     "bona": "4x − 4 = 9x + 26",
+     "fitxesBona": [
+      "4x",
+      "− 4",
+      "=",
+      "9x",
+      "+ 26"
+     ],
+     "perque": [
+      [
+       "El $4$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.",
+       false
+      ],
+      [
+       "Ha multiplicat el $4$ per la $x$, però no pel $−1$.",
+       true
+      ],
+      [
+       "Ha canviat el signe del $−1$, i no l'havia de canviar.",
+       false
+      ],
+      [
+       "Ha multiplicat el $4$ pel $−1$, però no per la $x$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "4x − 4 = 9x + 26",
+       true
+      ],
+      [
+       "4x − 4 = 9x − 26",
+       false
+      ],
+      [
+       "4x − 4 = 9x + 27",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+1$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5x$ i també és correcte haver escrit $27$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${27|−5}$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{27|5}$."
+   },
+   "nota": null,
+   "solucio": "x = −6",
+   "banc": "lot1-B01"
+  },
+  {
+   "llavor": 27,
+   "nivell": 2,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "6·(x − 3)",
+     "=",
+     "−24"
+    ],
+    [
+     "6x",
+     "− 3",
+     "=",
+     "−24"
+    ],
+    [
+     "6x",
+     "=",
+     "−24",
+     "+ 3"
+    ],
+    [
+     "6x",
+     "=",
+     "−21"
+    ],
+    [
+     "x",
+     "=",
+     "{−21|6}"
+    ],
+    [
+     "x",
+     "=",
+     "−{7|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DISTRIBUTIVA",
+     "terme": 1,
+     "expl": "El $6$ multiplica tots els termes del parèntesi, també el $−3$. Només ha multiplicat la $x$.",
+     "bona": "6x − 18 = −24",
+     "fitxesBona": [
+      "6x",
+      "− 18",
+      "=",
+      "−24"
+     ],
+     "perque": [
+      [
+       "Ha multiplicat el $6$ per la $x$, però no pel $−3$.",
+       true
+      ],
+      [
+       "Ha multiplicat el $6$ pel $−3$, però no per la $x$.",
+       false
+      ],
+      [
+       "El $6$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.",
+       false
+      ],
+      [
+       "Ha canviat el signe del $−3$, i no l'havia de canviar.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "6x − 18 = 24",
+       false
+      ],
+      [
+       "6x − 18 = −25",
+       false
+      ],
+      [
+       "6x − 18 = −24",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+3$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−21$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−21|6}$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{7|2}$."
+   },
+   "nota": null,
+   "solucio": "x = −1",
+   "banc": "lot1-B02"
+  },
+  {
+   "llavor": 5,
+   "nivell": 2,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "10",
+     "− 2·(x + 7)",
+     "=",
+     "−9x",
+     "+ 10"
+    ],
+    [
+     "10",
+     "− 2x",
+     "+ 14",
+     "=",
+     "−9x",
+     "+ 10"
+    ],
+    [
+     "24",
+     "− 2x",
+     "=",
+     "−9x",
+     "+ 10"
+    ],
+    [
+     "−2x",
+     "+ 9x",
+     "=",
+     "10",
+     "− 24"
+    ],
+    [
+     "7x",
+     "=",
+     "−14"
+    ],
+    [
+     "x",
+     "=",
+     "{−14|7}"
+    ],
+    [
+     "x",
+     "=",
+     "−2"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SIGNE",
+     "terme": 2,
+     "expl": "El $−2$ multiplica tots els termes del parèntesi amb el seu signe: el $7$ també havia de canviar de signe.",
+     "bona": "10 − 2x − 14 = −9x + 10",
+     "fitxesBona": [
+      "10",
+      "− 2x",
+      "− 14",
+      "=",
+      "−9x",
+      "+ 10"
+     ],
+     "perque": [
+      [
+       "No havia de multiplicar el $7$: només es multiplica la $x$.",
+       false
+      ],
+      [
+       "Havia de canviar el signe de tots els termes de l'equació.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−2$ per la $x$ i s'ha equivocat en el signe.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−2$ pel $7$ i s'ha equivocat en el signe del resultat.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "10 − 4x − 14 = −9x + 10",
+       false
+      ],
+      [
+       "10 − 2x − 14 = −9x + 10",
+       true
+      ],
+      [
+       "10 − 2x + 7 = −9x + 10",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $24$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+9x$ i també és correcte haver escrit $−24$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $7x$ i també és correcte haver escrit $−14$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−14|7}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2$."
+   },
+   "nota": null,
+   "solucio": "x = 2",
+   "banc": "lot1-B03"
+  },
+  {
+   "llavor": 9,
+   "nivell": 2,
+   "alumne": "la Marta",
+   "linies": [
+    [
+     "15",
+     "− 3·(x + 3)",
+     "=",
+     "−6x",
+     "+ 27"
+    ],
+    [
+     "15",
+     "− 3x",
+     "+ 9",
+     "=",
+     "−6x",
+     "+ 27"
+    ],
+    [
+     "24",
+     "− 3x",
+     "=",
+     "−6x",
+     "+ 27"
+    ],
+    [
+     "−3x",
+     "+ 6x",
+     "=",
+     "27",
+     "− 24"
+    ],
+    [
+     "3x",
+     "=",
+     "3"
+    ],
+    [
+     "x",
+     "=",
+     "{3|3}"
+    ],
+    [
+     "x",
+     "=",
+     "1"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SIGNE",
+     "terme": 2,
+     "expl": "El $−3$ multiplica tots els termes del parèntesi amb el seu signe: el $3$ també havia de canviar de signe.",
+     "bona": "15 − 3x − 9 = −6x + 27",
+     "fitxesBona": [
+      "15",
+      "− 3x",
+      "− 9",
+      "=",
+      "−6x",
+      "+ 27"
+     ],
+     "perque": [
+      [
+       "Havia de canviar el signe de tots els termes de l'equació.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−3$ pel $3$ i s'ha equivocat en el signe del resultat.",
+       true
+      ],
+      [
+       "No havia de multiplicar el $3$: només es multiplica la $x$.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−3$ per la $x$ i s'ha equivocat en el signe.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "15 − 3x + 3 = −6x + 27",
+       false
+      ],
+      [
+       "15 − 3x − 9 = 6x + 27",
+       false
+      ],
+      [
+       "15 − 3x − 9 = −6x + 27",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $24$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+6x$ i també és correcte haver escrit $−24$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x$ i també és correcte haver escrit $3$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${3|3}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $1$."
+   },
+   "nota": null,
+   "solucio": "x = 7",
+   "banc": "lot1-B04"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "la Júlia",
+   "linies": [
+    [
+     "9x",
+     "+ 7",
+     "=",
+     "3x",
+     "− 23"
+    ],
+    [
+     "9x",
+     "+ 3x",
+     "=",
+     "−23",
+     "− 7"
+    ],
+    [
+     "12x",
+     "=",
+     "−30"
+    ],
+    [
+     "x",
+     "=",
+     "{−30|12}"
+    ],
+    [
+     "x",
+     "=",
+     "−{5|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "SIGNE_TRANSPOSAR",
+     "terme": 1,
+     "expl": "El $+3x$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe.",
+     "bona": "9x − 3x = −23 − 7",
+     "fitxesBona": [
+      "9x",
+      "− 3x",
+      "=",
+      "−23",
+      "− 7"
+     ],
+     "perque": [
+      [
+       "Havia de sumar els termes de cada membre abans de passar-los a l'altre.",
+       false
+      ],
+      [
+       "Havia de passar tots els termes, també els nombres, al membre de l'esquerra.",
+       false
+      ],
+      [
+       "El $+3x$ havia de passar a l'altre membre dividint.",
+       false
+      ],
+      [
+       "Ha passat el $+3x$ a l'altre membre sense canviar-li el signe.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "9x − 3x = −23 − 7",
+       true
+      ],
+      [
+       "16x = 3x − 23",
+       false
+      ],
+      [
+       "−9x − 3x = −23 − 7",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $12x$ i també és correcte haver escrit $−30$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−30|12}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{5|2}$."
+   },
+   "nota": null,
+   "solucio": "x = −5",
+   "banc": "lot1-B05"
+  },
+  {
+   "llavor": 8,
+   "nivell": 1,
+   "alumne": "en Pau",
+   "linies": [
+    [
+     "2x",
+     "+ 4",
+     "=",
+     "6"
+    ],
+    [
+     "2x",
+     "=",
+     "6",
+     "+ 4"
+    ],
+    [
+     "2x",
+     "=",
+     "10"
+    ],
+    [
+     "x",
+     "=",
+     "{10|2}"
+    ],
+    [
+     "x",
+     "=",
+     "5"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "SIGNE_TRANSPOSAR",
+     "terme": 3,
+     "expl": "El $+4$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe.",
+     "bona": "2x = 6 − 4",
+     "fitxesBona": [
+      "2x",
+      "=",
+      "6",
+      "− 4"
+     ],
+     "perque": [
+      [
+       "Havia de passar tots els termes, també els nombres, al membre de l'esquerra.",
+       false
+      ],
+      [
+       "Ha passat el $+4$ a l'altre membre sense canviar-li el signe.",
+       true
+      ],
+      [
+       "Havia de sumar els termes de cada membre abans de passar-los a l'altre.",
+       false
+      ],
+      [
+       "El $+4$ havia de passar a l'altre membre dividint.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "2x = 6 − 4",
+       true
+      ],
+      [
+       "x = 6 − 4",
+       false
+      ],
+      [
+       "2x = 5 − 4",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $10$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|2}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $5$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot1-B06"
+  },
+  {
+   "llavor": 48,
+   "nivell": 1,
+   "alumne": "la Júlia",
+   "linies": [
+    [
+     "4x",
+     "+ 11",
+     "=",
+     "15"
+    ],
+    [
+     "4x",
+     "=",
+     "15",
+     "− 11"
+    ],
+    [
+     "4x",
+     "=",
+     "6"
+    ],
+    [
+     "x",
+     "=",
+     "{6|4}"
+    ],
+    [
+     "x",
+     "=",
+     "{3|2}"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "CALCUL",
+     "terme": 2,
+     "expl": "$15 − 11$ no fa $6$.",
+     "bona": "4x = 4",
+     "fitxesBona": [
+      "4x",
+      "=",
+      "4"
+     ],
+     "perque": [
+      [
+       "Només s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Ha calculat $15 − 11$ i no fa $6$.",
+       true
+      ],
+      [
+       "En lloc de sumar, havia de multiplicar: $15 − 11$ és un producte.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "4x = 4",
+       true
+      ],
+      [
+       "5x = 4",
+       false
+      ],
+      [
+       "4x = 3",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${6|4}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${3|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot1-B08"
+  },
+  {
+   "llavor": 1,
+   "nivell": 2,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "2·(x − 3)",
+     "− x",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "2x",
+     "− 6",
+     "− x",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "x",
+     "− 6",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "x",
+     "+ x",
+     "=",
+     "4",
+     "+ 6"
+    ],
+    [
+     "2x",
+     "=",
+     "10"
+    ],
+    [
+     "x",
+     "=",
+     "8"
+    ]
+   ],
+   "errades": {
+    "5": {
+     "tipus": "OPERACIO_INVERSA",
+     "terme": 2,
+     "expl": "El $2$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $2$. Ha restat $2$.",
+     "bona": "x = {10|2}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{10|2}"
+     ],
+     "perque": [
+      [
+       "El resultat és $210$.",
+       false
+      ],
+      [
+       "Ha decidit fer $10 − 2$, però hauria d'haver fet ${10|2}$.",
+       true
+      ],
+      [
+       "Ha decidit fer una resta, però havia de fer una suma.",
+       false
+      ],
+      [
+       "Havia de fer $10 − 2$, però el resultat és $−8$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {2|10}",
+       false
+      ],
+      [
+       "x = {10|2}",
+       true
+      ],
+      [
+       "x = {−10|2}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 6$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x$ i també és correcte haver escrit $10$."
+   },
+   "nota": null,
+   "solucio": "x = 5",
+   "banc": "lot1-B09"
+  },
+  {
+   "llavor": 23,
+   "nivell": 1,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "4x",
+     "− 8",
+     "=",
+     "−32"
+    ],
+    [
+     "4x",
+     "=",
+     "−32",
+     "+ 8"
+    ],
+    [
+     "4x",
+     "=",
+     "−24"
+    ],
+    [
+     "x",
+     "=",
+     "−28"
+    ]
+   ],
+   "errades": {
+    "3": {
+     "tipus": "OPERACIO_INVERSA",
+     "terme": 2,
+     "expl": "El $4$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $4$. Ha restat $4$.",
+     "bona": "x = {−24|4}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−24|4}"
+     ],
+     "perque": [
+      [
+       "Ha decidit fer $−24 − 4$, però hauria d'haver fet ${−24|4}$.",
+       true
+      ],
+      [
+       "Havia de fer $−24 − 4$, però el resultat és $+28$.",
+       false
+      ],
+      [
+       "El resultat és $424$.",
+       false
+      ],
+      [
+       "Ha decidit fer una resta, però havia de fer una suma.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "3x = {−24|4}",
+       false
+      ],
+      [
+       "x = {−24|4}",
+       true
+      ],
+      [
+       "x = {4|−24}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+8$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−24$."
+   },
+   "nota": null,
+   "solucio": "x = −6",
+   "banc": "lot1-B10"
+  },
+  {
+   "llavor": 54,
+   "nivell": 2,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "3",
+     "− 4·(x + 2)",
+     "=",
+     "3x",
+     "− 26"
+    ],
+    [
+     "3",
+     "− 4x",
+     "− 8",
+     "=",
+     "3x",
+     "− 26"
+    ],
+    [
+     "−5",
+     "− 4x",
+     "=",
+     "3x",
+     "− 26"
+    ],
+    [
+     "−4x",
+     "− 3x",
+     "=",
+     "−26",
+     "+ 5"
+    ],
+    [
+     "−7x",
+     "=",
+     "−21"
+    ],
+    [
+     "x",
+     "=",
+     "{−21|7}"
+    ],
+    [
+     "x",
+     "=",
+     "−3"
+    ]
+   ],
+   "errades": {
+    "5": {
+     "tipus": "DIVISIO_SIGNE",
+     "terme": 2,
+     "expl": "El coeficient de la $x$ és $−7$: s'ha de dividir entre $−7$, amb el seu signe.",
+     "bona": "x = {−21|−7}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−21|−7}"
+     ],
+     "perque": [
+      [
+       "Ha dividit entre $7$, però havia de dividir entre $−7$.",
+       true
+      ],
+      [
+       "Havia de dividir al revés: ${−7|−21}$.",
+       false
+      ],
+      [
+       "Havia de restar $−7$ als dos membres.",
+       false
+      ],
+      [
+       "Havia de multiplicar per $−7$, i no dividir.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {−7|−21}",
+       false
+      ],
+      [
+       "x = {−21|−7}",
+       true
+      ],
+      [
+       "x = −14",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x − 8$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+5$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $−21$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot1-B11"
+  },
+  {
+   "llavor": 72,
+   "nivell": 2,
+   "alumne": "en Pau",
+   "linies": [
+    [
+     "2·(x − 8)",
+     "=",
+     "9x",
+     "+ 5"
+    ],
+    [
+     "2x",
+     "− 16",
+     "=",
+     "9x",
+     "+ 5"
+    ],
+    [
+     "2x",
+     "− 9x",
+     "=",
+     "5",
+     "+ 16"
+    ],
+    [
+     "−7x",
+     "=",
+     "21"
+    ],
+    [
+     "x",
+     "=",
+     "{21|7}"
+    ],
+    [
+     "x",
+     "=",
+     "3"
+    ]
+   ],
+   "errades": {
+    "4": {
+     "tipus": "DIVISIO_SIGNE",
+     "terme": 2,
+     "expl": "El coeficient de la $x$ és $−7$: s'ha de dividir entre $−7$, amb el seu signe.",
+     "bona": "x = {21|−7}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{21|−7}"
+     ],
+     "perque": [
+      [
+       "Havia de restar $−7$ als dos membres.",
+       false
+      ],
+      [
+       "Ha dividit entre $7$, però havia de dividir entre $−7$.",
+       true
+      ],
+      [
+       "Havia de dividir al revés: ${−7|21}$.",
+       false
+      ],
+      [
+       "Havia de multiplicar per $−7$, i no dividir.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = 28",
+       false
+      ],
+      [
+       "x = {21|−7}",
+       true
+      ],
+      [
+       "x = {−7|21}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 16$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+16$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $21$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3$."
+   },
+   "nota": null,
+   "solucio": "x = −3",
+   "banc": "lot1-B12"
+  },
+  {
+   "llavor": 5,
+   "nivell": 1,
+   "alumne": "la Carla",
+   "linies": [
+    [
+     "2x",
+     "+ 11",
+     "=",
+     "15"
+    ],
+    [
+     "2x",
+     "=",
+     "15",
+     "− 11"
+    ],
+    [
+     "2x",
+     "=",
+     "4"
+    ],
+    [
+     "x",
+     "=",
+     "{2|4}"
+    ],
+    [
+     "x",
+     "=",
+     "{1|2}"
+    ]
+   ],
+   "errades": {
+    "3": {
+     "tipus": "QUOCIENT_INVERTIT",
+     "terme": 2,
+     "expl": "Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés.",
+     "bona": "x = {4|2}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{4|2}"
+     ],
+     "perque": [
+      [
+       "Havia de fer $4 − 2$.",
+       false
+      ],
+      [
+       "Havia de fer $4 · 2$.",
+       false
+      ],
+      [
+       "Ha fet ${2|4}$, però havia de fer ${4|2}$.",
+       true
+      ],
+      [
+       "La divisió està ben plantejada, però s'havia de simplificar abans.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {−4|2}",
+       false
+      ],
+      [
+       "x = {4|2}",
+       true
+      ],
+      [
+       "−x = {4|2}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${1|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 2",
+   "banc": "lot1-B13"
+  },
+  {
+   "llavor": 8,
+   "nivell": 2,
+   "alumne": "la Marta",
+   "linies": [
+    [
+     "2·(x + 7)",
+     "=",
+     "2"
+    ],
+    [
+     "2x",
+     "+ 14",
+     "=",
+     "2"
+    ],
+    [
+     "2x",
+     "=",
+     "2",
+     "− 14"
+    ],
+    [
+     "2x",
+     "=",
+     "−12"
+    ],
+    [
+     "x",
+     "=",
+     "{2|−12}"
+    ],
+    [
+     "x",
+     "=",
+     "−{1|6}"
+    ]
+   ],
+   "errades": {
+    "4": {
+     "tipus": "QUOCIENT_INVERTIT",
+     "terme": 2,
+     "expl": "Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés.",
+     "bona": "x = {−12|2}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−12|2}"
+     ],
+     "perque": [
+      [
+       "Havia de fer $−12 · 2$.",
+       false
+      ],
+      [
+       "La divisió està ben plantejada, però s'havia de simplificar abans.",
+       false
+      ],
+      [
+       "Ha fet ${2|−12}$, però havia de fer ${−12|2}$.",
+       true
+      ],
+      [
+       "Havia de fer $−12 − 2$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {−12|2}",
+       true
+      ],
+      [
+       "x = −14",
+       false
+      ],
+      [
+       "−x = {−12|2}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x + 14$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−14$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{1|6}$."
+   },
+   "nota": null,
+   "solucio": "x = −6",
+   "banc": "lot1-B14"
+  },
+  {
+   "llavor": 12,
+   "nivell": 2,
+   "alumne": "la Noa",
+   "linies": [
+    [
+     "2·(x − 4)",
+     "− 5x",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "2x",
+     "− 8",
+     "− 5x",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "−3x",
+     "− 8",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "−11x",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "−11x",
+     "+ 7x",
+     "=",
+     "−36"
+    ],
+    [
+     "−4x",
+     "=",
+     "−36"
+    ],
+    [
+     "x",
+     "=",
+     "{−36|−4}"
+    ],
+    [
+     "x",
+     "=",
+     "9"
+    ]
+   ],
+   "errades": {
+    "3": {
+     "tipus": "TERMES_NO_SEMBLANTS",
+     "terme": 0,
+     "expl": "$−3x$ i $−8$ no són termes semblants: no es poden sumar. El $−8$ havia de passar a l'altre membre.",
+     "bona": "−3x + 7x = −36 + 8",
+     "fitxesBona": [
+      "−3x",
+      "+ 7x",
+      "=",
+      "−36",
+      "+ 8"
+     ],
+     "perque": [
+      [
+       "Ha passat el $−8$ a l'altre membre sense canviar-li el signe.",
+       false
+      ],
+      [
+       "Havia de multiplicar $−3x$ per $−8$.",
+       false
+      ],
+      [
+       "S'ha equivocat en el càlcul: $−3 − 8$ no fa $−11$.",
+       false
+      ],
+      [
+       "Ha sumat $−3x$ i $−8$ com si fossin termes semblants, però un té $x$ i l'altre no.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "−3x − 7x = −36 + 8",
+       false
+      ],
+      [
+       "−3x + 7x = −36 + 8",
+       true
+      ],
+      [
+       "−3x + 7x = −36 − 8",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 8$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−36|−4}$.",
+    "7": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $9$."
+   },
+   "nota": null,
+   "solucio": "x = −7",
+   "banc": "lot1-B15"
+  },
+  {
+   "llavor": 14,
+   "nivell": 1,
+   "alumne": "la Marta",
+   "linies": [
+    [
+     "3x",
+     "− 11",
+     "=",
+     "−26"
+    ],
+    [
+     "−8x",
+     "=",
+     "−26"
+    ],
+    [
+     "x",
+     "=",
+     "{−26|−8}"
+    ],
+    [
+     "x",
+     "=",
+     "{13|4}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "TERMES_NO_SEMBLANTS",
+     "terme": 0,
+     "expl": "$3x$ i $−11$ no són termes semblants: no es poden sumar. El $−11$ havia de passar a l'altre membre.",
+     "bona": "3x = −26 + 11",
+     "fitxesBona": [
+      "3x",
+      "=",
+      "−26",
+      "+ 11"
+     ],
+     "perque": [
+      [
+       "Ha passat el $−11$ a l'altre membre sense canviar-li el signe.",
+       false
+      ],
+      [
+       "Havia de multiplicar $3x$ per $−11$.",
+       false
+      ],
+      [
+       "S'ha equivocat en el càlcul: $3 − 11$ no fa $−8$.",
+       false
+      ],
+      [
+       "Ha sumat $3x$ i $−11$ com si fossin termes semblants, però un té $x$ i l'altre no.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "3x = −26 + 11",
+       true
+      ],
+      [
+       "−3x = −26 + 11",
+       false
+      ],
+      [
+       "3x = −26 − 11",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−26|−8}$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${13|4}$."
+   },
+   "nota": null,
+   "solucio": "x = −5",
+   "banc": "lot1-B16"
+  },
+  {
+   "llavor": 7,
+   "nivell": 2,
+   "alumne": "l'Èric",
+   "linies": [
+    [
+     "16",
+     "− 3·(x + 5)",
+     "=",
+     "9x",
+     "− 11"
+    ],
+    [
+     "16",
+     "− 3x",
+     "+ 5",
+     "=",
+     "9x",
+     "− 11"
+    ],
+    [
+     "21",
+     "− 3x",
+     "=",
+     "9x",
+     "− 11"
+    ],
+    [
+     "−3x",
+     "− 9x",
+     "=",
+     "−11",
+     "− 21"
+    ],
+    [
+     "−12x",
+     "=",
+     "−32"
+    ],
+    [
+     "x",
+     "=",
+     "−20"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DISTRIBUTIVA",
+     "terme": 2,
+     "expl": "El $−3$ multiplica tots els termes del parèntesi, també el $5$. Només ha multiplicat la $x$.",
+     "bona": "16 − 3x − 15 = 9x − 11",
+     "fitxesBona": [
+      "16",
+      "− 3x",
+      "− 15",
+      "=",
+      "9x",
+      "− 11"
+     ],
+     "perque": [
+      [
+       "Ha multiplicat el $−3$ per la $x$, però no pel $5$.",
+       true
+      ],
+      [
+       "Ha canviat el signe del $5$, i no l'havia de canviar.",
+       false
+      ],
+      [
+       "El $−3$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−3$ pel $5$, però no per la $x$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "16 − 3x − 15 = 9x − 11",
+       true
+      ],
+      [
+       "16 − 3x − 15 = 9x + 11",
+       false
+      ],
+      [
+       "16 − 3x + 15 = 9x − 11",
+       false
+      ]
+     ]
+    },
+    "5": {
+     "tipus": "OPERACIO_INVERSA",
+     "terme": 2,
+     "expl": "El $−12$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $−12$. Ha restat $−12$.",
+     "bona": "x = {−32|−12}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−32|−12}"
+     ],
+     "perque": [
+      [
+       "Ha decidit fer una resta, però havia de fer una suma.",
+       false
+      ],
+      [
+       "Havia de fer $−32 − (−12)$, però el resultat és $+20$.",
+       false
+      ],
+      [
+       "El resultat és $1232$.",
+       false
+      ],
+      [
+       "Ha decidit fer $−32 − (−12)$, però hauria d'haver fet ${−32|−12}$.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {−32|−12}",
+       true
+      ],
+      [
+       "x = {−12|−32}",
+       false
+      ],
+      [
+       "x = {−32|12}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $21$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $−21$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−32$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot1-B17"
+  },
+  {
+   "llavor": 8,
+   "nivell": 2,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "18",
+     "− 3·(x + 2)",
+     "=",
+     "3x",
+     "+ 36"
+    ],
+    [
+     "18",
+     "− 3x",
+     "+ 2",
+     "=",
+     "3x",
+     "+ 36"
+    ],
+    [
+     "20",
+     "− 3x",
+     "=",
+     "3x",
+     "+ 36"
+    ],
+    [
+     "−3x",
+     "− 3x",
+     "=",
+     "36",
+     "− 20"
+    ],
+    [
+     "−8x",
+     "=",
+     "16"
+    ],
+    [
+     "x",
+     "=",
+     "{16|−8}"
+    ],
+    [
+     "x",
+     "=",
+     "−2"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DISTRIBUTIVA",
+     "terme": 2,
+     "expl": "El $−3$ multiplica tots els termes del parèntesi, també el $2$. Només ha multiplicat la $x$.",
+     "bona": "18 − 3x − 6 = 3x + 36",
+     "fitxesBona": [
+      "18",
+      "− 3x",
+      "− 6",
+      "=",
+      "3x",
+      "+ 36"
+     ],
+     "perque": [
+      [
+       "Ha multiplicat el $−3$ pel $2$, però no per la $x$.",
+       false
+      ],
+      [
+       "El $−3$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−3$ per la $x$, però no pel $2$.",
+       true
+      ],
+      [
+       "Ha canviat el signe del $2$, i no l'havia de canviar.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "18 − 3x − 6 = 3x + 36",
+       true
+      ],
+      [
+       "18 − 3x − 8 = 3x + 36",
+       false
+      ],
+      [
+       "18 − 3x + 6 = 3x + 36",
+       false
+      ]
+     ]
+    },
+    "4": {
+     "tipus": "CALCUL",
+     "terme": 0,
+     "expl": "$−3x − 3x$ no fa $−8x$.",
+     "bona": "−6x = 16",
+     "fitxesBona": [
+      "−6x",
+      "=",
+      "16"
+     ],
+     "perque": [
+      [
+       "En lloc de sumar, havia de multiplicar: $−3x − 3x$ és un producte.",
+       false
+      ],
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "S'ha equivocat en el càlcul de $36 − 20$.",
+       false
+      ],
+      [
+       "Ha calculat $−3x − 3x$ i no fa $−8x$.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "−6x = 16",
+       true
+      ],
+      [
+       "−6x = 15",
+       false
+      ],
+      [
+       "−4x = 16",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $20$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−20$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|−8}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2$."
+   },
+   "nota": null,
+   "solucio": "x = −4",
+   "banc": "lot1-B18"
+  },
+  {
+   "llavor": 2,
+   "nivell": 2,
+   "alumne": "la Noa",
+   "linies": [
+    [
+     "3·(x + 6)",
+     "− 4x",
+     "=",
+     "−7x",
+     "+ 30"
+    ],
+    [
+     "3x",
+     "+ 18",
+     "− 4x",
+     "=",
+     "−7x",
+     "+ 30"
+    ],
+    [
+     "−2x",
+     "+ 18",
+     "=",
+     "−7x",
+     "+ 30"
+    ],
+    [
+     "−2x",
+     "+ 7x",
+     "=",
+     "30",
+     "− 18"
+    ],
+    [
+     "5x",
+     "=",
+     "10"
+    ],
+    [
+     "x",
+     "=",
+     "{10|5}"
+    ],
+    [
+     "x",
+     "=",
+     "2"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "CALCUL",
+     "terme": 0,
+     "expl": "$3x − 4x$ no fa $−2x$.",
+     "bona": "−x + 18 = −7x + 30",
+     "fitxesBona": [
+      "−x",
+      "+ 18",
+      "=",
+      "−7x",
+      "+ 30"
+     ],
+     "perque": [
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Ha calculat $3x − 4x$ i no fa $−2x$.",
+       true
+      ],
+      [
+       "Només s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "En lloc de sumar, havia de multiplicar: $3x − 4x$ és un producte.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−x + 18 = −7x + 30",
+       true
+      ],
+      [
+       "−3x + 18 = −7x + 30",
+       false
+      ],
+      [
+       "−x + 18 = −7x − 30",
+       false
+      ]
+     ]
+    },
+    "4": {
+     "tipus": "CALCUL",
+     "terme": 2,
+     "expl": "$30 − 18$ no fa $10$.",
+     "bona": "5x = 12",
+     "fitxesBona": [
+      "5x",
+      "=",
+      "12"
+     ],
+     "perque": [
+      [
+       "Només s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "Ha calculat $30 − 18$ i no fa $10$.",
+       true
+      ],
+      [
+       "En lloc de sumar, havia de multiplicar: $30 − 18$ és un producte.",
+       false
+      ],
+      [
+       "S'ha equivocat en el càlcul de $−2x + 7x$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "5x = −12",
+       false
+      ],
+      [
+       "5x = 12",
+       true
+      ],
+      [
+       "3x = 12",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x + 18$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−18$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|5}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+   },
+   "nota": "La solució $x = 2$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.",
+   "solucio": "x = 2",
+   "banc": "lot1-B19"
+  },
+  {
+   "llavor": 3,
+   "nivell": 2,
+   "alumne": "l'Aina",
+   "linies": [
+    [
+     "3",
+     "− 4·(x + 8)",
+     "=",
+     "8x",
+     "+ 19"
+    ],
+    [
+     "3",
+     "− 4x",
+     "+ 32",
+     "=",
+     "8x",
+     "+ 19"
+    ],
+    [
+     "35",
+     "− 4x",
+     "=",
+     "8x",
+     "+ 19"
+    ],
+    [
+     "−4x",
+     "− 8x",
+     "=",
+     "19",
+     "− 35"
+    ],
+    [
+     "−12x",
+     "=",
+     "−16"
+    ],
+    [
+     "x",
+     "=",
+     "−4"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SIGNE",
+     "terme": 2,
+     "expl": "El $−4$ multiplica tots els termes del parèntesi amb el seu signe: el $8$ també havia de canviar de signe.",
+     "bona": "3 − 4x − 32 = 8x + 19",
+     "fitxesBona": [
+      "3",
+      "− 4x",
+      "− 32",
+      "=",
+      "8x",
+      "+ 19"
+     ],
+     "perque": [
+      [
+       "Havia de canviar el signe de tots els termes de l'equació.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−4$ pel $8$ i s'ha equivocat en el signe del resultat.",
+       true
+      ],
+      [
+       "No havia de multiplicar el $8$: només es multiplica la $x$.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−4$ per la $x$ i s'ha equivocat en el signe.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "3 − 4x − 32 = −8x + 19",
+       false
+      ],
+      [
+       "3 − 4x − 32 = 8x + 19",
+       true
+      ],
+      [
+       "3 − 4x + 8 = 8x + 19",
+       false
+      ]
+     ]
+    },
+    "5": {
+     "tipus": "OPERACIO_INVERSA",
+     "terme": 2,
+     "expl": "El $−12$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $−12$. Ha restat $−12$.",
+     "bona": "x = {−16|−12}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−16|−12}"
+     ],
+     "perque": [
+      [
+       "Ha decidit fer una resta, però havia de fer una suma.",
+       false
+      ],
+      [
+       "Havia de fer $−16 − (−12)$, però el resultat és $+4$.",
+       false
+      ],
+      [
+       "Ha decidit fer $−16 − (−12)$, però hauria d'haver fet ${−16|−12}$.",
+       true
+      ],
+      [
+       "El resultat és $1216$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = {−16|12}",
+       false
+      ],
+      [
+       "x = {−16|−12}",
+       true
+      ],
+      [
+       "x = {−12|−16}",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $35$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x$ i també és correcte haver escrit $−35$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−16$."
+   },
+   "nota": "La solució $x = −4$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.",
+   "solucio": "x = −4",
+   "banc": "lot1-B20"
+  },
+  {
+   "llavor": 2,
+   "nivell": 2,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "8",
+     "− 6·(x + 5)",
+     "=",
+     "−8x",
+     "− 28"
+    ],
+    [
+     "8",
+     "− 6x",
+     "− 30",
+     "=",
+     "−8x",
+     "− 28"
+    ],
+    [
+     "−22",
+     "− 6x",
+     "=",
+     "−8x",
+     "− 28"
+    ],
+    [
+     "−6x",
+     "+ 8x",
+     "=",
+     "−28",
+     "+ 22"
+    ],
+    [
+     "2x",
+     "=",
+     "−6"
+    ],
+    [
+     "x",
+     "=",
+     "{−6|2}"
+    ],
+    [
+     "x",
+     "=",
+     "−3"
+    ]
+   ],
+   "errades": {},
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x − 30$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−22$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+8x$ i també és correcte haver escrit $+22$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x$ i també és correcte haver escrit $−6$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|2}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+   },
+   "nota": null,
+   "solucio": "x = −3",
+   "banc": "lot1-B21"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "la Júlia",
+   "linies": [
+    [
+     "8x",
+     "− 15",
+     "=",
+     "−4x",
+     "− 3"
+    ],
+    [
+     "8x",
+     "+ 4x",
+     "=",
+     "−3",
+     "+ 15"
+    ],
+    [
+     "12x",
+     "=",
+     "−12"
+    ],
+    [
+     "x",
+     "=",
+     "{−12|12}"
+    ],
+    [
+     "x",
+     "=",
+     "−1"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "CALCUL",
+     "terme": 2,
+     "expl": "$−3 + 15$ no fa $−12$.",
+     "bona": "12x = 12",
+     "fitxesBona": [
+      "12x",
+      "=",
+      "12"
+     ],
+     "perque": [
+      [
+       "En lloc de sumar, havia de multiplicar: $−3 + 15$ és un producte.",
+       false
+      ],
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Els termes $−3$ i $+15$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.",
+       false
+      ],
+      [
+       "Ha calculat $−3 + 15$ i s'ha equivocat en el signe del resultat.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "12x = 12",
+       true
+      ],
+      [
+       "−12x = 12",
+       false
+      ],
+      [
+       "11x = 12",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−12|12}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−1$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot2-C01"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "8x",
+     "− 15",
+     "=",
+     "−4x",
+     "− 3"
+    ],
+    [
+     "8x",
+     "+ 4x",
+     "=",
+     "−3",
+     "+ 15"
+    ],
+    [
+     "12x",
+     "=",
+     "−18"
+    ],
+    [
+     "x",
+     "=",
+     "{−18|12}"
+    ],
+    [
+     "x",
+     "=",
+     "−{3|2}"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "CALCUL",
+     "terme": 2,
+     "expl": "$−3 + 15$ no fa $−18$: quan els dos termes tenen signes diferents, no se sumen els seus valors.",
+     "bona": "12x = 12",
+     "fitxesBona": [
+      "12x",
+      "=",
+      "12"
+     ],
+     "perque": [
+      [
+       "Ha calculat $−3 + 15$ i s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "Els termes $−3$ i $+15$ tenen signes diferents, però els ha sumat com si tinguessin el mateix signe.",
+       true
+      ],
+      [
+       "Els termes $−3$ i $+15$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.",
+       false
+      ],
+      [
+       "En lloc de sumar, havia de multiplicar: $−3 + 15$ és un producte.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "12x = 12",
+       true
+      ],
+      [
+       "−12x = 12",
+       false
+      ],
+      [
+       "12x = −12",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−18|12}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{3|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot2-C02"
+  },
+  {
+   "llavor": 13,
+   "nivell": 1,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "2x",
+     "− 2",
+     "=",
+     "−4"
+    ],
+    [
+     "2x",
+     "=",
+     "−4",
+     "+ 2"
+    ],
+    [
+     "2x",
+     "=",
+     "−6"
+    ],
+    [
+     "x",
+     "=",
+     "{−6|2}"
+    ],
+    [
+     "x",
+     "=",
+     "−3"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "CALCUL",
+     "terme": 2,
+     "expl": "$−4 + 2$ no fa $−6$: quan els dos termes tenen signes diferents, no se sumen els seus valors.",
+     "bona": "2x = −2",
+     "fitxesBona": [
+      "2x",
+      "=",
+      "−2"
+     ],
+     "perque": [
+      [
+       "Els termes $−4$ i $+2$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.",
+       false
+      ],
+      [
+       "Els termes $−4$ i $+2$ tenen signes diferents, però els ha sumat com si tinguessin el mateix signe.",
+       true
+      ],
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "En lloc de sumar, havia de multiplicar: $−4 + 2$ és un producte.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−2x = −2",
+       false
+      ],
+      [
+       "2x = −3",
+       false
+      ],
+      [
+       "2x = −2",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+2$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|2}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+   },
+   "nota": null,
+   "solucio": "x = −1",
+   "banc": "lot2-C03"
+  },
+  {
+   "llavor": 60,
+   "nivell": 2,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "19",
+     "− 5·(x + 8)",
+     "=",
+     "8x",
+     "+ 18"
+    ],
+    [
+     "19",
+     "− 5x",
+     "− 40",
+     "=",
+     "8x",
+     "+ 18"
+    ],
+    [
+     "−21",
+     "− 5x",
+     "=",
+     "8x",
+     "+ 18"
+    ],
+    [
+     "−5x",
+     "− 8x",
+     "=",
+     "18",
+     "+ 21"
+    ],
+    [
+     "−3x",
+     "=",
+     "39"
+    ],
+    [
+     "x",
+     "=",
+     "{39|−3}"
+    ],
+    [
+     "x",
+     "=",
+     "−13"
+    ]
+   ],
+   "errades": {
+    "4": {
+     "tipus": "CALCUL",
+     "terme": 0,
+     "expl": "$−5x − 8x$ no fa $−3x$: quan els dos termes tenen el mateix signe, els seus valors se sumen.",
+     "bona": "−13x = 39",
+     "fitxesBona": [
+      "−13x",
+      "=",
+      "39"
+     ],
+     "perque": [
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Els termes $−5x$ i $−8x$ tenen signes diferents, però els ha sumat com si tinguessin el mateix signe.",
+       false
+      ],
+      [
+       "Els termes $−5x$ i $−8x$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.",
+       true
+      ],
+      [
+       "Ha calculat $−5x − 8x$ i s'ha equivocat en el signe del resultat.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−11x = 39",
+       false
+      ],
+      [
+       "−14x = 39",
+       false
+      ],
+      [
+       "−13x = 39",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5x − 40$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−21$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x$ i també és correcte haver escrit $+21$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${39|−3}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−13$."
+   },
+   "nota": null,
+   "solucio": "x = −3",
+   "banc": "lot2-C04"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "9x",
+     "+ 7",
+     "=",
+     "3x",
+     "− 23"
+    ],
+    [
+     "9x",
+     "− 3x",
+     "=",
+     "23",
+     "− 7"
+    ],
+    [
+     "6x",
+     "=",
+     "16"
+    ],
+    [
+     "x",
+     "=",
+     "{16|6}"
+    ],
+    [
+     "x",
+     "=",
+     "{8|3}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "SIGNE_COPIAT",
+     "terme": 3,
+     "expl": "Ha escrit $+23$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre.",
+     "bona": "9x − 3x = −23 − 7",
+     "fitxesBona": [
+      "9x",
+      "− 3x",
+      "=",
+      "−23",
+      "− 7"
+     ],
+     "perque": [
+      [
+       "Ha passat el $−23$ a l'altre membre sense canviar-li el signe.",
+       false
+      ],
+      [
+       "Ha copiat el $−23$ de la línia de sobre amb el signe canviat.",
+       true
+      ],
+      [
+       "El $−23$ havia de canviar de signe, i l'ha deixat igual.",
+       false
+      ],
+      [
+       "S'ha equivocat sumant dos nombres d'aquesta línia.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "16x = 3x − 23",
+       false
+      ],
+      [
+       "9x − 3x = −23 + 7",
+       false
+      ],
+      [
+       "9x − 3x = −23 − 7",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $6x$ i també és correcte haver escrit $16$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|6}$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${8|3}$."
+   },
+   "nota": null,
+   "solucio": "x = −5",
+   "banc": "lot2-C05"
+  },
+  {
+   "llavor": 1,
+   "nivell": 2,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "2·(x − 4)",
+     "− 5x",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "2x",
+     "− 8",
+     "− 5x",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "−3x",
+     "+ 8",
+     "=",
+     "−7x",
+     "− 36"
+    ],
+    [
+     "−3x",
+     "+ 7x",
+     "=",
+     "−36",
+     "− 8"
+    ],
+    [
+     "4x",
+     "=",
+     "−44"
+    ],
+    [
+     "x",
+     "=",
+     "{−44|4}"
+    ],
+    [
+     "x",
+     "=",
+     "−11"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "SIGNE_COPIAT",
+     "terme": 1,
+     "expl": "Ha escrit $+8$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre.",
+     "bona": "−3x − 8 = −7x − 36",
+     "fitxesBona": [
+      "−3x",
+      "− 8",
+      "=",
+      "−7x",
+      "− 36"
+     ],
+     "perque": [
+      [
+       "S'ha equivocat sumant dos nombres d'aquesta línia.",
+       false
+      ],
+      [
+       "Ha sumat el $−8$ amb un terme que no era semblant.",
+       false
+      ],
+      [
+       "Ha copiat el $−8$ de la línia de sobre amb el signe canviat.",
+       true
+      ],
+      [
+       "El $−8$ havia de canviar de signe, i l'ha deixat igual.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "7x − 8 = −7x − 36",
+       false
+      ],
+      [
+       "−3x − 8 = −7x − 36",
+       true
+      ],
+      [
+       "−11x = −7x − 36",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 8$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4x$ i també és correcte haver escrit $−44$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−44|4}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$."
+   },
+   "nota": null,
+   "solucio": "x = −7",
+   "banc": "lot2-C06"
+  },
+  {
+   "llavor": 1,
+   "nivell": 2,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "2·(x − 3)",
+     "− x",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "2x",
+     "− 6",
+     "+ x",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "3x",
+     "− 6",
+     "=",
+     "−x",
+     "+ 4"
+    ],
+    [
+     "3x",
+     "+ x",
+     "=",
+     "4",
+     "+ 6"
+    ],
+    [
+     "4x",
+     "=",
+     "10"
+    ],
+    [
+     "x",
+     "=",
+     "{10|4}"
+    ],
+    [
+     "x",
+     "=",
+     "{5|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "SIGNE_COPIAT",
+     "terme": 2,
+     "expl": "Ha escrit $+x$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre.",
+     "bona": "2x − 6 − x = −x + 4",
+     "fitxesBona": [
+      "2x",
+      "− 6",
+      "− x",
+      "=",
+      "−x",
+      "+ 4"
+     ],
+     "perque": [
+      [
+       "Ha passat el $−x$ a l'altre membre sense canviar-li el signe.",
+       false
+      ],
+      [
+       "El $−x$ havia de canviar de signe, i l'ha deixat igual.",
+       false
+      ],
+      [
+       "S'ha equivocat sumant dos nombres d'aquesta línia.",
+       false
+      ],
+      [
+       "Ha copiat el $−x$ de la línia de sobre amb el signe canviat.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "2x − 3 − x = −x + 4",
+       false
+      ],
+      [
+       "2x − 6 − x = −x + 4",
+       true
+      ],
+      [
+       "2x − 6 − x = −3x + 4",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4x$ i també és correcte haver escrit $10$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|4}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 5",
+   "banc": "lot2-C07"
+  },
+  {
+   "llavor": 145,
+   "nivell": 1,
+   "alumne": "la Noa",
+   "linies": [
+    [
+     "5x",
+     "+ 8",
+     "− 9x",
+     "=",
+     "−24"
+    ],
+    [
+     "−4x",
+     "+ 8",
+     "=",
+     "−24"
+    ],
+    [
+     "4x",
+     "=",
+     "−24",
+     "− 8"
+    ],
+    [
+     "4x",
+     "=",
+     "−32"
+    ],
+    [
+     "x",
+     "=",
+     "{−32|4}"
+    ],
+    [
+     "x",
+     "=",
+     "−8"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "SIGNE_COPIAT",
+     "terme": 0,
+     "expl": "Ha escrit $+4x$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre.",
+     "bona": "−4x = −24 − 8",
+     "fitxesBona": [
+      "−4x",
+      "=",
+      "−24",
+      "− 8"
+     ],
+     "perque": [
+      [
+       "Ha passat el $−4x$ a l'altre membre sense canviar-li el signe.",
+       false
+      ],
+      [
+       "S'ha equivocat sumant dos nombres d'aquesta línia.",
+       false
+      ],
+      [
+       "Ha copiat el $−4x$ de la línia de sobre amb el signe canviat.",
+       true
+      ],
+      [
+       "El $−4x$ havia de canviar de signe, i l'ha deixat igual.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−4x = −24 + 8",
+       false
+      ],
+      [
+       "4x = −24",
+       false
+      ],
+      [
+       "−4x = −24 − 8",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−32$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−32|4}$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8$."
+   },
+   "nota": null,
+   "solucio": "x = 8",
+   "banc": "lot2-C08"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "l'Èric",
+   "linies": [
+    [
+     "2x",
+     "+ 3",
+     "+ 4x",
+     "=",
+     "18"
+    ],
+    [
+     "9x",
+     "=",
+     "18"
+    ],
+    [
+     "x",
+     "=",
+     "{18|9}"
+    ],
+    [
+     "x",
+     "=",
+     "2"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "TERMES_NO_SEMBLANTS",
+     "terme": 0,
+     "expl": "El $+3$ no té $x$: no és un terme semblant a $2x$ i $+4x$, i no s'hi pot sumar.",
+     "bona": "6x + 3 = 18",
+     "fitxesBona": [
+      "6x",
+      "+ 3",
+      "=",
+      "18"
+     ],
+     "perque": [
+      [
+       "El $+3$ s'havia de multiplicar per la $x$.",
+       false
+      ],
+      [
+       "Ha sumat el $+3$ amb els termes en $x$, però el $+3$ no té $x$.",
+       true
+      ],
+      [
+       "Havia de multiplicar els termes en $x$, i no sumar-los.",
+       false
+      ],
+      [
+       "Ha passat el $+3$ a l'altre membre sense canviar-li el signe.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "6x + 3 = 18",
+       true
+      ],
+      [
+       "6x − 3 = 18",
+       false
+      ],
+      [
+       "−6x + 3 = 18",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${18|9}$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+   },
+   "nota": null,
+   "solucio": "x = {5|2}",
+   "banc": "lot2-C09"
+  },
+  {
+   "llavor": 30,
+   "nivell": 1,
+   "alumne": "la Noa",
+   "linies": [
+    [
+     "9x",
+     "− 13",
+     "− 6x",
+     "=",
+     "5"
+    ],
+    [
+     "−10x",
+     "=",
+     "5"
+    ],
+    [
+     "x",
+     "=",
+     "{5|−10}"
+    ],
+    [
+     "x",
+     "=",
+     "−{1|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "TERMES_NO_SEMBLANTS",
+     "terme": 0,
+     "expl": "El $−13$ no té $x$: no és un terme semblant a $9x$ i $−6x$, i no s'hi pot sumar.",
+     "bona": "3x − 13 = 5",
+     "fitxesBona": [
+      "3x",
+      "− 13",
+      "=",
+      "5"
+     ],
+     "perque": [
+      [
+       "El $−13$ s'havia de multiplicar per la $x$.",
+       false
+      ],
+      [
+       "Els termes en $x$ no es podien sumar perquè no són l'un al costat de l'altre.",
+       false
+      ],
+      [
+       "Ha sumat el $−13$ amb els termes en $x$, però el $−13$ no té $x$.",
+       true
+      ],
+      [
+       "Havia de multiplicar els termes en $x$, i no sumar-los.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "15x − 13 = 5",
+       false
+      ],
+      [
+       "3x − 13 = 5",
+       true
+      ],
+      [
+       "3x + 13 = 5",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|−10}$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{1|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 6",
+   "banc": "lot2-C10"
+  },
+  {
+   "llavor": 52,
+   "nivell": 1,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "6x",
+     "− 12",
+     "− 8x",
+     "=",
+     "−24"
+    ],
+    [
+     "−2x",
+     "− 12",
+     "=",
+     "−24"
+    ],
+    [
+     "−2x",
+     "=",
+     "−24",
+     "+ 12"
+    ],
+    [
+     "−2x",
+     "=",
+     "−12"
+    ],
+    [
+     "x",
+     "=",
+     "{−2|−12}"
+    ],
+    [
+     "x",
+     "=",
+     "{1|6}"
+    ]
+   ],
+   "errades": {
+    "4": {
+     "tipus": "QUOCIENT_INVERTIT",
+     "terme": 2,
+     "expl": "Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés.",
+     "bona": "x = {−12|−2}",
+     "fitxesBona": [
+      "x",
+      "=",
+      "{−12|−2}"
+     ],
+     "perque": [
+      [
+       "Havia de fer $−12 · (−2)$.",
+       false
+      ],
+      [
+       "Ha fet ${−2|−12}$, però havia de fer ${−12|−2}$.",
+       true
+      ],
+      [
+       "La divisió està ben plantejada, però s'havia de simplificar abans.",
+       false
+      ],
+      [
+       "Havia de fer $−12 − (−2)$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x = −10",
+       false
+      ],
+      [
+       "x = {−12|2}",
+       false
+      ],
+      [
+       "x = {−12|−2}",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2x$.",
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+12$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${1|6}$."
+   },
+   "nota": null,
+   "solucio": "x = 6",
+   "banc": "lot2-C12"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "en Pol",
+   "linies": [
+    [
+     "3x",
+     "− 5",
+     "+ 4x",
+     "=",
+     "16"
+    ],
+    [
+     "2x",
+     "=",
+     "16"
+    ],
+    [
+     "x",
+     "=",
+     "{16|2}"
+    ],
+    [
+     "x",
+     "=",
+     "8"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "TERMES_NO_SEMBLANTS",
+     "terme": 0,
+     "expl": "El $−5$ no té $x$: no és un terme semblant a $3x$ i $+4x$, i no s'hi pot sumar.",
+     "bona": "7x − 5 = 16",
+     "fitxesBona": [
+      "7x",
+      "− 5",
+      "=",
+      "16"
+     ],
+     "perque": [
+      [
+       "El $−5$ s'havia de multiplicar per la $x$.",
+       false
+      ],
+      [
+       "Ha sumat el $−5$ amb els termes en $x$, però el $−5$ no té $x$.",
+       true
+      ],
+      [
+       "Els termes en $x$ no es podien sumar perquè no són l'un al costat de l'altre.",
+       false
+      ],
+      [
+       "Ha passat el $−5$ a l'altre membre sense canviar-li el signe.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "7x + 5 = 16",
+       false
+      ],
+      [
+       "7x − 5 = 16",
+       true
+      ],
+      [
+       "−7x − 5 = 16",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|2}$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $8$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot3-D01"
+  },
+  {
+   "llavor": 1,
+   "nivell": 1,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "3x",
+     "+ x",
+     "+ 6x",
+     "=",
+     "4",
+     "− 2x"
+    ],
+    [
+     "9x",
+     "=",
+     "4",
+     "− 2x"
+    ],
+    [
+     "9x",
+     "+ 2x",
+     "=",
+     "4"
+    ],
+    [
+     "11x",
+     "=",
+     "4"
+    ],
+    [
+     "x",
+     "=",
+     "{4|11}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "COEFICIENT_U",
+     "terme": 0,
+     "expl": "La $x$ vol dir $1x$: també s'havia de comptar en fer $3x + x + 6x$.",
+     "bona": "10x = 4 − 2x",
+     "fitxesBona": [
+      "10x",
+      "=",
+      "4",
+      "− 2x"
+     ],
+     "perque": [
+      [
+       "Ha calculat $3x + x + 6x$ i s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "No ha comptat la $x$: la $x$ vol dir $1x$.",
+       true
+      ],
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Ha comptat la $x$ dues vegades.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−10x = 4 − 2x",
+       false
+      ],
+      [
+       "10x = 4 + 2x",
+       false
+      ],
+      [
+       "10x = 4 − 2x",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+2x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $11x$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${4|11}$."
+   },
+   "nota": null,
+   "solucio": "x = {1|3}",
+   "banc": "lot3-D02"
+  },
+  {
+   "llavor": 32,
+   "nivell": 1,
+   "alumne": "l'Èric",
+   "linies": [
+    [
+     "6x",
+     "+ 13",
+     "+ x",
+     "=",
+     "34"
+    ],
+    [
+     "6x",
+     "+ 13",
+     "=",
+     "34"
+    ],
+    [
+     "6x",
+     "=",
+     "34",
+     "− 13"
+    ],
+    [
+     "6x",
+     "=",
+     "21"
+    ],
+    [
+     "x",
+     "=",
+     "{21|6}"
+    ],
+    [
+     "x",
+     "=",
+     "{7|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "COEFICIENT_U",
+     "terme": 0,
+     "expl": "La $x$ vol dir $1x$: també s'havia de comptar en fer $6x + x$.",
+     "bona": "7x + 13 = 34",
+     "fitxesBona": [
+      "7x",
+      "+ 13",
+      "=",
+      "34"
+     ],
+     "perque": [
+      [
+       "Ha sumat termes que no són semblants.",
+       false
+      ],
+      [
+       "Ha calculat $6x + x$ i s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "Ha comptat la $x$ dues vegades.",
+       false
+      ],
+      [
+       "No ha comptat la $x$: la $x$ vol dir $1x$.",
+       true
+      ]
+     ],
+     "opcions": [
+      [
+       "7x + 13 = 34",
+       true
+      ],
+      [
+       "20x = 34",
+       false
+      ],
+      [
+       "7x − 13 = 34",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−13$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $21$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${21|6}$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${7|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot3-D04"
+  },
+  {
+   "llavor": 567,
+   "nivell": 2,
+   "alumne": "l'Arnau",
+   "linies": [
+    [
+     "x",
+     "− 2·(4x − 8)",
+     "=",
+     "−5x",
+     "+ 10"
+    ],
+    [
+     "x",
+     "− 8x",
+     "+ 16",
+     "=",
+     "−5x",
+     "+ 10"
+    ],
+    [
+     "−8x",
+     "+ 16",
+     "=",
+     "−5x",
+     "+ 10"
+    ],
+    [
+     "−8x",
+     "+ 5x",
+     "=",
+     "10",
+     "− 16"
+    ],
+    [
+     "−3x",
+     "=",
+     "−6"
+    ],
+    [
+     "x",
+     "=",
+     "{−6|−3}"
+    ],
+    [
+     "x",
+     "=",
+     "2"
+    ]
+   ],
+   "errades": {
+    "2": {
+     "tipus": "COEFICIENT_U",
+     "terme": 0,
+     "expl": "La $x$ vol dir $1x$: també s'havia de comptar en fer $x − 8x$.",
+     "bona": "−7x + 16 = −5x + 10",
+     "fitxesBona": [
+      "−7x",
+      "+ 16",
+      "=",
+      "−5x",
+      "+ 10"
+     ],
+     "perque": [
+      [
+       "No ha comptat la $x$: la $x$ vol dir $1x$.",
+       true
+      ],
+      [
+       "Ha restat la $x$ en lloc de sumar-la.",
+       false
+      ],
+      [
+       "Ha calculat $x − 8x$ i s'ha equivocat en el signe del resultat.",
+       false
+      ],
+      [
+       "Ha comptat la $x$ dues vegades.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "7x + 16 = −5x + 10",
+       false
+      ],
+      [
+       "−7x + 16 = −5x + 10",
+       true
+      ],
+      [
+       "−7x − 16 = −5x + 10",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x + 16$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+5x$ i també és correcte haver escrit $−16$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−6$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|−3}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot3-D05"
+  },
+  {
+   "llavor": 1,
+   "nivell": 2,
+   "alumne": "en Pau",
+   "linies": [
+    [
+     "x",
+     "− 2·(3x + 6)",
+     "=",
+     "3x",
+     "+ 7"
+    ],
+    [
+     "x",
+     "− 5x",
+     "− 12",
+     "=",
+     "3x",
+     "+ 7"
+    ],
+    [
+     "−4x",
+     "− 12",
+     "=",
+     "3x",
+     "+ 7"
+    ],
+    [
+     "−4x",
+     "− 3x",
+     "=",
+     "7",
+     "+ 12"
+    ],
+    [
+     "−7x",
+     "=",
+     "19"
+    ],
+    [
+     "x",
+     "=",
+     "{19|−7}"
+    ],
+    [
+     "x",
+     "=",
+     "−{19|7}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SUMA",
+     "terme": 1,
+     "expl": "$−2 · 3x$ no fa $−5x$: el nombre de fora del parèntesi multiplica el $3x$, no s'hi suma.",
+     "bona": "x − 6x − 12 = 3x + 7",
+     "fitxesBona": [
+      "x",
+      "− 6x",
+      "− 12",
+      "=",
+      "3x",
+      "+ 7"
+     ],
+     "perque": [
+      [
+       "Havia de sumar el $−2$ a cada terme del parèntesi.",
+       false
+      ],
+      [
+       "S'ha equivocat multiplicant el $−2$ pel $6$.",
+       false
+      ],
+      [
+       "Ha sumat el $2$ i el $3$ de $3x$, i els havia de multiplicar.",
+       true
+      ],
+      [
+       "Ha multiplicat el $−2$ per $3x$, però no pel $6$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x − 6x + 6 = 3x + 7",
+       false
+      ],
+      [
+       "x − 6x + 12 = 3x + 7",
+       false
+      ],
+      [
+       "x − 6x − 12 = 3x + 7",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+12$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $19$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${19|−7}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{19|7}$."
+   },
+   "nota": null,
+   "solucio": "x = −{19|8}",
+   "banc": "lot3-D06"
+  },
+  {
+   "llavor": 4671,
+   "nivell": 2,
+   "alumne": "en Biel",
+   "linies": [
+    [
+     "x",
+     "+ 4·(3x − 1)",
+     "=",
+     "2x",
+     "+ 29"
+    ],
+    [
+     "x",
+     "+ 7x",
+     "− 4",
+     "=",
+     "2x",
+     "+ 29"
+    ],
+    [
+     "8x",
+     "− 4",
+     "=",
+     "2x",
+     "+ 29"
+    ],
+    [
+     "8x",
+     "− 2x",
+     "=",
+     "29",
+     "+ 4"
+    ],
+    [
+     "6x",
+     "=",
+     "33"
+    ],
+    [
+     "x",
+     "=",
+     "{33|6}"
+    ],
+    [
+     "x",
+     "=",
+     "{11|2}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SUMA",
+     "terme": 1,
+     "expl": "$4 · 3x$ no fa $7x$: el nombre de fora del parèntesi multiplica el $3x$, no s'hi suma.",
+     "bona": "x + 12x − 4 = 2x + 29",
+     "fitxesBona": [
+      "x",
+      "+ 12x",
+      "− 4",
+      "=",
+      "2x",
+      "+ 29"
+     ],
+     "perque": [
+      [
+       "Ha sumat el $4$ i el $3$ de $3x$, i els havia de multiplicar.",
+       true
+      ],
+      [
+       "S'ha equivocat multiplicant el $4$ pel $−1$.",
+       false
+      ],
+      [
+       "Havia de sumar el $4$ a cada terme del parèntesi.",
+       false
+      ],
+      [
+       "Ha multiplicat el $4$ per $3x$, però no pel $−1$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x + 12x − 4 = 2x − 29",
+       false
+      ],
+      [
+       "x + 12x − 1 = 2x + 29",
+       false
+      ],
+      [
+       "x + 12x − 4 = 2x + 29",
+       true
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $8x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2x$ i també és correcte haver escrit $+4$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $6x$ i també és correcte haver escrit $33$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${33|6}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${11|2}$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot3-D07"
+  },
+  {
+   "llavor": 10874,
+   "nivell": 2,
+   "alumne": "la Marta",
+   "linies": [
+    [
+     "x",
+     "− 5·(2x + 3)",
+     "=",
+     "6x",
+     "− 30"
+    ],
+    [
+     "x",
+     "− 7x",
+     "− 15",
+     "=",
+     "6x",
+     "− 30"
+    ],
+    [
+     "−6x",
+     "− 15",
+     "=",
+     "6x",
+     "− 30"
+    ],
+    [
+     "−6x",
+     "− 6x",
+     "=",
+     "−30",
+     "+ 15"
+    ],
+    [
+     "−12x",
+     "=",
+     "−15"
+    ],
+    [
+     "x",
+     "=",
+     "{−15|−12}"
+    ],
+    [
+     "x",
+     "=",
+     "{5|4}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SUMA",
+     "terme": 1,
+     "expl": "$−5 · 2x$ no fa $−7x$: el nombre de fora del parèntesi multiplica el $2x$, no s'hi suma.",
+     "bona": "x − 10x − 15 = 6x − 30",
+     "fitxesBona": [
+      "x",
+      "− 10x",
+      "− 15",
+      "=",
+      "6x",
+      "− 30"
+     ],
+     "perque": [
+      [
+       "S'ha equivocat multiplicant el $−5$ pel $3$.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−5$ per $2x$, però no pel $3$.",
+       false
+      ],
+      [
+       "Ha sumat el $5$ i el $2$ de $2x$, i els havia de multiplicar.",
+       true
+      ],
+      [
+       "S'ha equivocat en el signe del terme en $x$.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "x − 10x − 15 = 6x + 30",
+       false
+      ],
+      [
+       "x − 10x − 15 = 6x − 30",
+       true
+      ],
+      [
+       "x − 10x + 15 = 6x − 30",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$ i també és correcte haver escrit $+15$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−15$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−15|−12}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|4}$."
+   },
+   "nota": null,
+   "solucio": "x = 1",
+   "banc": "lot3-D08"
+  },
+  {
+   "llavor": 1004,
+   "nivell": 2,
+   "alumne": "la Laia",
+   "linies": [
+    [
+     "−x",
+     "− 4·(2x − 7)",
+     "=",
+     "−3x",
+     "+ 10"
+    ],
+    [
+     "−x",
+     "− 8x",
+     "− 28",
+     "=",
+     "−3x",
+     "+ 10"
+    ],
+    [
+     "−9x",
+     "− 28",
+     "=",
+     "−3x",
+     "+ 10"
+    ],
+    [
+     "−9x",
+     "+ 3x",
+     "=",
+     "10",
+     "+ 28"
+    ],
+    [
+     "−6x",
+     "=",
+     "38"
+    ],
+    [
+     "x",
+     "=",
+     "{38|−6}"
+    ],
+    [
+     "x",
+     "=",
+     "−{19|3}"
+    ]
+   ],
+   "errades": {
+    "1": {
+     "tipus": "DIST_SIGNE",
+     "terme": 2,
+     "expl": "El $−4$ multiplica tots els termes del parèntesi amb el seu signe: el $−7$ també havia de canviar de signe.",
+     "bona": "−x − 8x + 28 = −3x + 10",
+     "fitxesBona": [
+      "−x",
+      "− 8x",
+      "+ 28",
+      "=",
+      "−3x",
+      "+ 10"
+     ],
+     "perque": [
+      [
+       "Ha multiplicat el $−4$ pel $−7$ i s'ha equivocat en el signe del resultat.",
+       true
+      ],
+      [
+       "No havia de multiplicar el $−7$: només es multiplica $2x$.",
+       false
+      ],
+      [
+       "Havia de canviar el signe de tots els termes de l'equació.",
+       false
+      ],
+      [
+       "Ha multiplicat el $−4$ per $2x$ i s'ha equivocat en el signe.",
+       false
+      ]
+     ],
+     "opcions": [
+      [
+       "−x − 8x + 28 = −3x + 10",
+       true
+      ],
+      [
+       "−x − 8x − 7 = −3x + 10",
+       false
+      ],
+      [
+       "x − 8x + 28 = −3x + 10",
+       false
+      ]
+     ]
+    }
+   },
+   "correctes": {
+    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$.",
+    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+3x$ i també és correcte haver escrit $+28$.",
+    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$ i també és correcte haver escrit $38$.",
+    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${38|−6}$.",
+    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{19|3}$."
+   },
+   "nota": null,
+   "solucio": "x = 3",
+   "banc": "lot3-D09"
+  }
+ ]
 }

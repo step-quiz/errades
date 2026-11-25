@@ -24,12 +24,12 @@ and a term phase at levels 4–5), plus a curated bank (`data/banc.json`).
 | `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers. `enllac()` is pure (tested). |
 | `equacions.html`, `js/equacions/pagina.js` | The first-degree equations activity (reads the URL, loads `data/errors.json` and `data/banc.json`, starts a session). `exempleSessio()` is pure (tested). |
 | `js/equacions/nivells.js` | What each level means (`parametres`: statement type, number of errors, compensating pairs, announced or not, term phase) and which bank examples fit a level (`encaixaBanc`). Pure. |
-| `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format; about 1 example in 3 comes from here when one fits the level. |
+| `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format, each with `banc: "lot1-B05"` (batch and card id of the review artifact); about 1 example in 3 comes from here when one fits the level. `tests/banc.test.js` checks their structure. |
 | `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, all texts, `valida()`). |
 | `data/errors.json` | Error taxonomy: name and description of each type. Keys = `REGLES`. |
 | `js/motor/estat.js` | Pure state machine of one example (select, check, attempts ladder, term phase, «Per què?», «Corregeix-la» by choice or typing, points). |
 | `js/motor/escriure.js` | Pure: is a correction typeable (`escrivible`), reading what the student typed (`llegeix`), comparing values (`correcte`). |
-| `js/motor/llibreta.js` | DOM: draws the notebook, handles mouse, touch and keyboard. |
+| `js/motor/llibreta.js` | DOM: draws the notebook, handles mouse, touch and keyboard. `alinea()` gives every line the widest member width (`--ma`, `--mb`) so «=» stays on one vertical even when a line overflows. |
 | `js/motor/sessio.js` | A session of N examples: progress line, «Següent» band, final screen with the mark. |
 | `css/tokens.css` | Colours with meaning (two layers, R1) and the self-hosted fonts. |
 | `css/pagina.css`, `css/llibreta.css` | Page structure and buttons; the notebook. |
@@ -44,7 +44,7 @@ and a term phase at levels 4–5), plus a curated bank (`data/banc.json`).
 
 | Parameter | Values | Default | Meaning |
 |---|---|---|---|
-| `nivell` | 1–5 | 1 | 1: one error, no brackets (4–5 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating; term phase. 5: one or two, not announced, ≈30 % of the two-error ones compensating; term phase. |
+| `nivell` | 1–5 | 1 | 1: one error, no brackets (4–6 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating; term phase. 5: one or two, not announced, ≈30 % of the two-error ones compensating; term phase. |
 | `escriu` | 0, 1 | 0 | 1: in «Corregeix-la» the student types the circled term, corrected (on-page keypad: digits, x, +, −, /), instead of choosing the line. Any writing with the same value is accepted (10/2 = 5). Errors that change the line's structure (`TERMES_NO_SEMBLANTS`) still use the 3 options. |
 | `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No n'hi ha cap més»). |
 | `totaloperations` | 1–20 | 6 | Examples per session. |
@@ -78,14 +78,27 @@ Mal-rules (`REGLES`):
 |---|---|---|
 | `DISTRIBUTIVA` | exp | `2·(x + 4) → 2x + 4` |
 | `DIST_SIGNE` | exp | `−2·(x − 3) → −2x − 6` |
-| `SIGNE_TRANSPOSAR` | tra | `3x − 6 = x + 4 → 3x − x = 4 − 6` |
-| `TERMES_NO_SEMBLANTS` | tra | `2x + 6 = x + 10 → 8x = x + 10` |
-| `CALCUL` | red1, red2 | `2x + 7x = 13 − 4 → 9x = 8` |
-| `OPERACIO_INVERSA` | div | `2x = −2 → x = −4` |
+| `DIST_SUMA` | exp | `x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7` (outer factor added to the inner x-coefficient: sign(c)·(\|c\| + m); only for `c·(mx + b)` with m ≥ 2, \|c\| ≥ 2; David's real error) |
+| `SIGNE_TRANSPOSAR` | tra | `3x − 6 = x + 4 → 3x − x = 4 − 6`; 35 % of the time when ≥ 2 terms move, all keep their sign: `5x + 3 = 2x + 9 → 5x + 2x = 9 + 3` (Erbaş YK26). Errors with two wrong terms store `termes: [i, j]`; the term phase accepts either |
+| `SIGNE_COPIAT` | exp, red1, tra (30 %: two terms when possible) | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` (a term that is only copied in this step loses or gains a visible minus; never the leading positive term, whose sign is not written) |
+| `TERMES_NO_SEMBLANTS` | tra, red1 | tra: `2x + 6 = x + 10 → 8x = x + 10`; red1: `2x + 3 + 4x = 18 → 9x = 18` (side with ≥ 2 x-terms and ≥ 1 number, all numbers \|n\| ≤ 15) |
+| `COEFICIENT_U` | red1, red2 | `3x + x + 6x = 4 − 2x → 9x = 4 − 2x`; `5x − x = 9 − 1 → 5x = 8` (a lone ±x is not counted; David's real error) |
+| `CALCUL` | red1, red2 | `8x + 4x = −3 + 15 → 12x = −12` (sign of the result) or `→ 12x = −18` (adds the absolute values of opposite-sign terms); `−3 − 15 → +18` or `→ −12`. Only two-term sums with at least one negative term (David, bank batch 1, B07) |
+| `OPERACIO_INVERSA` | div | `3x = 12 → x = 9` (B − A), `x = −9` (A − B, likelier when \|A\| > \|B\|), `x = 36` (A·B), `x = 15` (A + B) (Erbaş et al. 2009, YK06/YK03/YK05) |
+| `COEFICIENT_OBLIDAT` | div | `3x = 12 → x = 12` (Erbaş et al. 2009, YK01) |
 | `DIVISIO_SIGNE` | div | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | div | `2x = 16 → x = 2/16` |
 
-At level 1 there are no brackets, so `DISTRIBUTIVA` and `DIST_SIGNE` only appear at level 2.
+At level 1 there are no brackets, so `DISTRIBUTIVA`, `DIST_SIGNE` and `DIST_SUMA` only appear at level 2. Level-2
+forms: C `c·(x + b) = dx + e`, D `c·(x + b) + fx = dx + e`, E `e − c·(x + b) = dx + f`, F `c·(x + b) = d·(x + e)`,
+H `ax + c·(mx + b) = dx + e` (bracket term `P(c, b, m)`, m = 2…4; `DIST_SUMA` needs it). Level-1 statement
+forms: A `ax + b = c`, B `ax + b = dx + e`, G `ax + b + cx = e` (weights 2:1:1; G exists so that the red1 variant
+of `TERMES_NO_SEMBLANTS` and red1 `CALCUL`/`SIGNE_COPIAT` appear at level 1; G gives 5–6 lines, hence 4–6).
+
+Bank tooling: `generaExemple({ llavor, nivell, errades, e0, filtre }, TIPUS)` accepts a fixed statement
+`e0 = T.linia([T.X(8), T.N(-15)], [T.X(-4), T.N(-3)])` and a candidate filter
+`filtre = c => c.id === 'CALCUL' && text(c.res.linia) === '12x = −12'` (try successive seeds until it
+returns); this is how curated bank candidates are rebuilt after review.
 
 ## Tests
 

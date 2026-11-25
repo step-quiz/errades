@@ -1,14 +1,14 @@
 // tests/generador.test.js — el generador d'exemples (docs/SPEC.md §5.3 i §10).
 import fs from 'node:fs';
-import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q } from '../js/equacions/generador.js';
+import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
 const TIPUS = JSON.parse(fs.readFileSync(new URL('../data/errors.json', import.meta.url), 'utf8'));
-const LIMITS = { 1: [4, 5], 2: [6, 8] };
+const LIMITS = { 1: [4, 6], 2: [6, 8] };
 
 // Racionals i procediment
 igual([new Q(6, -4).n, new Q(6, -4).d], [-3, 2], 'Q simplifica i porta el signe al numerador');
-const l = { L: [{ k: 'p', c: 2, b: 4 }], R: [{ k: 'n', v: new Q(13) }, { k: 'x', c: new Q(-7) }] };
+const l = { L: [T.P(2, 4)], R: [{ k: 'n', v: new Q(13) }, { k: 'x', c: new Q(-7) }] };
 ok(solucio(l).igual(new Q(5, 9)), '2·(x + 4) = 13 − 7x té solució 5/9');
 igual(resol(l).map(p => p.op), ['exp', 'tra', 'red2', 'div'], 'procediment de 2·(x + 4) = 13 − 7x');
 ok(aplica('simp', resol(l)[3].linia) === null, '5/9 ja no se simplifica');
@@ -32,12 +32,13 @@ for (const nivell of [1, 2]) {
             const [mn, mx] = LIMITS[nivell];
             ok(ex.linies.length >= mn && ex.linies.length <= mx, `nivell ${nivell}, llavor ${s}: ${ex.linies.length} línies`);
             ok(Object.keys(ex.errades).length === errades, `nivell ${nivell}, llavor ${s}: hauria de tenir ${errades} errades`);
+            ok(!/[+−] 0(?![\d|])/.test(ex.linies[0].join(' ')), `nivell ${nivell}, llavor ${s}: l'enunciat té un «+ 0»: ${ex.linies[0].join(' ')}`);
             for (const e of Object.values(ex.errades)) vistos[e.tipus] = (vistos[e.tipus] || 0) + 1;
             if (s <= 50) igual(perPagina(generaExemple({ llavor: s, nivell, errades }, TIPUS)), perPagina(ex), `llavor ${s}: la mateixa llavor ha de donar el mateix exemple`);
         }
         if (errades) {
             const esperats = nivell === 1
-                ? ['SIGNE_TRANSPOSAR', 'TERMES_NO_SEMBLANTS', 'CALCUL', 'OPERACIO_INVERSA', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT']
+                ? ['SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT']
                 : Object.keys(REGLES);
             for (const t of esperats) ok(vistos[t] > 0, `nivell ${nivell}: no surt mai el tipus ${t}`);
             console.log(`  nivell ${nivell}: ${JSON.stringify(vistos)}`);
@@ -71,4 +72,51 @@ for (let s = 1; s <= 300; s++)
             ok(v.perque.every(o => /^[A-ZÀ-Ú]/.test(o[0]) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
         }
     }
+// Regles afegides després del lot 1 del banc (comentaris del David a B05, B07, B15 i B16)
+const { X: tX, N: tN, linia: tL } = T;
+function resultats(id, l, op, n = 200) {
+    const out = new Set();
+    for (let s = 1; s <= n; s++) {
+        const res = REGLES[id].fes(l, creaAtzar(s), op);
+        out.add(res ? text(res.linia) : null);
+    }
+    return [...out].sort();
+}
+igual(resultats('CALCUL', tL([tX(12)], [tN(-3), tN(15)]), 'red2'), ['12x = −12', '12x = −18'], 'CALCUL: −3 + 15 → −12 o −18 (B07)');
+igual(resultats('CALCUL', tL([tX(12)], [tN(-3), tN(-15)]), 'red2'), ['12x = 18', '12x = −12'], 'CALCUL: −3 − 15 → +18 o −12');
+igual(resultats('CALCUL', tL([tX(8), tX(4)], [tN(3), tN(15)]), 'red2'), [null], 'CALCUL: sense cap terme negatiu no hi ha errada de càlcul');
+igual(resultats('SIGNE_COPIAT', tL([tX(9), tN(7)], [tX(3), tN(-23)]), 'tra'), ['9x − 3x = 23 − 7'], 'SIGNE_COPIAT: el −23 es copia amb el signe canviat (B05)');
+{
+    const rs = resultats('SIGNE_COPIAT', tL([tX(2), tN(-8), tX(-5)], [tX(-7), tN(-36)]), 'red1');
+    for (const t of ['−3x + 8 = −7x − 36', '−3x − 8 = 7x − 36', '−3x − 8 = −7x + 36', '−3x + 8 = −7x + 36'])
+        ok(rs.includes(t), `SIGNE_COPIAT (B15): falta ${t}`);
+    ok(rs.length <= 6, 'SIGNE_COPIAT (B15): un o dos signes, i res més');
+}
+igual(resultats('SIGNE_TRANSPOSAR', tL([tX(5), tN(3)], [tX(2), tN(9)]), 'tra').includes('5x + 2x = 9 + 3'), true, 'SIGNE_TRANSPOSAR amb els dos termes (Erbaş YK26)');
+igual(resultats('COEFICIENT_OBLIDAT', tL([tX(3)], [tN(12)]), 'div'), ['x = 12'], 'COEFICIENT_OBLIDAT: 3x = 12 → x = 12');
+igual(resultats('OPERACIO_INVERSA', tL([tX(3)], [tN(12)]), 'div', 400).sort(), ['x = 15', 'x = 36', 'x = 9', 'x = −9'].sort(), 'OPERACIO_INVERSA: resta, resta al revés, producte i suma');
+igual(resultats('SIGNE_COPIAT', tL([tX(4)], [tN(9), tN(3)]), 'red2'), [null], 'SIGNE_COPIAT: no s\'aplica a red2');
+igual(resultats('TERMES_NO_SEMBLANTS', tL([tX(2), tN(3), tX(4)], [tN(18)]), 'red1'), ['9x = 18'], 'TERMES_NO_SEMBLANTS amb tres termes: 2x + 3 + 4x = 18 → 9x = 18 (B16)');
+igual(resultats('TERMES_NO_SEMBLANTS', tL([tX(6), tN(-48), tX(5)], [tN(1)]), 'red1'), [null], 'TERMES_NO_SEMBLANTS amb tres termes: no amb nombres grans');
+// Regles de les errades reals del David (lot 2)
+igual(text(tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])), 'x − 2·(3x + 6) = 3x + 7', 'parèntesi amb un coeficient a dins');
+igual(resultats('DIST_SUMA', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)]), 'exp'), ['x − 5x − 12 = 3x + 7'], 'DIST_SUMA: −2·(3x + 6) → −5x − 12');
+igual(resultats('DIST_SUMA', tL([T.P(2, 1)], [tN(8)]), 'exp'), [null], 'DIST_SUMA: no sense coeficient a dins');
+igual(resultats('COEFICIENT_U', tL([tX(3), tX(1), tX(6)], [tN(4), tX(-2)]), 'red1'), ['9x = 4 − 2x'], 'COEFICIENT_U: 3x + x + 6x → 9x');
+igual(resultats('COEFICIENT_U', tL([tX(5), tX(-1)], [tN(9), tN(-1)]), 'red2'), ['5x = 8'], 'COEFICIENT_U: 5x − x → 5x');
+igual(resultats('COEFICIENT_U', tL([tX(5), tX(2)], [tN(9)]), 'red2'), [null], 'COEFICIENT_U: sense cap x sola no hi ha errada');
+igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)]))), 'x − 6x − 12 = 3x + 7', 'exp amb coeficient a dins');
+
+// Eina del banc: un enunciat fix i un filtre de candidats
+{
+    let fet = null;
+    for (let s = 1; s <= 200 && !fet; s++)
+        try {
+            fet = generaExemple({ llavor: s, nivell: 1, e0: tL([tX(8), tN(-15)], [tX(-4), tN(-3)]), filtre: c => c.id === 'CALCUL' && text(c.res.linia) === '12x = −18' }, TIPUS);
+        } catch (e) {
+            /* una altra llavor */
+        }
+    ok(fet && fet.linies[0].join(' ') === '8x − 15 = −4x − 3' && fet.linies[2].join(' ') === '12x = −18' && valida(fet).length === 0, 'eina del banc: B07 refet amb −18');
+}
+
 informe('generador');

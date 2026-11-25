@@ -42,11 +42,15 @@ const servidor = http.createServer((req, res) => {
 await new Promise(r => servidor.listen(0, r));
 const BASE = `http://127.0.0.1:${servidor.address().port}/`;
 
-const [LT_LLAVOR, LT] = await (async () => {
-    const g = await import('../../js/equacions/generador.js');
-    const t = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'errors.json'), 'utf8'));
+// Els exemples que la pàgina farà sortir (generador o banc), calculats igual que pagina.js
+const PAG = await import('../../js/equacions/pagina.js');
+const ERRORS = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'errors.json'), 'utf8'));
+const BANC = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'banc.json'), 'utf8')).exemples;
+const sessio = (base, i = 0, nivell = 1, noerrors = false) => PAG.exempleSessio(i, { base, nivell, noerrors, tipus: ERRORS, banc: BANC });
+const primera = ex => Object.keys(ex.errades).map(Number).sort((a, b) => a - b)[0];
+const [LT_LLAVOR, LT] = (() => {
     for (let s = 1; ; s++) {
-        const e = +Object.keys(g.generaExemple({ llavor: s, nivell: 1, errades: 1 }, t).errades)[0];
+        const e = primera(sessio(s));
         if (e >= 3) return [s, e];
     }
 })();
@@ -77,11 +81,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     // Activitat: 2 exemples, llavor fixa
     await pg.goto(BASE + 'equacions.html?totaloperations=2&llavor=11');
     await pg.waitForSelector('#llibreta .ln');
-    const errada = await pg.evaluate(async () => {
-        const g = await import('./js/equacions/generador.js');
-        const t = await (await fetch('data/errors.json')).json();
-        return Object.keys(g.generaExemple({ llavor: 11, nivell: 1, errades: 1 }, t).errades).map(Number)[0];
-    });
+    const errada = primera(sessio(11, 0));
     const bona = errada === 1 ? 2 : 1;
     ok((await pg.locator('#llibreta [data-a=comprova]').count()) === 0, 'al principi no hi ha cap botó «Comprova»');
     await clica(`#llibreta [data-l="${bona}"]`);
@@ -121,11 +121,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
 
     // Segon exemple, amb el teclat (Enter també prem «Següent»)
     await pg.waitForSelector('#llibreta [data-l="1"]');
-    const errada2 = await pg.evaluate(async () => {
-        const g = await import('./js/equacions/generador.js');
-        const t = await (await fetch('data/errors.json')).json();
-        return Object.keys(g.generaExemple({ llavor: (11 + 7919) >>> 0, nivell: 1, errades: 1 }, t).errades).map(Number)[0];
-    });
+    const errada2 = primera(sessio(11, 1));
     await pg.focus('#llibreta');
     await pg.keyboard.press(String(errada2));
     await pg.keyboard.press('Enter');
@@ -157,23 +153,20 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     // Nivell 4: dues errades, amb la fase del terme
     await pg.goto(BASE + 'equacions.html?nivell=4&totaloperations=1&llavor=21');
     await pg.waitForSelector('#llibreta .ln');
-    const ex4 = await pg.evaluate(async () => {
-        const m = await import('./js/equacions/pagina.js');
-        const t = await (await fetch('data/errors.json')).json();
-        return m.exempleSessio(0, { base: 21, nivell: 4, noerrors: false, tipus: t, banc: [] });
-    });
-    const [e1, e2] = Object.keys(ex4.errades).map(Number);
+    const ex4 = sessio(21, 0, 4);
+    const [e1, e2] = Object.keys(ex4.errades).map(Number).sort((a, b) => a - b);
     ok(/Errades: 2/.test(await pg.textContent('#llibreta .chips')), 'nivell 4: «Errades: 2»');
     for (const [k, e] of [[0, e1], [1, e2]]) {
         await clica(`#llibreta [data-l="${e}"]`);
         await clica('#llibreta [data-a=comprova]');
         ok((await pg.locator('#llibreta .tb').count()) > 1, `nivell 4, errada ${k + 1}: els termes de la línia es poden tocar`);
         const bo = ex4.errades[e].terme;
-        const dolent = ex4.linies[e].findIndex((t, j) => t !== '=' && j !== bo);
+        const bons = ex4.errades[e].termes || [bo];
+        const dolent = ex4.linies[e].findIndex((t, j) => t !== '=' && !bons.includes(j));
         await clica(`#llibreta [data-tm="${dolent}"]`);
         ok(/Aquest terme està bé/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: un terme bo no és l'equivocat`);
         await clica(`#llibreta [data-tm="${bo}"]`);
-        ok(/Exacte: aquest és el terme equivocat/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
+        ok(/Exacte: aquest és (el|un dels) termes? equivocats?/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
         await clica('#llibreta [data-pq="0"]');
         await clica('#llibreta [data-co="0"]');
         if (k === 0) {
@@ -182,19 +175,15 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         }
     }
     ok(await pg.isVisible('.franja-final'), 'nivell 4: franja en acabar');
-    const xs = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila .ln > .ex > .t')].map(e => Math.round(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2)));
+    const xs = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila .ex > .t')].map(e => Math.round(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2)));
     ok(xs.every(x => Math.abs(x - xs[0]) <= 1), `nivell 4: tots els «=» a la mateixa vertical (${xs})`);
     ok(await pg.locator(`#llibreta .fila[data-i="${e2}"]`).evaluate(el => getComputedStyle(el).opacity === '1'), 'nivell 4: la segona errada es continua veient sencera');
 
     // Nivell 3: no es diu quantes n'hi ha; cal dir «No n'hi ha cap més»
     await pg.goto(BASE + 'equacions.html?nivell=3&totaloperations=1&llavor=8');
     await pg.waitForSelector('#llibreta .ln');
-    const ex3 = await pg.evaluate(async () => {
-        const m = await import('./js/equacions/pagina.js');
-        const t = await (await fetch('data/errors.json')).json();
-        return m.exempleSessio(0, { base: 8, nivell: 3, noerrors: false, tipus: t, banc: [] });
-    });
-    const e3 = Number(Object.keys(ex3.errades)[0]);
+    const ex3 = sessio(8, 0, 3);
+    const e3 = primera(ex3);
     ok(!/Errades:/.test(await pg.textContent('#llibreta .chips')), 'nivell 3: no es diu quantes errades hi ha');
     await clica(`#llibreta [data-l="${e3}"]`);
     await clica('#llibreta [data-a=comprova]');
@@ -212,13 +201,10 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await clica('#llibreta [data-a=comprova]');
     await clica('#llibreta [data-pq="0"]');
     ok(await pg.isVisible('#escrit') && (await pg.locator('#llibreta .tk').count()) === 15, 'escriu=1: casella i teclat');
-    const bo = await pg.evaluate(async ll => {
-        const m = await import('./js/equacions/pagina.js');
-        const t = await (await fetch('data/errors.json')).json();
-        const e = m.exempleSessio(0, { base: ll, nivell: 1, noerrors: false, tipus: t, banc: [] });
-        const [j, er] = Object.entries(e.errades)[0];
+    const bo = (() => {
+        const er = sessio(LT_LLAVOR).errades[LT];
         return er.fitxesBona[er.terme];
-    }, LT_LLAVOR);
+    })();
     const tecles = bo.replace(/\{([^|]+)\|([^}]+)\}/, '$1/$2').replace(/\s+/g, '').split('');
     await clica('#llibreta [data-k="0"]');
     await clica('#llibreta [data-k="⌫"]');

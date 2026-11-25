@@ -8,7 +8,7 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 | Stage (SPEC §9) | Status |
 |---|---|
 | 1 Skeleton, taxonomy, generator + tests, notebook page (tap + «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» by choice, points) | **DONE** — tested and accepted by David after six rounds of corrections |
-| 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | **DONE** (ZIP «etapa2»); bank batch 1 waiting for David's review |
+| 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | **DONE** (ZIP «etapa2»); bank: batch 1 → 20 (ZIP «banc1»), batch 2 → 11 (ZIP «banc2»), batch 3 → 8 (ZIP «banc3»): 39 examples |
 | 3 Verification code `LE` + analyser in `operacions` | PENDING |
 | 4 Projector mode | PENDING |
 | 5 Lasso (R3) | PENDING (prototype logic in the review artifact) |
@@ -129,6 +129,94 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
   The bank batch was regenerated with `fitxesBona` (same 21 examples, deterministic).
 - `pagina.js` only starts a session on `equacions.html` and only once (`window.__erradesEngegat`), so the browser
   test can import it to compute the same examples.
+
+## Bank batch 1 reviewed (2026-11-25, ZIP «banc1»)
+
+- **20 of 21 approved** → `data/banc.json` with `banc: "lot1-Bxx"` (B07 not approved). `tests/banc.test.js` checks
+  every bank example (one «=» per line, texts for every correct line, 4/3 options, typed term readable, `expl` does
+  not contain the correct line, fits some level). Replies to every card are in the batch-1 artifact (`rep/Bxx`).
+- **David's comments turned into generator changes:**
+  - B07 (`−3 + 15 → 10` is not a pupil error; −12 or −18 are): `CALCUL` rewritten. Only two-term sums with at least
+    one negative term; wrong value = −S («signe») or, with opposite signs, sign(v1)·(|v1|+|v2|) («suma»), with equal
+    signs sign(v1)·||v1|−|v2|| («resta»). Never S or 0. One specific true sentence per kind. B08 (`15 − 11 → 6`)
+    was approved anyway and stays in the bank; the generator would now write −4 or 26.
+  - B05, B15 (signs miscopied): new rule `SIGNE_COPIAT` (exp, red1, tra; pes 2). `copiats(op, l, bo)` lists the terms
+    of the correct line that are only copied in that step; one of them changes sign. Never the leading positive term
+    (its sign is not written). One sign per error (David's B15 example flips two; that would give the term phase two
+    right answers — asked in the reply, not done).
+  - B16 (`2x + 3 + 4x = 18 → 9x = 18`): `TERMES_NO_SEMBLANTS` also at red1 (a side with ≥ 2 x-terms and ≥ 1 number,
+    numbers |n| ≤ 15, merged into one x-term; data `tres: true`). New level-1 statement form G `ax + b + cx = e`
+    (`tria(['A','A','B','G'])`), so level 1 is now 4–6 lines (`LIMITS[1] = [4, 6]`).
+  - B09 (`x = 2/10`): already `QUOCIENT_INVERTIT`, and it is one of the wrong options of that very card. No change.
+- `valida()` now rejects an `expl` containing `$<right side of bona>$` (a whole formula); the old substring test
+  wrongly matched `$−12$` against `12$`.
+- **Bank tooling:** `generaExemple` accepts `e0` (fixed statement built with the exported `T.linia/X/N/P`) and
+  `filtre(c)`; batch 2 was built with it (script kept outside the repo; the README shows the pattern).
+- **«=» alignment on narrow screens:** `alinea()` in `llibreta.js` sets `--ma`/`--mb` on `.linies` to the widest left
+  and right member (re-run after every `pinta()`, on resize and on `document.fonts.ready`); the «=» column is a fixed
+  1.6rem with the «=» centred and the gap is in rem, so the print, pupil and teacher fonts (different «=» widths and
+  sizes) share one vertical. Found by the browser test at 360 px once a longer level-4 example came up.
+- The browser test now computes the examples with `exempleSessio()` and the real bank (it used to assume the
+  generator), and checks the «=» of the corrections too.
+- **Batch 2** «Banc d'errades, lot 2» (https://claude.ai/artifact/KgzZM2mQo9bho8g5h4FizT, slug
+  9759f95d-eda9-44f9-85e1-f767c3ec13a8; same db layout): C01/C02 = B07 rebuilt with −12/−18, C03–C04 new `CALCUL`,
+  C05 = David's B05 line, C06 = B15 statement with one miscopied sign, C07–C08 `SIGNE_COPIAT` at exp/tra, C09 = David's
+  B16 line, C10–C11 three-term `TERMES_NO_SEMBLANTS` (levels 1 and 2), C12 a form-G statement with an older error.
+  Approved ones go to `data/banc.json` as `lot2-Cxx`.
+
+## Bank batch 2 reviewed (2026-11-25, ZIP «banc2»)
+
+- **11 of 12 approved** → `data/banc.json` as `lot2-Cxx` (31 examples in all). C11 not approved: David disliked
+  «4 and −4» in the statement and proposed `3x − 5 + 4x = 16 → 2x = 16` (batch 3, D01). Batch-3 generated
+  candidates reject statements that repeat a number (`variat()` in the batch script; the generator itself does not
+  filter this yet).
+- **David's two real errors (`reals/notes`) became rules:**
+  - `COEFICIENT_U` (red1, red2; pes 3): in a group of ≥ 2 x-terms with a lone ±x, the ±x is not counted
+    (`3x + x + 6x = 4 − 2x → 9x = 4 − 2x`; `5x − x → 5x`). Level-1 forms B and G now draw a lone x 30 % of the time
+    so that it appears at level 1.
+  - `DIST_SUMA` (exp; pes 2): `c·(mx + b)` → x-coefficient sign(c)·(|c| + m), number multiplied correctly
+    (`x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7`). Needs m ≥ 2, |c| ≥ 2, |c| ≠ m.
+  - Bracket terms are now `P(c, b, m = 1)` = c·(mx + b) (`cos`, `lineal`, `expandeix(…, malX)`, `perQueBona`,
+    `dinsMarge` m ≤ 5; `DISTRIBUTIVA`/`DIST_SIGNE` texts say «per $3x$» when m ≠ 1). New level-2 form H
+    `ax + c·(mx + b) = dx + e` (forms C, D, E, F, H equally likely).
+- `valida()`: the last line may also be an irreducible fraction with positive denominator (`x = 4/11` has no simp
+  step); before, such examples were silently rejected, so a solution like 4/11 could only appear via simp.
+- `generaExemple` rejects statements with a superfluous `+ 0` (`zeroSobrer`; form H could write `−x + 0`).
+- The batch pages show Claude's reply to the real-errors note (`rep/reals`, `#rep-reals`).
+- **Batch 3** «Banc d'errades, lot 3» (https://claude.ai/artifact/K6iU7eSiHW9z5TabkADQeH, slug
+  9290c51d-6c23-40f6-9b83-9b1fe0a9acfe): D01 = David's C11 proposal, D02 and D06 = his two real errors exactly,
+  D03–D05 `COEFICIENT_U`, D07–D08 `DIST_SUMA`, D09 a form-H statement with `DIST_SIGNE`.
+
+## Research review (2026-11-25, answered; implemented in ZIP «banc3»)
+
+David sent a list of papers on real pupils' errors. Review artifact «Errades documentades a la recerca»
+(https://claude.ai/artifact/AkeL6uQEjqyVFAib5k1SEh, slug 4efa3c2d-cac4-46f1-bf2b-d0898c2c9bce; db collection
+`respostes` {decisio: si|no|despres|parlem, comentari}, `general/notes`, replies in `rep/<id>` and `rep/general`).
+Main source: Erbaş, Çetinkaya & Ersoy (2009, Education and Science 34(152)), 217 pupils, 32 coded mal-rules with
+counts (YK13 «Mx ± N → (M ± N)x» 437 = our `TERMES_NO_SEMBLANTS`; YK26 188 ≈ `SIGNE_TRANSPOSAR` with both moved terms;
+YK06 157 = `OPERACIO_INVERSA`; YK18 62 = `DISTRIBUTIVA`; YK19 7 = `DIST_SUMA`; YK04 6 = `QUOCIENT_INVERTIT`).
+Proposals A1–A9 (new rules: number-only distribution YK20, forgotten coefficient YK01, product of unlike terms YK11,
+more inverse operations YK03/YK05/YK06, factor applied after the bracket (Gasa), pair-only unlike terms (Gasa),
+two terms moved without sign change YK26 with a multi-answer term phase, factor subtracted (Vale et al.), divide
+before transposing (Mathematics in School 1984)), B1–B3 (out of scope: equation as expression, redistribution,
+trial and error), C1–C2 (weights from the counts; more arithmetic at levels 4–5).
+
+**David's answers:** yes A2, A4, A7, B1–B3 (keep out), C1; no A1, A3, A5, A6; later A8, A9, C2.
+- A2 → `COEFICIENT_OBLIDAT` (div, pes 3): `3x = 12 → x = 12`.
+- A4 → `OPERACIO_INVERSA` (pes 4) variants `resta` B − A, `inversa` A − B (double weight when |A| > |B|), `producte`
+  A·B, `suma` A + B (data `v`, `W`; per-variant `expl` and «Per què?»). Bank examples made before keep the old
+  texts (no `v`: treated as `resta`).
+- A7 → `SIGNE_TRANSPOSAR` all moved terms keep their sign (35 % when ≥ 2 move; data `tots`) and `SIGNE_COPIAT` two
+  signs (30 % when ≥ 2 copied terms; data `ts`, `mals`) — David's B15. `construeix` stores `termes: [i, j]` when more
+  than one token differs; `triaTerme` accepts any of them and `llibreta.js` circles all of them. Such errors are
+  never typeable (`escrivible` needs exactly one different token).
+- C1 → `pes`: TNS 5; SIGNE_TRANSPOSAR, OPERACIO_INVERSA, CALCUL 4; DISTRIBUTIVA, DIST_SIGNE, COEFICIENT_OBLIDAT 3;
+  COEFICIENT_U, SIGNE_COPIAT 2; DIST_SUMA, QUOCIENT_INVERTIT, DIVISIO_SIGNE 1. `DIVISIO_SIGNE` is now very rare at
+  level 1 (≈ 1 in 600 seeds); the coverage test still passes but is close to its limit.
+- **Later (not done):** A8 factor subtracted `3(x − 2) = 5x → x − 2 = 5x − 3`; A9 divide before transposing
+  `3 + 2x = 9 → x = 9/2 − 3`; C2 more arithmetic errors at levels 4–5.
+
+**Bank batch 3:** 8 of 9 approved (D03 not) → `lot3-Dxx`; 39 examples in all.
 
 ## Setup still to do by David (once)
 
