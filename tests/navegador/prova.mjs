@@ -76,7 +76,9 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const bona = errada === 1 ? 2 : 1;
     await clica(`#llibreta [data-l="${bona}"]`);
     await clica('#llibreta [data-a=comprova]');
-    ok(/^No és aquí\. Aquesta línia és correcta/.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta');
+    ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta');
+    ok(await pg.locator('#llibreta .ln.enunciat').evaluate(e => getComputedStyle(e).cursor) === 'not-allowed', 'la línia 0 té el cursor de prohibit');
+    ok((await pg.textContent('#llibreta .ln.enunciat .n')).trim() === '0', 'la primera línia és la 0');
     ok((await pg.locator('#llibreta .mk.c').count()) === 1, 'línia bona: ✓ de llapis');
     await clica(`#llibreta [data-l="${errada}"]`);
     await clica('#llibreta [data-a=comprova]');
@@ -97,7 +99,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         return Object.keys(g.generaExemple({ llavor: (11 + 7919) >>> 0, nivell: 1, errades: 1 }, t).errades).map(Number)[0];
     });
     await pg.focus('#llibreta');
-    await pg.keyboard.press(String(errada2 + 1));
+    await pg.keyboard.press(String(errada2));
     await pg.keyboard.press('Enter');
     ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'teclat: encert');
     await pg.keyboard.press('Enter'); // «Per què?»: primer botó amb focus

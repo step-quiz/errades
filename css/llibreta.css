@@ -34,7 +34,7 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     margin-bottom: 12px;
 }
 .ins {
-    font: 21px/1.35 var(--lletra-alumne);
+    font: 600 18px/1.4 var(--lletra-ui);
     margin: 0;
     max-width: 54ch;
 }
@@ -85,6 +85,14 @@ button.ln:hover {
     display: grid;
     place-items: center;
     background: var(--paper);
+}
+/* La línia 0 és l'enunciat: no es pot triar. Els números sense cercle ja no són candidats */
+.ln.enunciat {
+    cursor: not-allowed;
+}
+.ln.fora .n {
+    border-color: transparent;
+    background: transparent;
 }
 .ln.sel {
     border: 2px dashed var(--text);
@@ -258,8 +266,11 @@ i {
     gap: 8px;
 }
 .opc .b {
-    justify-content: flex-start;
+    /* bloc, no flex: en un flex es perden els espais del voltant de les fórmules */
+    display: block;
+    width: 100%;
     text-align: left;
+    line-height: 1.6;
 }
 .opc .b.mat {
     font: 22px var(--lletra-alumne);

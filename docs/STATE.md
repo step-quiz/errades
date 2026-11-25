@@ -38,8 +38,10 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
   sessions (`?fixed=`) are not implemented yet.
 - **Level 1 has no brackets**, so `DISTRIBUTIVA` and `DIST_SIGNE` only appear at level 2. `DIVISIO_SIGNE` is
   rare at level 1 (it needs a negative coefficient after reducing). Rule weights: `pes` in `REGLES`.
-- **«Per què?» options are all generic** (from `data/errors.json`): a specific right option next to generic
-  distractors would give the answer away. The specific explanation (`expl`) is shown after the choice.
+- **«Per què?»: 4 sentences about that very line** (`PERQUE` in `generador.js`), one true and three plausible
+  false ones, all built from the line's numbers (David's model, 2026-11-25; it replaced the first, generic
+  options). Every false sentence is false for any example of its rule (checked by hand when written); CALCUL's
+  «only the sign is wrong» is offered only when it is false.
 - `package.json` exists only for `"type": "module"` (Node tests). Cloudflare Pages must have no build command.
 
 ## Corrections after David's first test (2026-11-25, ZIP 2)
@@ -54,6 +56,18 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 5. **The statement (line 1) can no longer be selected** (`seleccionable` needs i ≥ 1).
 6. **The message goes before the phase question** («Sí! L'errada és aquí.» then «Per què és una errada?»), and the
    page scrolls so both are visible.
+
+## Second round of corrections (2026-11-25, ZIP 3)
+
+1. The instruction sentence is in print font (UI font), not handwriting.
+2. Lines numbered 0, 1, 2…; line 0 = statement: no circle, `cursor: not-allowed`, keyboard 0 ignored.
+3. Checked lines (and the found error) lose the circle around their number: circled = still a candidate.
+4. F1 text: «En aquesta línia no s'ha comès cap errada:» + line break + «és correcte haver escrit X i també és
+   correcte haver escrit Y.» (X, Y = what was newly written, as it appears in the line). David wrote «+8» in his
+   example for `2x + 8 = −7x − 37 → 2x + 7x = −37 − 8`; the line shows «−8», so the text says «−8».
+   No «No és aquí.» any more; the direction hint (2nd miss) goes on a new line.
+5. Selecting another line clears the previous message.
+6. «Per què?» = 4 specific sentences (see above).
 
 ## Setup still to do by David (once)
 

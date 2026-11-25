@@ -61,5 +61,14 @@ for (let s = 1; s <= 150; s++) {
 
 // Coherència dels textos: cada línia bona té el seu «per què»; les errades, tots els textos
 const ex = generaExemple({ llavor: 42, nivell: 2 }, TIPUS);
-for (let i = 1; i < ex.linies.length; i++) ok(ex.errades[i] || /^Aquesta línia és correcta/.test(ex.correctes[i]), `text de la línia ${i + 1}`);
+for (let i = 1; i < ex.linies.length; i++) ok(ex.errades[i] || /^En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit \$/.test(ex.correctes[i]), `text de la línia ${i}: ${ex.correctes[i]}`);
+// «Per què?»: 4 frases concretes, cap de genèrica repetida de data/errors.json, i cap explicació amb la resposta
+for (let s = 1; s <= 300; s++)
+    for (const nivell of [1, 2]) {
+        const e = generaExemple({ llavor: s, nivell }, TIPUS);
+        for (const v of Object.values(e.errades)) {
+            ok(v.perque.length === 4 && v.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb 4 frases i una de certa`);
+            ok(v.perque.every(o => /^[A-ZÀ-Ú]/.test(o[0]) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
+        }
+    }
 informe('generador');

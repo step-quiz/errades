@@ -310,7 +310,7 @@ export const REGLES = {
             const L = [...l.L.filter(esX), ...movX.map(canvia)];
             const R = [...l.R.filter(t => esN(t) && !(t.v.zero && (l.R.length > 1 || movN.length))), ...movN.map(canvia)];
             if (!L.length) return null;
-            return { linia: linia(L, buit(R)), dades: { t: qui } };
+            return { linia: linia(L, buit(R)), dades: { t: qui, altres: tots.filter(t => t !== qui) } };
         },
         expl(d, bona) {
             return `El $${ambSigne(d.t)}$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe.`;
@@ -346,7 +346,8 @@ export const REGLES = {
                     if (abans.length > 1) opcions.push([c, k, abans]);
                 }
             if (!opcions.length) return null;
-            const [c, k, abans] = tria(r, opcions);
+            const triada = tria(r, opcions);
+            const [c, k, abans] = triada;
             const delta = tria(r, [-2, -1, 1, 2]);
             const nou = bo[c].map(t => {
                 if (t.k !== k) return t;
@@ -358,7 +359,13 @@ export const REGLES = {
             const resultat = bo[c].find(t => t.k === k);
             return {
                 linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou),
-                dades: { expr: sumaTx(abans), bo: pTx(resultat), mal: pTx(fet) },
+                dades: {
+                    expr: sumaTx(abans),
+                    bo: pTx(resultat),
+                    mal: pTx(fet),
+                    altres: opcions.filter(o => o !== triada).map(o => sumaTx(o[2])),
+                    signe: (k === 'x' ? fet.c : fet.v).igual((k === 'x' ? resultat.c : resultat.v).neg()),
+                },
             };
         },
         expl(d) {
@@ -373,7 +380,7 @@ export const REGLES = {
             const A = l.L[0].c.n,
                 B = l.R[0].v.n;
             if (Math.abs(A) < 2) return null;
-            return { linia: linia([X(1)], [N(B - A)]), dades: { A } };
+            return { linia: linia([X(1)], [N(B - A)]), dades: { A, B } };
         },
         expl(d) {
             return `El $${menys(d.A)}$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $${menys(d.A)}$. Ha restat $${menys(d.A)}$.`;
@@ -409,45 +416,146 @@ export const REGLES = {
         },
     },
 };
+// ---------- «Per què és una errada?»: una frase certa i distractors versemblants ----------
+// Cada funció torna { bona, dolentes } amb frases concretes de la línia (mai la línia bona sencera).
+const resta = (B, A) => `${menys(B)} − ${A < 0 ? '(' + menys(A) + ')' : A}`;
+const ambS = n => (n > 0 ? '+' + n : menys(n));
+const PERQUE = {
+    DISTRIBUTIVA(d) {
+        const c = menys(d.t.c),
+            b = menys(d.t.b);
+        return {
+            bona: `Ha multiplicat el $${c}$ per la $x$, però no pel $${b}$.`,
+            dolentes: [
+                `Ha multiplicat el $${c}$ pel $${b}$, però no per la $x$.`,
+                `El $${c}$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.`,
+                `Ha canviat el signe del $${b}$, i no l'havia de canviar.`,
+            ],
+        };
+    },
+    DIST_SIGNE(d) {
+        const c = menys(d.t.c),
+            b = menys(d.t.b);
+        if (d.t.c === -1)
+            return {
+                bona: `El signe $−$ de davant del parèntesi havia de canviar el signe del $${b}$, i no l'ha canviat.`,
+                dolentes: [
+                    `El signe $−$ de davant del parèntesi no ha canviat el signe de la $x$.`,
+                    `El signe $−$ de davant del parèntesi només havia de canviar el signe de la $x$.`,
+                    `Havia de canviar el signe de tots els termes de l'equació.`,
+                ],
+            };
+        return {
+            bona: `Ha multiplicat el $${c}$ pel $${b}$ i s'ha equivocat en el signe del resultat.`,
+            dolentes: [
+                `Ha multiplicat el $${c}$ per la $x$ i s'ha equivocat en el signe.`,
+                `No havia de multiplicar el $${b}$: només es multiplica la $x$.`,
+                `Havia de canviar el signe de tots els termes de l'equació.`,
+            ],
+        };
+    },
+    SIGNE_TRANSPOSAR(d) {
+        const t = ambSigne(d.t);
+        const u = d.altres && d.altres[0];
+        return {
+            bona: `Ha passat el $${t}$ a l'altre membre sense canviar-li el signe.`,
+            dolentes: [
+                u
+                    ? `Ha canviat el signe del $${ambSigne(u)}$ en passar-lo a l'altre membre, i no l'havia de canviar.`
+                    : `Ha passat el $${t}$ a l'altre membre, però l'havia de deixar on era.`,
+                `El $${t}$ havia de passar a l'altre membre dividint.`,
+                `Havia de passar tots els termes, també els nombres, al membre de l'esquerra.`,
+                `Havia de sumar els termes de cada membre abans de passar-los a l'altre.`,
+            ],
+        };
+    },
+    TERMES_NO_SEMBLANTS(d) {
+        const x = pTx(d.x),
+            n = pTx(d.n),
+            c = d.x.c.n,
+            b = d.n.v.n;
+        return {
+            bona: `Ha sumat $${x}$ i $${n}$ com si fossin termes semblants, però un té $x$ i l'altre no.`,
+            dolentes: [
+                `Ha passat el $${ambSigne(d.n)}$ a l'altre membre sense canviar-li el signe.`,
+                `S'ha equivocat en el càlcul: $${sumaTx([N(c), N(b)])}$ no fa $${menys(c + b)}$.`,
+                `Havia de multiplicar $${x}$ per $${n}$.`,
+            ],
+        };
+    },
+    CALCUL(d) {
+        const dolentes = [`En lloc de sumar, havia de multiplicar: $${d.expr}$ és un producte.`, `Ha sumat termes que no són semblants.`];
+        for (const a of d.altres || []) dolentes.push(`S'ha equivocat en el càlcul de $${a}$.`);
+        if (!d.signe) dolentes.push(`Només s'ha equivocat en el signe del resultat.`);
+        return { bona: `Ha calculat $${d.expr}$ i no fa $${d.mal}$.`, dolentes };
+    },
+    OPERACIO_INVERSA(d) {
+        const W = d.B - d.A;
+        return {
+            bona: `Ha decidit fer $${resta(d.B, d.A)}$, però hauria d'haver fet ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
+            dolentes: [
+                `Ha decidit fer una resta, però havia de fer una suma.`,
+                `Havia de fer $${resta(d.B, d.A)}$, però el resultat és $${ambS(-W)}$.`,
+                `El resultat és $${Math.abs(d.A)}${Math.abs(d.B)}$.`,
+            ],
+        };
+    },
+    DIVISIO_SIGNE(d) {
+        return {
+            bona: `Ha dividit entre $${Math.abs(d.A)}$, però havia de dividir entre $${menys(d.A)}$.`,
+            dolentes: [
+                `Havia de multiplicar per $${menys(d.A)}$, i no dividir.`,
+                `Havia de restar $${menys(d.A)}$ als dos membres.`,
+                `Havia de dividir al revés: ${'$'}{${menys(d.A)}|${menys(d.B)}}$.`,
+            ],
+        };
+    },
+    QUOCIENT_INVERTIT(d) {
+        return {
+            bona: `Ha fet ${'$'}{${menys(d.A)}|${menys(d.B)}}$, però havia de fer ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
+            dolentes: [
+                `Havia de fer $${resta(d.B, d.A)}$.`,
+                `Havia de fer $${menys(d.B)} · ${d.A < 0 ? '(' + menys(d.A) + ')' : d.A}$.`,
+                `La divisió està ben plantejada, però s'havia de simplificar abans.`,
+            ],
+        };
+    },
+};
+
 const opsDe = regla => (Array.isArray(regla.op) ? regla.op : [regla.op]);
 
 // ---------- Per què cada línia bona és bona (F1) ----------
 function perQueBona(op, abans, despres) {
-    const pre = 'Aquesta línia és correcta';
+    // El que s'ha escrit de nou en aquesta línia, tal com hi apareix
+    let escrit = [];
     switch (op) {
-        case 'exp': {
-            const ps = [...abans.L, ...abans.R].filter(t => t.k === 'p');
-            const parts = ps.map(t => `$${pTx(t)} = ${sumaTx([X(t.c), N(t.c * t.b)])}$`);
-            return `${pre}: treu ${ps.length > 1 ? 'els parèntesis' : 'el parèntesi'} multiplicant tots els termes: ${parts.join(' i ')}.`;
-        }
+        case 'exp':
+            escrit = [...abans.L, ...abans.R]
+                .filter(t => t.k === 'p')
+                .map(t => sumaTx([X(t.c), N(t.c * t.b)].filter((u, k) => k === 0 || !u.v.zero)));
+            break;
         case 'red1':
-        case 'red2': {
-            const parts = [];
+        case 'red2':
             for (const c of ['L', 'R'])
-                for (const k of ['x', 'n']) {
-                    const ts = abans[c].filter(t => t.k === k);
-                    const r = despres[c].find(t => t.k === k);
-                    if (ts.length > 1) parts.push(`$${sumaTx(ts)} = ${r ? pTx(r) : '0'}$`);
-                }
-            return `${pre}: ${op === 'red1' ? 'suma els termes semblants de cada membre: ' : ''}${parts.join(' i ')}.`;
-        }
-        case 'tra': {
-            const parts = [];
-            for (const t of abans.R.filter(esX)) parts.push(`$${ambSigne(t)}$ passa a l'esquerra ${t.c.n < 0 ? 'sumant' : 'restant'}`);
-            for (const t of abans.L.filter(t => esN(t) && !t.v.zero))
-                parts.push(`$${ambSigne(t)}$ passa a la dreta ${t.v.n < 0 ? 'sumant' : 'restant'}`);
-            return `${pre} respecte de l'anterior: ${parts.join(' i ')}.`;
-        }
-        case 'div': {
-            const A = abans.L[0].c.n;
-            return `${pre}: per aïllar la $x$, divideix els dos membres entre $${menys(A)}$.`;
-        }
-        case 'simp': {
-            const f = abans.R[0];
-            return `${pre}: $${cos(f)[1]} = ${termeTxt(despres.R[0], true)}$.`;
-        }
+                for (const k of ['x', 'n'])
+                    if (abans[c].filter(t => t.k === k).length > 1) {
+                        const r = despres[c].find(t => t.k === k);
+                        escrit.push(r ? pTx(r) : '0');
+                    }
+            break;
+        case 'tra':
+            escrit = [...abans.R.filter(esX), ...abans.L.filter(t => esN(t) && !t.v.zero)].map(t => ambSigne(negT(t)));
+            break;
+        case 'div':
+            escrit = [cos(despres.R[0])[1]];
+            break;
+        case 'simp':
+            escrit = [termeTxt(despres.R[0], true)];
+            break;
     }
-    return `${pre}.`;
+    const parts = escrit.map((e, k) => (k === 0 ? `és correcte haver escrit $${e}$` : `també és correcte haver escrit $${e}$`));
+    const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
+    return `En aquesta línia no s'ha comès cap errada:\n${llista}.`;
 }
 
 // ---------- Enunciats ----------
@@ -641,12 +749,9 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
             malF = fitxes(linies[c.j]);
         let terme = malF.findIndex((t, i) => t !== '=' && t !== bonaF[i]);
         if (terme < 0) terme = malF.findIndex(t => t !== '=');
-        // «Per què?»: la bona i dues d'altres operacions
-        const altres = barreja(
-            r,
-            Object.keys(REGLES).filter(id => !opsDe(REGLES[id]).some(o => opsDe(regla).includes(o)))
-        ).slice(0, 2);
-        const perque = barreja(r, [[TIPUS[c.id].perque, true], ...altres.map(id => [TIPUS[id].perque, false])]);
+        // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia
+        const fr = PERQUE[c.id](c.res.dades);
+        const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, 3).map(t => [t, false])]);
         // «Corregeix-la»: la línia bona i dues de dolentes (d'altres regles o retocades)
         const vistes = new Set([text(bona), text(linies[c.j])]);
         const dolentes = [];
@@ -722,8 +827,8 @@ export function valida(ex) {
     if (!(ult.L.length === 1 && esX(ult.L[0]) && ult.L[0].c.n === 1 && ult.L[0].c.d === 1 && ult.R.length === 1 && esN(ult.R[0])))
         p.push("l'última línia no és «x = valor»");
     for (const [j, e] of Object.entries(ex.errades)) {
-        if (e.perque.length !== 3 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir 3 opcions i una de bona`);
-        if (new Set(e.perque.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Per què?» repetides`);
+        if (e.perque.length !== 4 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir 4 opcions i una de bona`);
+        if (new Set(e.perque.map(o => o[0])).size !== 4) p.push(`errada ${j}: opcions de «Per què?» repetides`);
         if (e.opcions.length !== 3 || e.opcions.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Corregeix-la» ha de tenir 3 opcions i una de bona`);
         if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
         if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);

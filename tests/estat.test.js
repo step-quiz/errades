@@ -31,12 +31,15 @@ igual([S.sel, S.errors], [null, 0], "l'enunciat no es pot assenyalar");
 // Escala: 1r error explica, 2n afegeix la direcció, 3r ensenya l'errada i val 0
 S = nouEstat();
 tria(S, 3);
-ok(S.msg.text.startsWith('No és aquí. Aquesta línia és correcta (3).') && !/amunt|avall/.test(S.msg.text), '1r error: explica per què la línia és bona');
+ok(S.msg.text === 'Aquesta línia és correcta (3).', '1r error: explica per què la línia és bona');
 ok(S.revisades.includes(3) && punts(S) === 8, '1r error: línia revisada i 8 punts');
 selecciona(S, EX, 3);
 ok(S.sel === null, 'una línia revisada ja no es pot tornar a triar');
+selecciona(S, EX, 4);
+ok(S.msg === null, 'en triar una altra línia, el missatge anterior desapareix');
+selecciona(S, EX, 4);
 tria(S, 4);
-ok(/L'errada és més amunt\./.test(S.msg.text) && punts(S) === 6, '2n error: diu cap on és; 6 punts');
+ok(/\nL'errada és més amunt\./.test(S.msg.text) && punts(S) === 6, '2n error: diu cap on és, en una línia nova; 6 punts');
 tria(S, 2);
 igual([S.trobades, S.ajuda, S.fi, punts(S)], [[1], [1], true, 0], "3r error: ensenya l'errada; 0 punts");
 

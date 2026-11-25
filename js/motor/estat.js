@@ -42,6 +42,7 @@ export const seleccionable = (S, ex, i) =>
 export function selecciona(S, ex, i) {
     if (!seleccionable(S, ex, i)) return S;
     S.sel = S.sel === i ? null : i;
+    S.msg = null; // en triar una altra línia, el missatge d'abans ja no hi pinta res (el David, 25/11/2026)
     return S;
 }
 
@@ -56,7 +57,7 @@ function direccio(S, ex, i) {
 }
 
 function ensenya(S, ex, cfg, k, text) {
-    S.msg = { tipus: 'noEncert', text: `${text} Mira-ho: l'errada és a la línia ${k + 1}. ${ex.errades[k].expl}` };
+    S.msg = { tipus: 'noEncert', text: `${text} Mira-ho: l'errada és a la línia ${k}. ${ex.errades[k].expl}` };
     S.ajuda.push(k);
     S.trobades.push(k);
     S.corregides[k] = true;
@@ -94,9 +95,9 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
         return acaba(S);
     }
     S.revisades.push(i);
-    let t = ex.correctes[i] || 'Aquesta línia és correcta.';
-    if (S.errors >= 2 && p.length) t += ' ' + direccio(S, ex, i);
-    S.msg = { tipus: 'noEncert', text: 'No és aquí. ' + t };
+    let t = ex.correctes[i] || "En aquesta línia no s'ha comès cap errada.";
+    if (S.errors >= 2 && p.length) t += '\n' + direccio(S, ex, i);
+    S.msg = { tipus: 'noEncert', text: t };
     return S;
 }
 

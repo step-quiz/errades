@@ -32,7 +32,7 @@ export const fm = s =>
 export const txt = s =>
     String(s)
         .split('$')
-        .map((p, k) => (k % 2 ? `<span class="fx">${fm(p)}</span>` : esc(p)))
+        .map((p, k) => (k % 2 ? `<span class="fx">${fm(p)}</span>` : esc(p).replace(/\n/g, '<br>')))
         .join('');
 const maj = s => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -77,7 +77,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     function liniaHTML(i) {
         const trobada = S.trobades.includes(i),
             revisada = S.revisades.includes(i);
-        let cls = 'ln';
+        // Les línies es numeren 0, 1, 2…: la 0 és l'enunciat. El número encerclat vol dir «encara pot ser aquí»
+        const candidata = i > 0 && !trobada && !revisada;
+        let cls = 'ln' + (i === 0 ? ' enunciat' : '') + (candidata ? '' : ' fora');
         if (trobada) cls += ' err';
         if (S.sel === i) cls += ' sel';
         if (trobada && S.corregides[i]) cls += ' tat';
@@ -86,10 +88,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
         else if (revisada) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
-        const dins = `<span class="n">${i + 1}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
+        const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
         if (seleccionable(S, ex, i))
-            return `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i + 1}">${dins}</button>`;
-        return `<div class="${cls}">${dins}</div>`;
+            return `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`;
+        return `<div class="${cls}"${i === 0 ? ' title="És l\'enunciat: aquí no hi pot haver cap errada"' : ''}>${dins}</div>`;
     }
 
     function pinta() {
@@ -116,7 +118,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         }
         if (S.fase === 'corregeix') {
             const e = ex.errades[S.actual];
-            h += `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual + 1}?</h3><div class="opc">${e.opcions
+            h += `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3><div class="opc">${e.opcions
                 .map(([t], j) => `<button type="button" class="b mat" data-co="${j}">${fm(t)}</button>`)
                 .join('')}</div></div>`;
         }
@@ -168,7 +170,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             return S.sel;
         };
         let s = S.sel;
-        if (/^[1-9]$/.test(k)) s = +k - 1 <= ult ? +k - 1 : S.sel;
+        if (/^[0-9]$/.test(k)) s = seleccionable(S, ex, +k) ? +k : S.sel;
         else if (k === 'ArrowDown') s = busca(s === null ? 0 : s + 1, 1);
         else if (k === 'ArrowUp') s = busca(s === null ? ult : s - 1, -1);
         else if (k === 'Escape') {

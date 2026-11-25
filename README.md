@@ -7,8 +7,10 @@ A fictitious pupil («la Marta», «en Pau»…) solves an exercise in a squared
 The real student must:
 
 1. **find** the first line that cannot be deduced from the line above (tap it, then «Comprova»; keyboard:
-   ↑/↓ or 1–9, Enter, Esc);
-2. **explain** it («Per què és una errada?», 3 options);
+   ↑/↓ or the line number 1–9, Enter, Esc). Lines are numbered 0, 1, 2…: line 0 is the statement and cannot
+   be selected (not-allowed cursor). A circled number means «the error can still be here»: line 0 and the lines
+   already checked have no circle;
+2. **explain** it («Per què és una errada?», 4 sentences about that very line: one true, three false);
 3. **fix** it («Com hauria de quedar la línia?», 3 options).
 
 Status: **stage 1 of 7** (see [`docs/STATE.md`](docs/STATE.md)). One activity: first-degree equations,
@@ -21,7 +23,7 @@ levels 1–2, one announced error per example.
 | `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers. `enllac()` is pure (tested). |
 | `equacions.html`, `js/equacions/pagina.js` | The first-degree equations activity (reads the URL, loads `data/errors.json`, starts a session). |
 | `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, all texts, `valida()`). |
-| `data/errors.json` | Error taxonomy: name, description and the generic «Per què?» option of each type. Keys = `REGLES`. |
+| `data/errors.json` | Error taxonomy: name and description of each type. Keys = `REGLES`. |
 | `js/motor/estat.js` | Pure state machine of one example (select, check, attempts ladder, phases, points). |
 | `js/motor/llibreta.js` | DOM: draws the notebook, handles mouse, touch and keyboard. |
 | `js/motor/sessio.js` | A session of N examples: progress line, «Següent» band, final screen with the mark. |
@@ -54,9 +56,12 @@ Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if 
    (`x = b/a` written as a fraction), `simp` (simplify).
 3. One step is replaced by a **mal-rule** applied to the previous line; every later line is recomputed
    correctly from the wrong one. A wrong line must have a different solution from the line above.
-4. Texts: the explanation of the error, the correct line, 3 «Per què?» options (the right type and two types
-   of other operations, generic wording from `data/errors.json`), 3 «Corregeix-la» options (the correct line
-   and two wrong ones from other rules or a retouched number/sign), and why each correct line is correct.
+4. Texts: the explanation of the error (never the correct line: it comes before «Corregeix-la»), 4 «Per què?»
+   sentences built from the line's own numbers (`PERQUE`: one true, three plausible false ones, e.g. «Ha decidit
+   fer $−45 − 9$, però hauria d'haver fet {−45|9}» / «Ha decidit fer una resta, però havia de fer una suma» /
+   «Havia de fer $−45 − 9$, però el resultat és $+54$» / «El resultat és $945$»), 3 «Corregeix-la» options (the
+   correct line and two wrong ones), and, for each correct line, «En aquesta línia no s'ha comès cap errada: és
+   correcte haver escrit …» listing what was newly written in it.
 5. `valida()` checks every condition (each unmarked line is equivalent to the one above, each marked one is
    not, last line is `x = value`, numbers in range, options well formed, no `undefined`/`NaN`); the generator
    only returns examples that pass.

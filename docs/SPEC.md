@@ -45,12 +45,12 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | G6 | Keyboard always on: ↑/↓ and 1–9 select a line, Enter = Comprova, Esc = clear; ←/→ in the term phase. aria-live for messages. |
 | G7 | Circle with the finger: David wants to try it → R3 (prototype exists). |
 | E1 | Mark the found error, but **separate two colour layers** → R1. |
-| E2 | Phase «Per què?»: 3 options of error type; a wrong choice costs nothing, shows the right explanation. |
+| E2 | Phase «Per què?»: **4 sentences about that very line** (one true, three plausible false ones, built from its numbers; David's model, 2026-11-25); a wrong choice costs nothing and shows the explanation. |
 | E3 | Phase «Corregeix-la»: choose among 3 (1r–2n ESO); type it with the touch keypad from 3r ESO on (stage 2). The wrong line is struck through and the correct one is written below in the teacher's hand. |
 | E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 40 % inside a big red parenthesis «Ve d'una errada: no té sentit» (STATE.md). |
 | E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
-| G8 | The statement (line 1) cannot be selected (2026-11-25). |
-| F1 | Wrong tap on a correct line → say why that line is correct, mark it ✓ (layer C), lock it. Never a bare «Incorrecte». |
+| G8 | Lines are numbered **0, 1, 2…**; line 0 is the statement: no circle, not-allowed cursor, cannot be selected. A circled number = still a candidate; checked lines lose the circle (2026-11-25). |
+| F1 | Wrong tap on a correct line → «En aquesta línia no s'ha comès cap errada:» + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |
 | F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «N'hi ha una més amunt i una altra més avall»); 3rd miss = show the (next) error, marked «amb ajuda», example worth 0. `maxintents` default **3** here (operacions default is 4). |
 | F4, F5 | **No** hints (per-line solution; substitution). |
 | N2 | Error-free examples only when the teacher enables them → R5 (`noerrors=1`). |
