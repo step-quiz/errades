@@ -40,8 +40,15 @@ it is wrong and what it should have been. Read first:
 
 Hard rules (David's, all approved in the review artifact «Localitza l'errada»):
 
-- **The one definition (N1):** an error is a line that cannot be deduced from the line above *as written*.
-  Lines that follow correctly from a wrong line are not errors.
+- **The one definition (N1):** an error is a line that cannot be deduced from the line above *as written*
+  (equations: different solution set; order of operations: different value). Lines that follow correctly from a
+  wrong line are not errors.
+- **Two activities, one engine:** `equacions.html` (`js/equacions/`) and `prioritat.html` (`js/prioritat/`) share
+  `js/motor/*` (state machine, notebook, lasso, URL parameters). A new activity = a generator with the same example
+  format + a page + `cfg.activitat` texts in `llibreta.js` + an entry in the index (`js/index.js`).
+- **Realistic, documented errors only:** David rejects mal-rules no pupil would make (e.g. `−3 + 15 → 10`) and
+  statements that repeat numbers; new rules come from his comments, his pupils' real errors or published studies
+  (see `docs/STATE.md`, research review).
 - **Two colour layers (R1):** the notebook (red = teacher's pen, ONLY for errors; pencil grey ✓ for correct
   lines) vs. the real student's answer (lilac = right, grey = wrong; never red/green; always with text).
 - **Fonts (R2):** Kalam for the pupil, Permanent Marker for the teacher's correction, self-hosted in

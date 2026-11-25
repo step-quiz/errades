@@ -134,3 +134,14 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
         grid-template-columns: minmax(0, 1fr);
     }
 }
+.opcions .desc,
+.fila .desc {
+    color: var(--text-suau);
+    font-size: 15px;
+}
+.fila input.llarg {
+    width: 9em;
+}
+.mostra[hidden] {
+    display: none;
+}

@@ -33,7 +33,8 @@ export const errades = ex => Object.keys(ex.errades).map(Number).sort((a, b) => 
 export const pendents = (S, ex) => errades(ex).filter(k => !S.trobades.includes(k));
 
 export function nouEstat() {
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsTerme: 0, intentsEscriu: 0, fi: false, msg: null, msgLinia: null };
+    // ltermes / traca: els termes encerclats i el traç (R3), mentre la línia encerclada espera «Comprova»
+    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsTerme: 0, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
 }
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
@@ -46,6 +47,34 @@ export function selecciona(S, ex, i) {
     if (!seleccionable(S, ex, i)) return S;
     S.sel = S.sel === i ? null : i;
     S.msg = null; // en triar una altra línia, el missatge d'abans ja no hi pinta res (el David, 25/11/2026)
+    S.msgLinia = null;
+    S.ltermes = null;
+    S.traca = null;
+    return S;
+}
+
+/**
+ * Encerclar amb el dit (R3): el traç ha marcat la línia i (i, a dins, els termes de la llista, 0–2).
+ * La línia queda triada, com si l'hagués tocat, i s'espera «Comprova». traca: els punts, per tornar-los a dibuixar.
+ */
+export function marcaLlac(S, ex, i, termes = [], traca = null) {
+    if (!seleccionable(S, ex, i)) return S;
+    S.sel = i;
+    S.ltermes = termes.slice(0, 2);
+    S.traca = traca;
+    const n = S.ltermes.length;
+    S.msg = { tipus: 'info', text: `Has marcat la línia ${i}${n ? `, i a dins ${n === 1 ? 'un terme' : 'dos termes'}` : ''}. Prem «Comprova», o torna a encerclar.` };
+    S.msgLinia = i;
+    return S;
+}
+
+/** Un traç que no s'entén: es desfà la selecció i es demana que es torni a marcar. */
+export function llacDubtos(S, motiu) {
+    if (S.fi || S.fase !== 'busca') return S;
+    S.sel = null;
+    S.ltermes = null;
+    S.traca = null;
+    S.msg = { tipus: 'noEncert', text: `Torna a marcar-ho, si us plau: ${motiu}` };
     S.msgLinia = null;
     return S;
 }
@@ -74,10 +103,26 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const i = S.sel;
     if (i === null || i < 1 || S.fase !== 'busca' || S.fi) return S;
     S.sel = null;
+    const lt = S.ltermes || [];
+    S.ltermes = null;
+    S.traca = null;
     if (ex.errades[i]) {
         S.trobades.push(i);
         S.actual = i;
         S.msgLinia = i;
+        // Amb el traç (R3): si ha encerclat el terme equivocat, ja no cal la fase del terme
+        if (lt.length) {
+            const bons = ex.errades[i].termes || [ex.errades[i].terme];
+            if (lt.some(j => bons.includes(j))) {
+                S.termes[i] = true;
+                return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí. I has encerclat just el terme equivocat.");
+            }
+            if (!cfg.terme) return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí, encara que el terme equivocat no és el que has encerclat.");
+            S.fase = 'terme';
+            S.intentsTerme = 0;
+            S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia, encara que el terme equivocat no és el que has encerclat. Compara-la amb la de sobre." };
+            return S;
+        }
         if (cfg.terme) {
             S.fase = 'terme';
             S.intentsTerme = 0;

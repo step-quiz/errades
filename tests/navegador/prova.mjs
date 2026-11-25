@@ -75,7 +75,13 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     // Índex
     await pg.goto(BASE + 'index.html');
     await pg.check('input[name=nivell][value="2"]');
-    ok((await pg.inputValue('#eq-enllac')).endsWith('equacions.html?nivell=2'), 'índex: enllaç amb nivell 2');
+    ok((await pg.inputValue('#act-enllac')).endsWith('equacions.html?nivell=2'), 'índex: enllaç amb nivell 2');
+    await pg.check('input[name=activitat][value="prioritat"]');
+    await pg.check('input[name=encercla][value="1"]');
+    await pg.fill('#act-llavor', '42');
+    ok((await pg.inputValue('#act-enllac')).endsWith('prioritat.html?nivell=2&encercla=1&llavor=42'), 'índex: prioritat, encerclar sempre i llavor');
+    ok(/potències/.test(await pg.textContent('[data-niv="2"]')), 'índex: els nivells es descriuen segons l\'activitat');
+    ok(await pg.isVisible('.mostra[data-act="prioritat"]') && !(await pg.isVisible('.mostra[data-act="equacions"]')), "índex: la mostra és la de l'activitat triada");
     ok(await lateral(), 'índex: desplaçament lateral');
 
     // Activitat: 2 exemples, llavor fixa
@@ -211,6 +217,56 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     for (const k of tecles) await clica(`#llibreta [data-k="${k === '-' ? '−' : k}"]`);
     await clica('#llibreta [data-escriu] button[type=submit]');
     ok(/Molt bé: així havia de quedar/.test(await pg.textContent('#llibreta .msg')), `escriu=1: el terme «${bo}» escrit amb el teclat és correcte`);
+
+    // Encerclar amb el dit (R3): un cercle al voltant del terme equivocat, i un traç per dues línies
+    await pg.goto(BASE + `equacions.html?encercla=1&totaloperations=1&llavor=${LT_LLAVOR}`);
+    await pg.waitForSelector('#llibreta .linies.llac');
+    ok(/Encercla la primera línia/.test(await pg.textContent('#llibreta .cap-ex')), 'encercla=1: la consigna diu «Encercla»');
+    const traca = async punts => {
+        await pg.mouse.move(punts[0][0], punts[0][1]);
+        await pg.mouse.down();
+        for (const [x, y] of punts.slice(1)) await pg.mouse.move(x, y, { steps: 2 });
+        await pg.mouse.up();
+    };
+    const caixa = async sel => pg.locator(sel).first().boundingBox();
+    const ultima = sessio(LT_LLAVOR).linies.length - 1;
+    const b1 = await caixa('#llibreta .fila[data-i="1"] .ln'), bu = await caixa(`#llibreta .fila[data-i="${ultima}"] .ln`);
+    await traca([[b1.x + 40, b1.y + 5], [b1.x + 60, (b1.y + bu.y + bu.height) / 2], [b1.x + 80, bu.y + bu.height - 4]]);
+    ok(/^Torna a marcar-ho, si us plau/.test(await pg.textContent('#llibreta .msg')), 'traç per moltes línies: «Torna a marcar-ho»');
+    const tm = sessio(LT_LLAVOR).errades[LT].terme;
+    const bt = await caixa(`#llibreta .fila[data-i="${LT}"] .ln > .ex [data-j="${tm}"]`);
+    const cx = bt.x + bt.width / 2, cy = bt.y + bt.height / 2, rx = bt.width / 2 + 10, ry = bt.height / 2 + 6;
+    await traca(Array.from({ length: 25 }, (_, k) => [cx + rx * Math.cos((2 * Math.PI * k) / 24), cy + ry * Math.sin((2 * Math.PI * k) / 24)]));
+    ok(new RegExp(`^Has marcat la línia ${LT}, i a dins un terme`).test(await pg.textContent('#llibreta .msg')), 'cercle al voltant d\'un terme: línia i terme marcats');
+    ok((await pg.getAttribute('#llibreta svg.traca path', 'd')).startsWith('M'), 'el traç es queda dibuixat');
+    await clica('#llibreta [data-a=comprova]');
+    ok(/just el terme equivocat/.test(await pg.textContent('#llibreta .msg')), 'cercle al terme equivocat: «I has encerclat just el terme equivocat»');
+
+    // Prioritat d'operacions: un exemple sencer tocant, i el «=» de totes les línies a la mateixa vertical
+    {
+        const PP = await import('../../js/prioritat/pagina.js');
+        let ll = 1;
+        while (Object.keys(PP.exempleSessio(0, { base: ll, nivell: 2, noerrors: false }).errades)[0] < 2) ll++;
+        const exP = PP.exempleSessio(0, { base: ll, nivell: 2, noerrors: false });
+        const eP = Number(Object.keys(exP.errades)[0]);
+        await pg.goto(BASE + `prioritat.html?nivell=2&encercla=0&totaloperations=1&llavor=${ll}`);
+        await pg.waitForSelector('#llibreta .ln');
+        ok(/ha calculat aquesta expressió/.test(await pg.textContent('#llibreta .cap-ex')), 'prioritat: la consigna parla d\'una expressió');
+        ok((await pg.textContent('#llibreta .ln.enunciat .ex')).replace(/\s+/g, '').indexOf('=') < 0, "prioritat: l'enunciat no porta «=»");
+        await clica('#llibreta [data-l="1"]');
+        await clica('#llibreta [data-a=comprova]');
+        ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'prioritat: una línia bona s\'explica');
+        await clica(`#llibreta [data-l="${eP}"]`);
+        await clica('#llibreta [data-a=comprova]');
+        ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'prioritat: encert');
+        await clica('#llibreta [data-pq="0"]');
+        await clica('#llibreta [data-co="0"]');
+        ok(await pg.isVisible('.franja-final'), 'prioritat: franja en acabar');
+        const xsP = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila .ex > .t')].filter(e => e.textContent.trim() === '=').map(e => Math.round(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2)));
+        ok(xsP.length >= 3 && xsP.every(x => Math.abs(x - xsP[0]) <= 1), `prioritat: tots els «=» a la mateixa vertical (${xsP})`);
+        ok(await lateral(), 'prioritat: desplaçament lateral');
+        if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `prioritat-${mida.width}.png`), fullPage: true });
+    }
 
     ok(fallades.length === 0, 'errors o peticions externes: ' + fallades.join(' | '));
     await ctx.close();

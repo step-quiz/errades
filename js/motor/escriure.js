@@ -20,6 +20,8 @@
 export function escrivible(e, linia) {
     const b = e && e.fitxesBona;
     if (!Array.isArray(b) || b.length !== linia.length) return false;
+    // el terme bo s'ha de poder escriure amb el teclat (no «· 7» ni «(−3)»)
+    if (valorFitxa(b[e.terme]) === null) return false;
     return linia.every((t, j) => (j === e.terme ? t !== b[j] : t === b[j]));
 }
 

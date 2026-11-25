@@ -5,37 +5,20 @@
  * ROL: Punt d'entrada d'equacions.html: llegeix l'adreça, carrega els tipus
  *      d'errada i el banc, i engega una sessió.
  * ARQUITECTURA:
- * - Paràmetres (docs/SPEC.md §6): nivell (1–5, per defecte 1), noerrors (0/1),
- *   escriu (0/1: a «Corregeix-la» l'alumne escriu el terme encerclat en lloc de triar),
- *   totaloperations (exemples, 1–20, per defecte 6), maxintents (1–5, per
- *   defecte 3), llavor (enter; la mateixa llavor dona els mateixos exemples).
+ * - Paràmetres: js/motor/parametres.js (comuns a les dues activitats).
  * - Què vol dir cada nivell: js/equacions/nivells.js.
  * - Banc (R6): més o menys 1 exemple de cada 3 surt de data/banc.json, si n'hi
  *   ha cap que encaixi amb el nivell; la resta, del generador.
- * DEPENDÈNCIES: generador.js, nivells.js, js/motor/sessio.js, js/motor/estat.js.
+ * DEPENDÈNCIES: generador.js, nivells.js, js/motor/sessio.js, js/motor/estat.js, js/motor/parametres.js.
  * ============================================================================
  */
 import { generaExemple, perPagina, creaAtzar } from './generador.js';
 import { parametres, encaixaBanc, NIVELLS, PROPORCIO_BANC } from './nivells.js';
 import { iniciaSessio } from '../motor/sessio.js';
 import { CONFIG_PER_DEFECTE } from '../motor/estat.js';
+import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/parametres.js';
 
-export function llegeixParametres(cerca) {
-    const p = new URLSearchParams(cerca);
-    const ent = (k, def, min, max) => {
-        const v = Number.parseInt(p.get(k), 10);
-        return Number.isInteger(v) && v >= min && v <= max ? v : def;
-    };
-    const llavor = Number.parseInt(p.get('llavor'), 10);
-    return {
-        nivell: ent('nivell', 1, 1, 5),
-        noerrors: ent('noerrors', 0, 0, 1) === 1,
-        escriu: ent('escriu', 0, 0, 1) === 1,
-        total: ent('totaloperations', 6, 1, 20),
-        maxIntents: ent('maxintents', 3, 1, 5),
-        llavor: Number.isInteger(llavor) && llavor >= 0 ? llavor : null,
-    };
-}
+export { llegeixParametres };
 
 /** L'exemple i-èsim d'una sessió: del banc o del generador (pur, per a les proves). */
 export function exempleSessio(i, { base, nivell, noerrors, tipus, banc }) {
@@ -51,14 +34,6 @@ export function exempleSessio(i, { base, nivell, noerrors, tipus, banc }) {
         return perPagina(generaExemple({ llavor, nivell: p.forma, errades: Math.max(1, p.errades) }, tipus));
     }
 }
-
-const llavorNova = () => {
-    try {
-        return crypto.getRandomValues(new Uint32Array(1))[0];
-    } catch (e) {
-        return Math.floor(Math.random() * 2 ** 32);
-    }
-};
 
 async function engega() {
     const llibreta = document.getElementById('llibreta');
@@ -79,7 +54,8 @@ async function engega() {
     }
     let base = par.llavor ?? llavorNova();
     const sessio = parametres(par.nivell, par.noerrors, 0);
-    const cfg = { ...CONFIG_PER_DEFECTE, maxIntents: par.maxIntents, anuncia: sessio.anuncia, terme: sessio.terme, escriu: par.escriu };
+    const encercla = encerclaDe(par, esTactil());
+    const cfg = { ...CONFIG_PER_DEFECTE, activitat: 'equacions', maxIntents: par.maxIntents, anuncia: sessio.anuncia, terme: sessio.terme, escriu: par.escriu, encercla };
     document.getElementById('nivell').textContent = `Nivell ${par.nivell} · ${NIVELLS[par.nivell]}${par.noerrors ? ' · pot ser que no n\'hi hagi cap' : ''}`;
     iniciaSessio({
         llibreta,

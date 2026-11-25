@@ -16,20 +16,42 @@
  *   l'ample del membre més llarg (--ma, --mb): el «=» no es mou ni quan una
  *   línia no hi cap.
  * - Teclat (G6): ↑/↓ i 1–9 trien la línia, Enter = «Comprova», Esc = desfés.
+ * - Encerclar amb el dit (R3, cfg.encercla): sobre les línies, un traç marca una
+ *   línia (i 1–2 termes); la geometria és a js/motor/llac.js. Un toc curt continua
+ *   sent un toc. Mentre es busca, la llibreta no desplaça la pàgina amb el dit.
+ * - Dues activitats (cfg.activitat): 'equacions' (cada línia «A = B») i 'prioritat'
+ *   (l'enunciat sense «=» i cada línia «= expressió»): parts() separa els membres.
  * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos).
  *   Tot el que s'escriu passa per esc(): el contingut és nostre, però així no
- *   hi ha cap camí per injectar marques.
+ *   hi ha cap cami per injectar marques.
  * DEPENDÈNCIES: js/motor/estat.js.
  * ============================================================================
  */
-import { nouEstat, selecciona, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable } from './estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable } from './estat.js';
+import { avalua, llargada } from './llac.js';
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-/** Una expressió: fraccions {a|b} apilades i la x en cursiva. */
+/** Una expressió: fraccions {a|b} apilades, la x en cursiva i les potències (3^2) amb l'exponent a dalt. */
 export const fm = s =>
     esc(s)
         .replace(/\{([^|{}]+)\|([^|{}]+)\}/g, '<span class="fr"><span>$1</span><span>$2</span></span>')
-        .replace(/x/g, '<i>x</i>');
+        .replace(/x/g, '<i>x</i>')
+        .replace(/\^(\d+)/g, '<sup>$1</sup>');
+/** Els membres d'una línia de fitxes: [esquerre, hi ha «=», dret]. Sense «=» (l'enunciat de prioritat), tot és el dret. */
+export const parts = L => {
+    const q = L.indexOf('=');
+    return q < 0 ? [[], false, L, 0] : [L.slice(0, q), true, L.slice(q + 1), q + 1];
+};
+/** El mateix per a una línia en text: «2x + 4 = 13», «= 3 + 8» o «3 + 4 · 2». */
+const partsTxt = s => {
+    if (s.startsWith('= ')) return ['', true, s.slice(2)];
+    const k = s.indexOf(' = ');
+    return k < 0 ? ['', false, s] : [s.slice(0, k), true, s.slice(k + 3)];
+};
+const TEXTOS = {
+    equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que no es poden deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
+    prioritat: { fet: 'ha calculat aquesta expressió', on: "on s'ha equivocat", ons: "on s'ha equivocat", teclat: ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '0'], exemple: '12' },
+};
 /** Un text amb fórmules entre $…$. */
 export const txt = s =>
     String(s)
@@ -44,6 +66,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         tsel = null, // terme amb el focus del teclat a la fase del terme
         valorEscrit = ''; // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
     const n = errades(ex).length;
+    const T = TEXTOS[cfg.activitat] || TEXTOS.equacions;
+    let ignoraClic = false; // després d'un traç, el clic que el navegador hi afegeix no compta
 
     /**
      * Totes les línies (i les correccions) amb el mateix ample de membre esquerre i de membre dret:
@@ -64,15 +88,16 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
 
     /** La consigna en dues files: què ha fet l'alumne fictici i, a sota, què ha de fer l'alumne (el David, 25/11/2026). */
     function consigna() {
-        const qui = `${maj(ex.alumne)} ha resolt aquesta equació`;
-        if (n === 0 || !cfg.anuncia) return [qui + '.', "Si hi ha alguna línia que no es pot deduir de l'anterior, toca-la; si no n'hi ha cap, digues-ho."];
-        if (n === 1) return [qui + ' i ha comès una errada.', "Toca la primera línia que no es pot deduir de l'anterior."];
-        return [qui + ' i ha comès dues errades.', 'Toca les dues línies que no es poden deduir de la línia anterior.'];
+        const qui = `${maj(ex.alumne)} ${T.fet}`;
+        const v = cfg.encercla ? 'encercla' : 'toca';
+        if (n === 0 || !cfg.anuncia) return [qui + '.', `Si hi ha alguna línia ${T.on}, ${v}-la; si no n'hi ha cap, digues-ho.`];
+        if (n === 1) return [qui + ' i ha comès una errada.', `${maj(v)} la primera línia ${T.on}.`];
+        return [qui + ' i ha comès dues errades.', `${maj(v)} les dues línies ${T.ons}.`];
     }
 
     function expr(i) {
         const L = ex.linies[i],
-            q = L.indexOf('='),
+            [esq, igual, dre, des] = parts(L),
             e = ex.errades[i],
             trobada = S.trobades.includes(i);
         // A la fase del terme, els termes de la línia són botons al mateix lloc (sense ampliar-la, R4)
@@ -81,24 +106,24 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const terme = (t, j) =>
             tria
                 ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(t)}">${fm(t)}</button>`
-                : `<span class="t${cercle && (e.termes || [e.terme]).includes(j) ? ' mal' : ''}">${fm(t)}</span>`;
-        const a = L.slice(0, q).map((t, j) => terme(t, j)).join(''),
-            b = L.slice(q + 1).map((t, j) => terme(t, j + q + 1)).join('');
+                : `<span class="t${cercle && (e.termes || [e.terme]).includes(j) ? ' mal' : ''}" data-j="${j}">${fm(t)}</span>`;
+        const a = esq.map((t, j) => terme(t, j)).join(''),
+            b = dre.map((t, j) => terme(t, j + des)).join('');
         // Corregida: només es ratlla el membre que no coincideix amb el de la línia bona (el David, 25/11/2026)
         let ra = '',
             rb = '';
         if (trobada && S.corregides[i]) {
-            const k = e.bona.indexOf(' = ');
-            if (L.slice(0, q).join(' ') !== e.bona.slice(0, k)) ra = ' ratlla';
-            if (L.slice(q + 1).join(' ') !== e.bona.slice(k + 3)) rb = ' ratlla';
+            const [ba, , bb] = partsTxt(e.bona);
+            if (esq.join(' ') !== ba) ra = ' ratlla';
+            if (dre.join(' ') !== bb) rb = ' ratlla';
         }
-        return `<span class="ex"><span class="ma${ra}">${a}</span><span class="t">=</span><span class="mb${rb}">${b}</span></span>`;
+        return `<span class="ex"><span class="ma${ra}">${a}</span><span class="t">${igual ? '=' : ''}</span><span class="mb${rb}">${b}</span></span>`;
     }
 
     /** La línia bona, amb la lletra del professor i el «=» a la mateixa vertical que els altres (R4). */
     function correccio(bona) {
-        const k = bona.indexOf(' = ');
-        return `<span class="corr ex" aria-label="Havia de ser: ${esc(bona)}"><span class="ma">${fm(bona.slice(0, k))}</span><span class="t">=</span><span class="mb">${fm(bona.slice(k + 3))}</span></span>`;
+        const [ba, igual, bb] = partsTxt(bona);
+        return `<span class="corr ex" aria-label="Havia de ser: ${esc(bona)}"><span class="ma">${fm(ba)}</span><span class="t">${igual ? '=' : ''}</span><span class="mb">${fm(bb)}</span></span>`;
     }
 
     /** Des de quina línia les següents arrosseguen una errada ja corregida (null si encara no toca). */
@@ -152,9 +177,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (escriuAra(S, ex, cfg))
             return `<div class="fase escriu"><h3>Com havia de ser el terme encerclat?</h3>
 <form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme ben fet</label>
-<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="p. ex. +8">
+<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="p. ex. ${T.exemple}">
 <button type="submit" class="b pri">Comprova</button></form>
-<div class="teclat" aria-label="Teclat">${['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−']
+<div class="teclat${T.teclat.length === 12 ? ' t12' : ''}" aria-label="Teclat">${T.teclat
                 .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
                 .join('')}</div></div>`;
         if (S.fase === 'corregeix')
@@ -182,7 +207,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const [f1, f2] = consigna();
         let h = `<div class="cap-ex"><div class="fila-ins"><p class="ins">${esc(f1)}</p><div class="chips">`;
         if (cfg.anuncia) h += `<span class="chip">Errades: ${n}</span>`;
-        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies">`;
+        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies${llacActiu() ? ' llac' : ''}">`;
         const arr = inicArrossega();
         let msgPosat = false;
         for (let i = 0; i < ex.linies.length; i++) {
@@ -196,6 +221,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             }
         }
         if (arr !== null) h += '<span class="parent esq" aria-hidden="true"></span><span class="parent dre" aria-hidden="true"></span></div>';
+        if (cfg.encercla) h += `<svg class="traca" aria-hidden="true"><path d="${S.traca ? cami(S.traca) : ''}"/></svg>`;
         h += '</div>';
         if (S.msg && !msgPosat) h += `<div class="sota sense-linia">${msgHTML()}</div>`;
         if (!S.fi && S.fase === 'busca' && (n === 0 || !cfg.anuncia))
@@ -222,7 +248,78 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         }
     }
 
+    // ---------- Encerclar amb el dit (R3) ----------
+    const llacActiu = () => !!cfg.encercla && !S.fi && S.fase === 'busca';
+    const cami = pts => 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+    let dib = null; // { lin, r, id, pts, actiu }
+    function llacInici(ev) {
+        if (!llacActiu() || ev.button > 0) return;
+        const lin = ev.target.closest('.linies');
+        if (!lin || !contenidor.contains(lin) || ev.target.closest('[data-a]')) return;
+        const r = lin.getBoundingClientRect();
+        dib = { lin, r, id: ev.pointerId, pts: [[ev.clientX - r.left, ev.clientY - r.top]], actiu: false };
+    }
+    function llacMou(ev) {
+        if (!dib || ev.pointerId !== dib.id) return;
+        const p = [ev.clientX - dib.r.left, ev.clientY - dib.r.top],
+            ult = dib.pts[dib.pts.length - 1];
+        if (Math.hypot(p[0] - ult[0], p[1] - ult[1]) < 2) return;
+        dib.pts.push(p);
+        // fins que el traç no fa 8 px, encara pot ser un toc
+        if (!dib.actiu && llargada(dib.pts) >= 8) {
+            dib.actiu = true;
+            try {
+                dib.lin.setPointerCapture(ev.pointerId);
+            } catch (e) {
+                /* sense captura també funciona */
+            }
+        }
+        if (dib.actiu) {
+            ev.preventDefault();
+            const path = dib.lin.querySelector('svg.traca path');
+            if (path) path.setAttribute('d', cami(dib.pts));
+        }
+    }
+    function llacFi(ev) {
+        if (!dib || ev.pointerId !== dib.id) return;
+        const d = dib;
+        dib = null;
+        if (!d.actiu) return; // un toc: el clic normal tria la línia
+        ignoraClic = true;
+        setTimeout(() => (ignoraClic = false), 0);
+        // les caixes de les línies i dels termes, en les coordenades del traç
+        const rel = el => {
+            const r = el.getBoundingClientRect();
+            return { l: r.left - d.r.left, t: r.top - d.r.top, r: r.right - d.r.left, b: r.bottom - d.r.top };
+        };
+        const linies = [...d.lin.querySelectorAll('.fila')].map(f => {
+            const ln = f.querySelector('.ln'),
+                rl = rel(ln),
+                ex1 = ln.querySelector(':scope > .ex');
+            const termes = ex1
+                ? [...ex1.querySelectorAll(':scope > .ma > .t, :scope > .mb > .t')].map(t => {
+                      const r = rel(t);
+                      return { j: +t.dataset.j, cx: (r.l + r.r) / 2, cy: (r.t + r.b) / 2 };
+                  })
+                : [];
+            return { i: +f.dataset.i, t: rl.t, b: rl.b, termes };
+        });
+        const res = avalua(d.pts, linies);
+        if (res.torna) llacDubtos(S, res.torna);
+        else if (res.linia === 0) llacDubtos(S, "és l'enunciat: aquí no hi pot haver cap errada.");
+        else if (!seleccionable(S, ex, res.linia)) llacDubtos(S, 'aquesta línia ja està revisada.');
+        else marcaLlac(S, ex, res.linia, res.termes, d.pts);
+        pinta();
+    }
+    function llacCancel(ev) {
+        if (dib && ev.pointerId === dib.id) {
+            dib = null;
+            pinta();
+        }
+    }
+
     function clic(ev) {
+        if (ignoraClic) return;
         const b = ev.target.closest('button');
         if (!b || !contenidor.contains(b)) return;
         const d = b.dataset;
@@ -314,6 +411,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     contenidor.addEventListener('click', clic);
     contenidor.addEventListener('keydown', tecla);
     document.addEventListener('keydown', teclaDocument);
+    contenidor.addEventListener('pointerdown', llacInici);
+    contenidor.addEventListener('pointermove', llacMou);
+    contenidor.addEventListener('pointerup', llacFi);
+    contenidor.addEventListener('pointercancel', llacCancel);
     // la mida de la lletra canvia amb l'amplada (560px) i quan s'acaben de carregar les lletres
     addEventListener('resize', alinea);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(alinea);
@@ -326,6 +427,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             contenidor.removeEventListener('input', escriuInput);
             contenidor.removeEventListener('keydown', tecla);
             document.removeEventListener('keydown', teclaDocument);
+            contenidor.removeEventListener('pointerdown', llacInici);
+            contenidor.removeEventListener('pointermove', llacMou);
+            contenidor.removeEventListener('pointerup', llacFi);
+            contenidor.removeEventListener('pointercancel', llacCancel);
             removeEventListener('resize', alinea);
         },
     };

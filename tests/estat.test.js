@@ -1,5 +1,5 @@
 // tests/estat.test.js — la màquina d'estats d'un exemple (js/motor/estat.js).
-import { nouEstat, selecciona, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
 import { ok, igual, informe } from './lib.js';
 
 // L'exemple del David: 2·(x + 4) = 13 − 7x, errada a la línia 2 (índex 1)
@@ -145,5 +145,31 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     triaTerme(S, ex2, cfg, 0);
     triaTerme(S, ex2, cfg, 3);
     ok(S.fase === 'perque' && /els termes equivocats són/.test(S.msg.text), 'dos termes: després de dos intents, es diuen tots dos');
+}
+// Encerclar amb el dit (R3)
+{
+    const cfgT = { ...CONFIG_PER_DEFECTE, terme: true };
+    const bo = EX.errades[1].terme;
+    let S = nouEstat();
+    marcaLlac(S, EX, 1, [bo], [[0, 0], [1, 1]]);
+    ok(S.sel === 1 && S.msg.tipus === 'info' && /un terme/.test(S.msg.text) && S.traca, 'traç: la línia queda triada i es diu que a dins hi ha un terme');
+    comprova(S, EX, cfgT);
+    ok(S.fase === 'perque' && S.termes[1] && /just el terme equivocat/.test(S.msg.text) && !S.traca, 'traç amb el terme equivocat: no cal la fase del terme');
+    S = nouEstat();
+    const altre = EX.linies[1].findIndex((t, j) => t !== '=' && j !== bo);
+    marcaLlac(S, EX, 1, [altre]);
+    comprova(S, EX, cfgT);
+    ok(S.fase === 'terme' && /no és el que has encerclat/.test(S.msg.text), "traç amb un altre terme: la fase del terme continua");
+    S = nouEstat();
+    marcaLlac(S, EX, 1, []);
+    comprova(S, EX, cfgT);
+    ok(S.fase === 'terme', 'traç sense termes (tota la línia): fase del terme, com amb un toc');
+    S = nouEstat();
+    marcaLlac(S, EX, 2, [1]);
+    selecciona(S, EX, 3);
+    ok(S.sel === 3 && S.ltermes === null && S.traca === null, 'tocar una altra línia oblida el traç');
+    llacDubtos(S, "el traç toca més d'una línia.");
+    ok(S.sel === null && /^Torna a marcar-ho, si us plau/.test(S.msg.text), 'traç dubtós: «Torna a marcar-ho»');
+    ok(marcaLlac(nouEstat(), EX, 0, []).sel === null, "l'enunciat no es pot encerclar");
 }
 informe('estat');

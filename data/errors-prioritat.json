@@ -1,0 +1,35 @@
+{
+  "_que_es": "Tipus d'errada de prioritat d'operacions: nom i descripció. Les frases de «Per què?» les escriu el generador (PERQUE a js/prioritat/generador.js). Les claus han de coincidir amb REGLES (tests/docs.test.js ho comprova).",
+  "ESQUERRA_DRETA": {
+    "nom": "D'esquerra a dreta",
+    "descripcio": "Fa una suma o una resta abans d'una multiplicació o una divisió, perquè surt primer: 6 + 5 · 2 → 11 · 2."
+  },
+  "SUMA_ABANS_RESTA": {
+    "nom": "La suma abans que la resta",
+    "descripcio": "Fa una suma abans d'una resta que hi ha a l'esquerra: 10 − 3 + 2 → 10 − 5."
+  },
+  "PRODUCTE_ABANS_DIVISIO": {
+    "nom": "La multiplicació abans que la divisió",
+    "descripcio": "Fa una multiplicació abans d'una divisió que hi ha a l'esquerra: 24 : 2 · 3 → 24 : 6."
+  },
+  "PARENTESI_IGNORAT": {
+    "nom": "Parèntesi oblidat",
+    "descripcio": "El nombre de davant del parèntesi només multiplica el primer nombre de dins: 2 · (11 − 1) → 22 − 1."
+  },
+  "POTENCIA_PER_EXPONENT": {
+    "nom": "Potència com a multiplicació",
+    "descripcio": "Multiplica la base per l'exponent: 3² → 6."
+  },
+  "POTENCIA_DESPRES": {
+    "nom": "La multiplicació abans que la potència",
+    "descripcio": "Multiplica abans de fer la potència: 2 · 3² → 6²."
+  },
+  "RESTA_NEGATIVA": {
+    "nom": "Resta amb resultat negatiu",
+    "descripcio": "Quan es resta un nombre més gran, escriu el resultat positiu: 15 − 27 → 12."
+  },
+  "SIGNE_PRODUCTE": {
+    "nom": "Signe d'un producte",
+    "descripcio": "Multiplica o divideix nombres de signes diferents i el resultat li surt positiu: (−8) · 8 → 64."
+  }
+}

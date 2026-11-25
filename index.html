@@ -17,43 +17,66 @@
         </div>
     </header>
     <main class="pagina">
-        <section class="activitat" aria-labelledby="t-eq">
-            <div class="mostra" aria-hidden="true">
-                <span class="m1">2·(x + 4) = 13 − 7x</span>
-                <span class="m2">2x <span class="cercle">+ 4</span> = 13 − 7x</span>
-                <span class="m3">2x + 8 = 13 − 7x</span>
+        <section class="activitat" aria-labelledby="t-act">
+            <div class="mostres" aria-hidden="true">
+                <div class="mostra" data-act="equacions">
+                    <span class="m1">2·(x + 4) = 13 − 7x</span>
+                    <span class="m2">2x <span class="cercle">+ 4</span> = 13 − 7x</span>
+                    <span class="m3">2x + 8 = 13 − 7x</span>
+                </div>
+                <div class="mostra" data-act="prioritat" hidden>
+                    <span class="m1">6 + 5 · 2</span>
+                    <span class="m2">= <span class="cercle">11 · 2</span></span>
+                    <span class="m3">= 6 + 10</span>
+                </div>
             </div>
             <div class="cos">
-                <h2 id="t-eq">Equacions de 1r grau</h2>
-                <p>L'alumne fictici resol una equació en una llibreta i es descuida alguna cosa: un parèntesi, un signe en passar un terme, una divisió… L'alumne real toca la línia que no es pot deduir de l'anterior, diu per què és una errada i com havia de quedar.</p>
-                <form class="opcions" id="form-eq">
+                <h2 id="t-act">Prepara l'activitat</h2>
+                <p>Un alumne fictici resol un exercici en una llibreta i s'equivoca. L'alumne real marca la línia on hi ha l'errada (tocant-la o encerclant-la), diu per què és una errada i com havia de quedar.</p>
+                <form class="opcions" id="form-act">
+                    <fieldset>
+                        <legend>Activitat</legend>
+                        <label><input type="radio" name="activitat" value="equacions" checked> <span>Equacions de 1r grau <span class="desc">(un signe en passar un terme, un parèntesi, una divisió…)</span></span></label>
+                        <label><input type="radio" name="activitat" value="prioritat"> <span>Prioritat d'operacions <span class="desc">(d'esquerra a dreta, parèntesis, potències, signes…)</span></span></label>
+                    </fieldset>
                     <fieldset>
                         <legend>Nivell</legend>
-                        <label><input type="radio" name="nivell" value="1" checked> 1 · una errada, 4–6 línies</label>
-                        <label><input type="radio" name="nivell" value="2"> 2 · una errada, amb parèntesis, 6–8 línies</label>
-                        <label><input type="radio" name="nivell" value="3"> 3 · una errada, però no es diu quantes n'hi ha</label>
-                        <label><input type="radio" name="nivell" value="4"> 4 · dues errades; cal tocar també el terme equivocat</label>
-                        <label><input type="radio" name="nivell" value="5"> 5 · una o dues, sense dir-ho; de vegades es compensen</label>
+                        <label><input type="radio" name="nivell" value="1" checked> <span>1 · <span data-niv="1"></span></span></label>
+                        <label><input type="radio" name="nivell" value="2"> <span>2 · <span data-niv="2"></span></span></label>
+                        <label><input type="radio" name="nivell" value="3"> <span>3 · <span data-niv="3"></span></span></label>
+                        <label><input type="radio" name="nivell" value="4"> <span>4 · <span data-niv="4"></span></span></label>
+                        <label><input type="radio" name="nivell" value="5"> <span>5 · <span data-niv="5"></span></span></label>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Com marca la línia l'alumne</legend>
+                        <label><input type="radio" name="encercla" value="auto" checked> <span>Automàtic: encerclant-la amb el dit a les pantalles tàctils, i tocant-la amb el ratolí</span></label>
+                        <label><input type="radio" name="encercla" value="1"> <span>Encerclant-la sempre (amb el dit o arrossegant el ratolí)</span></label>
+                        <label><input type="radio" name="encercla" value="0"> <span>Tocant-la sempre</span></label>
                     </fieldset>
                     <label class="casella"><input type="checkbox" name="noerrors" value="1"> Hi pot haver exemples sense cap errada (aleshores la consigna no diu mai quantes n'hi ha)</label>
-                    <label class="casella"><input type="checkbox" name="escriu" value="1"> Per corregir l'errada, l'alumne escriu el terme ben fet en lloc de triar la línia bona</label>
+                    <label class="casella"><input type="checkbox" name="escriu" value="1"> Per corregir l'errada, l'alumne escriu el terme ben fet en lloc de triar la línia bona (quan l'errada és d'un sol terme)</label>
                     <div class="fila">
-                        <label for="eq-total">Exemples</label>
-                        <input id="eq-total" name="totaloperations" type="number" min="1" max="20" value="6" inputmode="numeric">
-                        <label for="eq-intents">Intents per exemple</label>
-                        <input id="eq-intents" name="maxintents" type="number" min="1" max="5" value="3" inputmode="numeric">
+                        <label for="act-total">Exemples</label>
+                        <input id="act-total" name="totaloperations" type="number" min="1" max="20" value="6" inputmode="numeric">
+                        <label for="act-intents">Intents per exemple</label>
+                        <input id="act-intents" name="maxintents" type="number" min="1" max="5" value="3" inputmode="numeric">
                     </div>
-                    <label for="eq-enllac" class="lbl">Enllaç per a l'alumnat</label>
-                    <input id="eq-enllac" class="enllac" type="text" readonly>
+                    <div class="fila">
+                        <label for="act-llavor">Llavor</label>
+                        <input id="act-llavor" class="llarg" name="llavor" type="number" min="0" max="4294967295" placeholder="buida" inputmode="numeric">
+                        <span class="desc">Buida: cada alumne té exemples diferents. Amb un número: tothom té els mateixos exemples.</span>
+                    </div>
+                    <label for="act-enllac" class="lbl">Enllaç per a l'alumnat</label>
+                    <input id="act-enllac" class="enllac" type="text" readonly>
                     <div class="acc">
-                        <button type="button" class="b pri" id="eq-copia">Copia l'enllaç</button>
-                        <a class="b" id="eq-obre" href="equacions.html">Obre l'activitat</a>
-                        <span id="eq-copiat" class="avis" aria-live="polite"></span>
+                        <button type="button" class="b pri" id="act-copia">Copia l'enllaç</button>
+                        <a class="b" id="act-obre" href="equacions.html">Obre l'activitat</a>
+                        <span id="act-copiat" class="avis" aria-live="polite"></span>
                     </div>
                 </form>
             </div>
         </section>
-        <p class="peu">Step Quiz · Localitza l'errada. Les noves activitats (fraccions, prioritat d'operacions…) sortiran aquí.</p>
+        <p class="peu">Step Quiz · Localitza l'errada. Les activitats noves (fraccions…) sortiran aquí.</p>
     </main>
     <script type="module" src="js/index.js"></script>
 </body>

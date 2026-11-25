@@ -167,6 +167,25 @@ and a number into one x-term (`2x + 3 + 4x = 18 → 9x = 18`, David's comment on
    (e) N4 (compensating): exactly two invalid transitions **and** final solution = true solution.
 5. Build texts (`expl`, `correctes`, `perque`, `opcions`) from templates per mal-rule/step type.
 
+### 5.4 Order of operations (David, 2026-11-25: done before stages 3–4)
+
+Same example format, same engine (`js/motor/*`), same levels (`js/equacions/nivells.js`, `forma` 1 for level 1
+and 2 for levels 2–5). N1 becomes: a line is an error if its **value** differs from the line above. The statement
+has no «=»; every other line starts with «=» (the notebook aligns them). The pupil does one level per line
+(brackets → powers → first `·`/`:` of every chain → first `+`/`−`). Mal-rules (ids map to `errors-prioritat.json`;
+the README has examples and sources):
+
+| id | Wrong step | Example |
+|---|---|---|
+| `ESQUERRA_DRETA` | left to right, ignoring precedence | `6 + 5 · 2 → 11 · 2` |
+| `SUMA_ABANS_RESTA` | addition before a subtraction on its left | `10 − 3 + 2 → 10 − 5` |
+| `PRODUCTE_ABANS_DIVISIO` | multiplication before a division on its left | `24 : 2 · 3 → 24 : 6` |
+| `PARENTESI_IGNORAT` | the factor multiplies only the first number in the bracket | `2 · (11 − 1) → 22 − 1` |
+| `POTENCIA_PER_EXPONENT` | base times exponent | `3^2 → 6` |
+| `POTENCIA_DESPRES` | multiplies before the power | `2 · 3^2 → 6^2` |
+| `RESTA_NEGATIVA` | negative difference written positive | `15 − 27 → 12` |
+| `SIGNE_PRODUCTE` | sign rule of the product ignored | `(−8) · 8 → 64` |
+
 ## 6. Levels and URL parameters
 
 | nivell | Content (R5 applied) |
@@ -177,8 +196,9 @@ and a number into one x-term (`2x + 3 + 4x = 18 → 9x = 18`, David's comment on
 | 4 | two errors, announced |
 | 5 | one or two, not announced (with `noerrors=1`: zero to two); compensating pairs allowed |
 
-Parameters, following `operacions` conventions: `nivell`, `noerrors` (R5), `maxintents` (default 3),
-`totaloperations`, `totalsessions`, `fixed` (fixed sessions). Final screen and code as in `operacions`.
+Parameters (`js/motor/parametres.js`, both activities; the index sets every one): `nivell`, `noerrors` (R5),
+`escriu`, `encercla` (R3; absent = circle on touch screens, tap with a mouse), `totaloperations`, `maxintents`
+(default 3), `llavor` (same examples for everyone). Not yet: `totalsessions`, `fixed`, verification code (stage 3).
 
 ## 7. Interaction (as prototyped)
 
@@ -207,9 +227,10 @@ Parameters, following `operacions` conventions: `nivell`, `noerrors` (R5), `maxi
    the teacher; the student types only the circled term, corrected — David, 2026-11-25).
 3. Verification code `LE` + analyser support in `operacions`.
 4. Projector mode.
-5. Lasso, if R3 is approved.
+5. **DONE 2026-11-25 (before 3 and 4, David's order).** Lasso (R3): `js/motor/llac.js`, `encercla` parameter.
 6. «Caça l'errada del solucionari» inside `step-quiz/sol`.
-7. Fractions (reuse `operacions/js/fraccions/errors-fraccions.js` diagnoses), then order of operations.
+7. **Order of operations DONE 2026-11-25** (`prioritat.html`, §5.4). Fractions still to do (reuse
+   `operacions/js/fraccions/errors-fraccions.js` diagnoses).
 
 ## 10. Tests (minimum)
 

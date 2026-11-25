@@ -11,9 +11,9 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 | 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | **DONE** (ZIP «etapa2»); bank: batch 1 → 20 (ZIP «banc1»), batch 2 → 11 (ZIP «banc2»), batch 3 → 8 (ZIP «banc3»): 39 examples |
 | 3 Verification code `LE` + analyser in `operacions` | PENDING |
 | 4 Projector mode | PENDING |
-| 5 Lasso (R3) | PENDING (prototype logic in the review artifact) |
+| 5 Lasso (R3) | **DONE** (ZIP «llac-prioritat»), before 3 and 4 at David's request |
 | 6 «Caça l'errada del solucionari» in `step-quiz/sol` | PENDING |
-| 7 Fractions, then order of operations | PENDING |
+| 7 Fractions, then order of operations | Order of operations **DONE** (ZIP «llac-prioritat»); fractions PENDING |
 
 ## Decisions taken while building stage 1 (agent; tell David if any matters)
 
@@ -217,6 +217,29 @@ trial and error), C1–C2 (weights from the counts; more arithmetic at levels 4�
   `3 + 2x = 9 → x = 9/2 − 3`; C2 more arithmetic errors at levels 4–5.
 
 **Bank batch 3:** 8 of 9 approved (D03 not) → `lot3-Dxx`; 39 examples in all.
+
+## Lasso, order of operations and the new index (2026-11-25, ZIP «llac-prioritat»)
+
+David asked, in this order: circle the error with the finger, the order-of-operations activity, and an index
+that chooses the activity and every parameter; then he tests both activities with real pupils.
+- **Lasso (R3):** `js/motor/llac.js` (pure geometry, `tests/llac.test.js`), `marcaLlac`/`llacDubtos` in `estat.js`
+  (state `ltermes`, `traca`), stroke handling in `llibreta.js` (pointer events on `.linies`; a stroke counts only
+  after 8 px, so taps still work; capture after that; the click that follows a stroke is ignored). `encercla`
+  URL parameter; default = circle on `pointer: coarse`. Consigna says «Encercla…» when active. If the circled
+  terms include a wrong term, the term phase is skipped («I has encerclat just el terme equivocat»).
+- **Order of operations:** `js/prioritat/generador.js`, `prioritat.html`, `data/errors-prioritat.json`,
+  `tests/prioritat.test.js`. Engine changes: `cfg.activitat` (texts and keypad), `parts()` for lines without «=»
+  or starting with «=», `^n` exponents in `fm()`, `escrivible` also requires a typeable correct term
+  (`valorFitxa` ≠ null: «· 7», «(−3)», «3^2» are never typed). Decisions taken: one level per line; level 1
+  without negatives, brackets or powers; no repeated numbers in a statement (David's C11 comment); `RESTA_NEGATIVA`
+  only with two positive numbers (`−24 − 5 → 29` was not realistic); `PARENTESI_IGNORAT` and `POTENCIA_DESPRES`
+  advance the other brackets/powers correctly in the same line. Two errors only at form 2 (levels 4–5), with one
+  more line allowed. No bank for this activity yet.
+- **Shared parameters:** `js/motor/parametres.js` (both pages).
+- **Index:** one form: activity, level (descriptions per activity), gesture (auto / circle / tap), `noerrors`,
+  `escriu`, examples, attempts, seed. `tests/index.test.js` checks that the activity reads back every parameter.
+- Browser test: lasso on desktop (mouse drag) and on the phone profile (auto mode, where all the earlier taps keep
+  working), the index, and a full order-of-operations example with the «=» check.
 
 ## Setup still to do by David (once)
 

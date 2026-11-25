@@ -28,8 +28,11 @@ for (const n of [1, 2, 3, 4, 5]) {
 igual([1, 2, 3, 4, 5].map(n => parametres(n, false, 1).anuncia), [true, true, false, true, false], 'es diu quantes n\'hi ha als nivells 1, 2 i 4');
 ok([1, 2, 3, 4, 5].every(n => !parametres(n, true, 1).anuncia), 'amb noerrors no es diu mai');
 igual([1, 2, 3, 4, 5].map(n => parametres(n, false, 1).terme), [false, false, false, true, true], 'fase del terme als nivells 4 i 5');
-igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, total: 6, maxIntents: 3, llavor: 7 }, 'paràmetres de l\'adreça');
+igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, encercla: -1, total: 6, maxIntents: 3, llavor: 7 }, 'paràmetres de l\'adreça');
 ok(llegeixParametres('?escriu=1').escriu === true, 'escriu=1');
+import { encerclaDe } from '../js/motor/parametres.js';
+ok(encerclaDe(llegeixParametres(''), true) && !encerclaDe(llegeixParametres(''), false), 'encercla automàtic: només a les pantalles tàctils');
+ok(encerclaDe(llegeixParametres('?encercla=1'), false) && !encerclaDe(llegeixParametres('?encercla=0'), true), 'encercla=1 i encercla=0 manen');
 
 // Exemples de sessió de tots els nivells: vàlids i amb el nombre d'errades del nivell
 for (const nivell of [1, 2, 3, 4, 5])
