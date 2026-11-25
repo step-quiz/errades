@@ -115,6 +115,15 @@ button.ln:hover {
 .ln.enunciat {
     cursor: not-allowed;
 }
+/* L'enunciat no l'ha escrit l'alumne: lletra d'impremta, negra (el «=» continua alineat: és la mateixa graella) */
+.ln.enunciat .ex {
+    font-family: 'Cambria Math', 'STIX Two Math', Georgia, 'Times New Roman', serif;
+    font-size: 0.92em;
+    color: var(--text);
+}
+.ln.enunciat .ex i {
+    font-style: italic;
+}
 .ln.fora .n {
     border-color: transparent;
     background: transparent;

@@ -94,6 +94,13 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
    other main buttons) = blue border, white background, blue text; focus ring #8fa3e8. The shared «Següent»
    button keeps the shared CSS, now with `--primary` = `--blau` (#2f45b8).
 
+## Fifth round (2026-11-25, ZIP 6)
+
+1. Hover rule now uses an **inset** shadow: the outer one was clipped on the left of «Comprova» (the `.linies`
+   container scrolls horizontally, so it clips anything outside it).
+2. At the end of an example, every correct line before the first error gets the pencil ✓.
+3. The statement (line 0) is in print (serif, black): the pupil did not write it. Same grid, so «=» stays aligned.
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

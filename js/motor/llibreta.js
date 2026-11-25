@@ -89,14 +89,17 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const trobada = S.trobades.includes(i),
             revisada = S.revisades.includes(i);
         // Les línies es numeren 0, 1, 2…: la 0 és l'enunciat. El número encerclat vol dir «encara pot ser aquí»
-        const candidata = i > 0 && !trobada && !revisada;
+        // En acabar, ✓ a totes les línies bones d'abans de la primera errada (el David, 25/11/2026)
+        const primera = errades(ex)[0];
+        const bonaFinal = S.fi && i > 0 && !trobada && (primera === undefined || i < primera);
+        const candidata = i > 0 && !trobada && !revisada && !S.fi;
         let cls = 'ln' + (i === 0 ? ' enunciat' : '') + (candidata ? '' : ' fora');
         if (trobada) cls += ' err';
         if (S.sel === i) cls += ' sel';
         if (trobada && S.corregides[i]) cls += ' tat';
         let marques = '';
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
-        else if (revisada) marques += '<span class="mk c" title="Línia correcta">✓</span>';
+        else if (revisada || bonaFinal) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
         const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
         const ln = seleccionable(S, ex, i)

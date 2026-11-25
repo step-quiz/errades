@@ -42,6 +42,15 @@ const servidor = http.createServer((req, res) => {
 await new Promise(r => servidor.listen(0, r));
 const BASE = `http://127.0.0.1:${servidor.address().port}/`;
 
+const [LT_LLAVOR, LT] = await (async () => {
+    const g = await import('../../js/equacions/generador.js');
+    const t = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'errors.json'), 'utf8'));
+    for (let s = 1; ; s++) {
+        const e = +Object.keys(g.generaExemple({ llavor: s, nivell: 1, errades: 1 }, t).errades)[0];
+        if (e >= 3) return [s, e];
+    }
+})();
+
 let errors = 0,
     oks = 0;
 const ok = (c, m) => (c ? oks++ : (errors++, console.log('  ✗ ' + m)));
@@ -100,6 +109,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(await pg.isVisible('.franja-final'), 'franja «Següent» a la vista');
     ok(/punts/.test(await pg.textContent('.franja-final')), 'la franja diu els punts');
     ok((await pg.locator('#llibreta .corr').count()) === 1, 'la correcció del professor és a la llibreta');
+    ok(await pg.locator('#llibreta .ln.enunciat .ex').evaluate(e => !/Kalam/.test(getComputedStyle(e).fontFamily)), "l'enunciat va en lletra d'impremta");
     const ratlles = await pg.evaluate(() => {
         const ln = document.querySelector('#llibreta .ln.tat'), c = ln.querySelector('.corr');
         const tx = el => el.textContent.replace(/\s+/g, '');
@@ -136,6 +146,14 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         await pg.waitForSelector('#llibreta .ln');
         await pg.screenshot({ path: path.join(process.env.CAPTURES, `nivell2-${mida.width}.png`), fullPage: true });
     }
+    // ✓ a totes les línies bones d'abans de l'errada, en acabar (exemple amb l'errada a la línia LT)
+    await pg.goto(BASE + `equacions.html?llavor=${LT_LLAVOR}`);
+    await pg.waitForSelector('#llibreta .ln');
+    await clica(`#llibreta [data-l="${LT}"]`);
+    await clica('#llibreta [data-a=comprova]');
+    await clica('#llibreta [data-pq="0"]');
+    await clica('#llibreta [data-co="0"]');
+    ok(await pg.evaluate(e => [...Array(e).keys()].slice(1).every(i => document.querySelector(`#llibreta .fila[data-i="${i}"] .mk.c`)), LT), "en acabar, ✓ a totes les línies bones d'abans de l'errada");
     ok(fallades.length === 0, 'errors o peticions externes: ' + fallades.join(' | '));
     await ctx.close();
 }
