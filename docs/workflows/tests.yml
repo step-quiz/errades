@@ -1,0 +1,29 @@
+# Proves de Localitza l'errada (node tests/run-all.js), a cada canvi.
+# Sense dependències: el generador, la màquina d'estats, l'índex i que la
+# documentació digui el mateix que el codi.
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proves:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Sintaxi
+        run: for f in $(git ls-files 'js/*.js' 'js/**/*.js' 'tests/*.js'); do node --check "$f" || exit 1; done
+
+      - name: Proves
+        run: node tests/run-all.js

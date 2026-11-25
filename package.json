@@ -1,0 +1,9 @@
+{
+  "name": "errades",
+  "private": true,
+  "type": "module",
+  "description": "Localitza l'errada (step-quiz). Static site: no build step. package.json only makes Node read js/ as ES modules for the tests.",
+  "scripts": {
+    "test": "node tests/run-all.js"
+  }
+}

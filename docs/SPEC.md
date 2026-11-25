@@ -1,0 +1,209 @@
+# step-quiz/errades — specification (v0.2, 2026-11-25)
+
+> **Audience:** a cold-start Claude that will build the repository `step-quiz/errades`.
+> Talk to the user (David, maths teacher, Catalonia) in **Catalan**; everything the student sees is
+> **Catalan**; this file is English. Read the common rules block of any `step-quiz` `CLAUDE.md`
+> (ZIP delivery to `_uploads/`, Cloudflare Pages, never `[skip ci]`, docs follow code, tests before delivery).
+>
+> **Source of truth for decisions:** the review artifact «Localitza l'errada»
+> (https://claude.ai/artifact/8xYMeyJDW3owvTfJgeygSE). Point IDs below (G1, E3, R2…) refer to it.
+> Both rounds are answered (33 + 8 points). Living state and later decisions: [`STATE.md`](STATE.md),
+> which wins over this file.
+
+---
+
+## 1. What the activity is
+
+An *erroneous-example* activity: the student sees a resolution written by a fictitious pupil in a
+squared-paper notebook and must locate the line(s) where the pupil went wrong. Cycle per example:
+**find → explain → fix** (find the line; say why it is wrong; say what it should have been).
+
+### 1.1 The one definition (N1, approved)
+
+> An **error** is a line that cannot be deduced from the line immediately above it *as written*.
+
+Consequences: lines that correctly follow from a wrong line are **not** errors (the classic
+`2(x+4) = 13 − 7x → 2x + 4 = 13 − 7x → 2x + 7x = 13 − 4 …`: only line 2 is an error). An example with
+two errors has exactly two non-deducible transitions. Line 1 is the statement and can never be an error.
+
+Student-facing instruction (David's wording, G2 comment):
+«Toca la primera línia que no es pot deduir de l'anterior.» (two errors: «Toca les dues línies que no es
+poden deduir de la línia anterior»; no count announced: «Si hi ha alguna línia que no es pot deduir de
+l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
+
+---
+
+## 2. Approved decisions (round 1)
+
+| ID | Decision |
+|---|---|
+| G1 | The whole line is the target (number, expression, empty space up to the edge), ≥ 48 px tall. Mouse hover: David's rule — thick pure-black border + light-grey background, no layout shift. |
+| G2 | **No** step arrows between lines. |
+| G3 | Term-level phase: under discussion → see R4 (no zoom; previous line highlighted). |
+| G4 | **No** sequential ✓/✗ mode. |
+| G5 | Two-step answer: tap selects (neutral dashed outline), «Comprova» answers. |
+| G6 | Keyboard always on: ↑/↓ and 1–9 select a line, Enter = Comprova, Esc = clear; ←/→ in the term phase. aria-live for messages. |
+| G7 | Circle with the finger: David wants to try it → R3 (prototype exists). |
+| E1 | Mark the found error, but **separate two colour layers** → R1. |
+| E2 | Phase «Per què?»: 3 options of error type; a wrong choice costs nothing, shows the right explanation. |
+| E3 | Phase «Corregeix-la»: choose among 3 (1r–2n ESO); type it with the touch keypad from 3r ESO on (stage 2). The wrong line is struck through and the correct one is written below in the teacher's hand. |
+| E4 | **No** propagation colouring and **no** final correct chain. |
+| E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
+| F1 | Wrong tap on a correct line → say why that line is correct, mark it ✓ (layer C), lock it. Never a bare «Incorrecte». |
+| F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «N'hi ha una més amunt i una altra més avall»); 3rd miss = show the (next) error, marked «amb ajuda», example worth 0. `maxintents` default **3** here (operacions default is 4). |
+| F4, F5 | **No** hints (per-line solution; substitution). |
+| N2 | Error-free examples only when the teacher enables them → R5 (`noerrors=1`). |
+| N3 | Two errors, announced as «Errades trobades: k de 2». |
+| N4 | Two compensating errors (right answer, wrong procedure), high levels / Batxillerat. Final note: «Una solució bona no vol dir un procediment bo.» |
+| N5 | Five levels (see §6), adjusted by R5. |
+| P1 | **Always the notebook** (squared paper, pupil's blue handwriting, rotating names). The teacher's correction in a completely different typeface → R2. |
+| P2 | Line numbers in the margin, always. |
+| P3 | **No** «intention» annotations. |
+| C1 | Main engine: automatic generation with **mal-rules** injected into a correct solution (§5). |
+| C2 | Hand-curated bank: «la IA proposa errades i jo enriqueixo el banc» → R6. |
+| C3 | «Caça l'errada del solucionari» approved; proposed to live in `step-quiz/sol` (its data are there), linked from this index (stage 6). |
+| C4 | One error taxonomy file (`data/errors.json`, like `cb/errors.json`) before the pilot. |
+| I1 | David prefers a **new repository `step-quiz/errades`** → R7 (agent agrees). |
+| I2 | Pilot: first-degree equations; then fractions, then order of operations. |
+| I3 | Verification code v2 with a new exercise code (proposed `LE`, free in `operacions/js/exercise-codes.js`). |
+| I4 | Projector mode (teacher projects, class discusses, teacher taps), later (stage 4). |
+
+## 3. Round 2 decisions (2026-11-25)
+
+| ID | Decision |
+|---|---|
+| R1 | Two colour layers. **Notebook:** E (error) = teacher's red pen (ellipse around the wrong term, ✗ in the margin, correction text); C (correct line) = grey pencil ✓. **Student:** right = **lilac**, wrong = **grey** (David's choice); never red/green; always with text. Selection before «Comprova» is neutral (black dashed). Code names: `errada`/`correcta` vs `encert`/`noEncert`. |
+| R2 | Pupil: Kalam (blue ink). Teacher's correction: **Permanent Marker**. Both self-hosted. |
+| R3 | Lasso approved (closed stroke → term centres inside the polygon; one line → select it and remember 1–2 terms; ≥ 2 lines, too small or unclear → «Torna a marcar-ho, si us plau»; open underline accepted over one line; then «Comprova»). Default gesture on touch devices; tap for mouse/keyboard. **Stage 5.** |
+| R4 | All lines aligned at «=» (grid `1fr auto 1fr`), always. Term phase (no zoom, previous line shaded «compara-la amb aquesta») only at high levels — stage 2. |
+| R5 | `noerrors=1`: absent → every example has ≥ 1 error and the count is announced; present → ≈ 1 in 5 error-free, count not announced, button «No hi ha cap errada». Checkbox in the link generator. Stage 2. |
+| R6 | Curated bank: Claude proposes candidate batches in a review artifact, David approves/edits and adds real errors; approved items go to `data/banc.json`. Stage 2. |
+| R7 | New repository `step-quiz/errades`. Shared code via **`step-quiz/step-quiz-commons`** (David: «m'agrada molt la idea d'aprofitar codi»): `punts.js`, `seguent.js`, `seguent.css` now live in commons (`fitxers/esm/`, `fitxers/seguent.css`) and reach this repo through `comuns.json` (web `errades`) and the daily workflow `comuns.yml`. Operacions still keeps its own copies (migrating it is a separate decision). |
+| R8 | Stages approved (§9); human-in-the-loop after each one. |
+
+The working prototype (single HTML page) is the artifact above; reuse its logic, texts and examples.
+
+---
+
+## 4. Repository layout (stage 1; see README for the file table)
+
+```
+errades/
+├── index.html  js/index.js  css/index.css      ← index + link generator
+├── equacions.html  js/equacions/pagina.js       ← first activity
+├── js/equacions/generador.js                    ← pure seeded generator (§5)
+├── js/motor/estat.js  llibreta.js  sessio.js     ← state machine, notebook DOM, session
+├── js/comu/punts.js  seguent.js  css/seguent.css ← from step-quiz-commons (never edit here)
+├── css/tokens.css  pagina.css  llibreta.css
+├── data/errors.json                              ← taxonomy (C4)
+├── vendor/fonts/                                 ← Kalam, Permanent Marker (+ licences)
+├── tests/  run-all.js  *.test.js  navegador/prova.mjs
+├── docs/  SPEC.md  STATE.md  workflows/          ← workflows are pasted into .github/ via the GitHub web
+└── CLAUDE.md  README.md  _headers  package.json  _uploads/
+```
+
+Static site, ES modules (needs a local server for testing, like `operacions`). No network, no student data.
+
+## 5. Data model and generator
+
+### 5.1 Example (rendered unit)
+
+```json
+{
+  "id": "eq-3f9a",
+  "alumne": "la Marta",
+  "linies": [["2·(x + 4)", "=", "13", "− 7x"], ["2x", "+ 4", "=", "13", "− 7x"], "..."],
+  "errades": {
+    "1": { "terme": 1, "tipus": "DISTRIBUTIVA",
+           "expl": "El 2 multiplica tot el parèntesi: $2·(x + 4) = 2x + 8$. …",
+           "perque": [["…", false], ["…", true], ["…", false]],
+           "bona": "2x + 8 = 13 − 7x",
+           "opcions": [["2x + 6 = 13 − 7x", false], ["x + 8 = 13 − 7x", false], ["2x + 8 = 13 − 7x", true]] }
+  },
+  "correctes": { "2": "Aquesta línia és correcta respecte de l'anterior: …" },
+  "nota": null
+}
+```
+
+- A line is a list of **terms**; exactly one `"="`. Terms are the tap/lasso units (G3/R3) and carry the red ellipse.
+- `correctes[i]` (F1 text) is required for **every** non-error line ≥ 2.
+- `perque` options come from the taxonomy (one right, two plausible distractors of other types).
+- Fractions inside a term: `{num|den}`, drawn as stacked HTML (no KaTeX), so that the handwriting font is kept.
+
+### 5.2 Mal-rules for first-degree equations (initial set; ids map to `errors.json`)
+
+| id | Wrong step | Example |
+|---|---|---|
+| `DISTRIBUTIVA` | factor multiplies only the first term | `2(x+4) → 2x+4` |
+| `DIST_SIGNE` | minus before a bracket changes only the first sign | `−(x−3) → −x−3` |
+| `SIGNE_TRANSPOSAR` | term moved across without changing sign | `3x−6 = x+4 → 3x−x = 4−6` |
+| `OPERACIO_INVERSA` | subtracts/adds the coefficient instead of dividing | `2x = −2 → x = −4` |
+| `DIVISIO_SIGNE` | divides by the absolute value of a negative coefficient | `−3x = 9 → x = 9/3` |
+| `QUOCIENT_INVERTIT` | divides the wrong way round | `9x = 5 → x = 9/5` |
+| `TERMES_NO_SEMBLANTS` | adds unlike terms | `2x + 3 → 5x` |
+| `CALCUL` | arithmetic slip in a correct strategy | `13 − 4 = 8` |
+
+`TERMES_NO_SEMBLANTS` replaces the `tra` step and the pupil then transposes what is left
+(`2x + 6 = x + 10 → 8x = x + 10 → 8x − x = 10 …`). The README has the generator's real rule table.
+
+### 5.3 Generation algorithm (pure, seeded — fixed sessions must be reproducible)
+
+1. Generate a statement for the level and the pupil's correct procedure (`resol`: exp, red1, tra, red2, div, simp).
+   The `operacions` engine was not reused: its steps (move and simplify in one go) are not the lines a pupil writes.
+2. Choose `k` transitions (k = 1 or 2 by level; 0 only with `noerrors=1`) and a mal-rule applicable to each.
+3. Apply the mal-rule to that transition; **recompute every later line correctly from the wrong line**.
+4. Validate: (a) every non-injected transition is a valid equivalence (same solution set, checked with exact
+   rationals); (b) every injected transition is **not** valid; (c) the injected line is not accidentally
+   equal to another valid transformation of the previous line; (d) numbers stay in the level's range;
+   (e) N4 (compensating): exactly two invalid transitions **and** final solution = true solution.
+5. Build texts (`expl`, `correctes`, `perque`, `opcions`) from templates per mal-rule/step type.
+
+## 6. Levels and URL parameters
+
+| nivell | Content (R5 applied) |
+|---|---|
+| 1 | one error, announced, 4–5 lines (stage 1) |
+| 2 | one error, announced, 6–8 lines, brackets (stage 1) |
+| 3 | one error, not announced (with `noerrors=1`: zero or one) |
+| 4 | two errors, announced |
+| 5 | one or two, not announced (with `noerrors=1`: zero to two); compensating pairs allowed |
+
+Parameters, following `operacions` conventions: `nivell`, `noerrors` (R5), `maxintents` (default 3),
+`totaloperations`, `totalsessions`, `fixed` (fixed sessions). Final screen and code as in `operacions`.
+
+## 7. Interaction (as prototyped)
+
+- States per example: `busca` → (hit) `perque` → `corregeix` → `busca` (if errors remain) → `fi`.
+- Hit with a lasso that enclosed exactly the wrong term: append «I has encerclat just el terme equivocat.»
+- After the last error (announced count): band «Molt bé! +N punts» / «0 punts» + «Següent» (Enter).
+  With unannounced count the student must press «No n'hi ha cap més» / «No hi ha cap errada».
+- Messages: second person singular, Catalan, short, with TeX for maths (David's caption rules in
+  `pau/procediments/INSIGHTS.md` §3).
+
+## 8. Visual rules
+
+- Notebook only (P1): squared paper, pupil ink blue, Kalam; lines aligned at «=» (R4); line numbers (P2).
+- Teacher layer (R1/R2): red, correction typeface; pencil-grey ✓ for confirmed correct lines.
+- Student layer (R1): palette from R1 for messages, chips and the final band; never red/green alone.
+- Hover rule on every clickable control (David): black thick border + light grey background, no shift.
+- Targets: Chromebooks and Lenovo laptops first, then iPads/Android tablets; phones secondary but no
+  horizontal overflow at 360 px.
+
+## 9. Stages (R8, approved)
+
+1. **DONE 2026-11-25.** Repo skeleton, `errors.json`, equation generator + mal-rules + tests, page with notebook, tap +
+   «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» (choice), points.
+2. Five levels, two errors, compensating pairs, `noerrors`, typed correction (touch keypad), curated bank (R6).
+3. Verification code `LE` + analyser support in `operacions`.
+4. Projector mode.
+5. Lasso, if R3 is approved.
+6. «Caça l'errada del solucionari» inside `step-quiz/sol`.
+7. Fractions (reuse `operacions/js/fraccions/errors-fraccions.js` diagnoses), then order of operations.
+
+## 10. Tests (minimum)
+
+- Generator, over ≥ 1000 seeds per level: §5.3 validations; no `undefined`/`NaN` in any text; fixed sessions
+  give identical fingerprints.
+- State machine: ladder (1st/2nd/3rd miss), scoring floor, phases, two-error flow, unannounced flow.
+- Lasso geometry: enclosed term, two-line ambiguity, too-small stroke, open underline.
+- Browser smoke test (Playwright, 1366×768 and 360×740 touch): a full example by tap, by keyboard and by lasso.

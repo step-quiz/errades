@@ -1,0 +1,76 @@
+/*
+============================================================================
+PROJECTE: Localitza l'errada (step-quiz/errades)
+FITXER: css/tokens.css
+ROL: Els colors i les lletres amb significat. Cap altre fitxer no escriu
+     aquests colors a mà.
+ARQUITECTURA:
+- Dues capes (R1, docs/SPEC.md §3):
+  · la llibreta de l'alumne fictici: --tinta (el que va escriure),
+    --errada (el bolígraf vermell del professor, NOMÉS per a les errades) i
+    --llapis (el ✓ de les línies correctes);
+  · la resposta de l'alumne real: --encert (lila) i --noencert (gris). Mai
+    vermell ni verd, i sempre amb text.
+- La franja «Següent» comuna (css/seguent.css) fa servir --success, --danger i
+  --primary: aquí són l'encert, el no encert i la tinta.
+- Lletres (R2): Kalam per a l'alumne fictici i Permanent Marker per a la
+  correcció, allotjades a vendor/fonts (cap petició a tercers).
+DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
+============================================================================
+*/
+@font-face {
+    font-family: 'Kalam';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../vendor/fonts/kalam-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Kalam';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../vendor/fonts/kalam-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Permanent Marker';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../vendor/fonts/permanent-marker-latin-400-normal.woff2') format('woff2');
+}
+:root {
+    --text: #1e2230;
+    --text-suau: #4a5163;
+    --fons: #f3f5f9;
+    --paper: #ffffff;
+    --vora: #d4dae6;
+    --quadricula: #e2ebf7;
+    --hover-fons: #ebebeb;
+    --hover-vora: #000000;
+    --focus: #2340c8;
+
+    /* La llibreta */
+    --tinta: #1f2f86;
+    --errada: #c81e1e;
+    --llapis: #5d6470;
+
+    /* La resposta de l'alumne */
+    --encert: #6d28d9;
+    --encert-fons: #f2ebff;
+    --noencert: #4b5563;
+    --noencert-fons: #eef0f3;
+
+    /* Per a css/seguent.css (fitxer comú) */
+    --success: var(--encert);
+    --success-light: var(--encert-fons);
+    --danger: var(--noencert);
+    --danger-light: var(--noencert-fons);
+    --primary: var(--tinta);
+    --primary-dark: #14205e;
+    --primary-hover: #14205e;
+
+    --lletra-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --lletra-alumne: 'Kalam', 'Segoe Print', 'Comic Sans MS', cursive;
+    --lletra-correccio: 'Permanent Marker', 'Comic Sans MS', cursive;
+}

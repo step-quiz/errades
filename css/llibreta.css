@@ -1,0 +1,247 @@
+/*
+============================================================================
+PROJECTE: Localitza l'errada (step-quiz/errades)
+FITXER: css/llibreta.css
+ROL: La llibreta de l'alumne fictici (js/motor/llibreta.js): paper
+     quadriculat, línies alineades pel «=», la correcció del professor, les
+     fases «Per què?» i «Corregeix-la» i els missatges.
+ARQUITECTURA:
+- .ln és una graella: número | expressió | marques; la correcció (.corr) va a
+  sota. La columna de les marques té una amplada fixa perquè el «=» quedi al
+  mateix lloc a totes les línies (R4). Per sota de 560 px, les marques passen
+  a sota i el «=» continua alineat.
+- Capes de color (R1): .err, .mal, .corr, .mk.e = --errada; .mk.c = --llapis;
+  .msg.encert / .msg.noEncert = --encert / --noencert.
+DEPENDÈNCIES: css/tokens.css, css/pagina.css.
+============================================================================
+*/
+.llibreta {
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--quadricula) 1px, transparent 1px),
+        linear-gradient(90deg, var(--quadricula) 1px, transparent 1px);
+    background-size: 26px 26px;
+    background-position: -1px -1px;
+    border: 1px solid var(--vora);
+    border-radius: 16px;
+    padding: 20px clamp(12px, 3vw, 28px) 24px;
+}
+.cap-ex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+.ins {
+    font: 21px/1.35 var(--lletra-alumne);
+    margin: 0;
+    max-width: 54ch;
+}
+.chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.chip {
+    font-size: 14px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1.5px solid var(--vora);
+    white-space: nowrap;
+    background: var(--paper);
+}
+.ln {
+    display: grid;
+    grid-template-columns: 2.4em minmax(0, 1fr) 8.5rem;
+    align-items: center;
+    gap: 4px 10px;
+    width: 100%;
+    min-height: 54px;
+    padding: 6px 12px;
+    margin: 2px 0;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--tinta);
+    font: 25px/1.35 var(--lletra-alumne);
+    text-align: left;
+}
+button.ln {
+    cursor: pointer;
+    touch-action: manipulation;
+}
+button.ln:hover {
+    background: var(--hover-fons);
+    border-color: var(--hover-vora);
+}
+.ln .n {
+    font: 700 14px var(--lletra-ui);
+    color: var(--text-suau);
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    border: 1.5px solid var(--vora);
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+}
+.ln.sel {
+    border: 2px dashed var(--text);
+    background: rgba(30, 34, 48, 0.06);
+}
+.ln.err {
+    border-color: rgba(200, 30, 30, 0.7);
+}
+.linies {
+    overflow-x: auto;
+}
+.ex {
+    display: grid;
+    /* el «=» al mig a totes les línies; un membre més ample que la meitat no es parteix mai */
+    grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+    column-gap: 0.35em;
+    align-items: center;
+}
+.ex .ma {
+    justify-self: end;
+    text-align: right;
+    white-space: nowrap;
+}
+.ex .mb {
+    justify-self: start;
+    white-space: nowrap;
+}
+.t {
+    display: inline-block;
+    margin: 0 0.1em;
+}
+.t.mal {
+    outline: 2.5px solid var(--errada);
+    outline-offset: 3px;
+    border-radius: 50%;
+}
+.tat .ex .t {
+    text-decoration: line-through;
+    text-decoration-color: var(--errada);
+    text-decoration-thickness: 2px;
+}
+.corr {
+    grid-column: 2 / -1;
+    font: 24px/1.3 var(--lletra-correccio);
+    color: var(--errada);
+    padding-left: 1.2em;
+}
+.tags {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.tag {
+    font: 700 13px var(--lletra-ui);
+    padding: 2px 9px;
+    border-radius: 999px;
+    border: 1.5px solid var(--vora);
+    color: var(--text-suau);
+    white-space: nowrap;
+}
+.mk {
+    font: 22px/1 var(--lletra-correccio);
+    white-space: nowrap;
+}
+.mk.e {
+    color: var(--errada);
+}
+.mk.c {
+    color: var(--llapis);
+}
+.mk small {
+    font: 13px var(--lletra-ui);
+    color: var(--text-suau);
+}
+i {
+    font-style: normal;
+}
+.fr {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 0.78em;
+    line-height: 1.15;
+    margin: 0 0.1em;
+}
+.fr > span:first-child {
+    border-bottom: 1.5px solid currentColor;
+    padding: 0 0.2em;
+}
+.fx {
+    font-family: var(--lletra-alumne);
+    font-size: 1.12em;
+    white-space: nowrap;
+}
+.msg {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 5px solid var(--text-suau);
+    background: var(--paper);
+    font-size: 17px;
+}
+.msg.encert {
+    border-color: var(--encert);
+    background: var(--encert-fons);
+}
+.msg.noEncert {
+    border-color: var(--noencert);
+    background: var(--noencert-fons);
+}
+.msg.info {
+    border-color: var(--text);
+}
+.msg:empty {
+    display: none;
+}
+.fase {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--vora);
+    border-radius: 12px;
+    background: var(--paper);
+}
+.fase h3 {
+    margin: 0 0 10px;
+    font-size: 17px;
+}
+.opc {
+    display: grid;
+    gap: 8px;
+}
+.opc .b {
+    justify-content: flex-start;
+    text-align: left;
+}
+.opc .b.mat {
+    font: 22px var(--lletra-alumne);
+    color: var(--tinta);
+}
+@media (max-width: 560px) {
+    .ln {
+        font-size: 20px;
+        padding: 6px 6px;
+        grid-template-columns: 2.1em minmax(0, 1fr);
+    }
+    .ln .tags {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+    .ln .tags:empty {
+        display: none;
+    }
+    .corr {
+        font-size: 20px;
+        padding-left: 0;
+    }
+}

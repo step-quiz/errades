@@ -1,0 +1,43 @@
+{
+  "_que_es": "Tipus d'errada de les equacions de 1r grau (docs/SPEC.md §5.2). «perque» és l'opció genèrica de la fase «Per què?». Les claus han de coincidir amb REGLES de js/equacions/generador.js (tests/docs.test.js ho comprova).",
+  "DISTRIBUTIVA": {
+    "nom": "Propietat distributiva",
+    "descripcio": "El nombre de fora del parèntesi no multiplica tots els termes de dins.",
+    "perque": "No ha multiplicat tots els termes del parèntesi"
+  },
+  "DIST_SIGNE": {
+    "nom": "Signe davant d'un parèntesi",
+    "descripcio": "El signe negatiu de davant del parèntesi no canvia el signe de tots els termes de dins.",
+    "perque": "No ha canviat el signe de tots els termes del parèntesi"
+  },
+  "SIGNE_TRANSPOSAR": {
+    "nom": "Signe en passar un terme",
+    "descripcio": "Un terme passa a l'altre membre sense canviar-ne el signe.",
+    "perque": "Ha passat un terme a l'altre membre sense canviar-ne el signe"
+  },
+  "TERMES_NO_SEMBLANTS": {
+    "nom": "Termes no semblants",
+    "descripcio": "Suma un terme amb x i un terme sense x com si fossin semblants.",
+    "perque": "Ha sumat un terme amb x i un terme sense x"
+  },
+  "CALCUL": {
+    "nom": "Error de càlcul",
+    "descripcio": "L'estratègia és bona, però s'equivoca en una suma o una resta.",
+    "perque": "S'ha equivocat en una suma o una resta"
+  },
+  "OPERACIO_INVERSA": {
+    "nom": "Operació inversa",
+    "descripcio": "Per aïllar la x resta el coeficient en lloc de dividir-hi els dos membres.",
+    "perque": "Ha restat el coeficient de la x en lloc de dividir"
+  },
+  "DIVISIO_SIGNE": {
+    "nom": "Signe en dividir",
+    "descripcio": "Divideix pel coeficient de la x sense tenir-ne en compte el signe.",
+    "perque": "Ha dividit sense tenir en compte el signe del coeficient"
+  },
+  "QUOCIENT_INVERTIT": {
+    "nom": "Divisió al revés",
+    "descripcio": "Divideix el coeficient de la x entre el terme independent, i no al revés.",
+    "perque": "Ha dividit al revés"
+  }
+}

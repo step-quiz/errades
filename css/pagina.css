@@ -1,0 +1,163 @@
+/*
+============================================================================
+PROJECTE: Localitza l'errada (step-quiz/errades)
+FITXER: css/pagina.css
+ROL: L'estructura de les pàgines (índex i activitats), els botons i la
+     pantalla final.
+ARQUITECTURA:
+- Regla del David per a tot el que es pot clicar: en passar-hi el ratolí, vora
+  negra gruixuda i fons gris clar, sense que res es mogui (la vora gruixuda es
+  fa amb box-shadow, a sobre de la vora d'1,5 px que el botó ja té).
+- Pensat per a Chromebooks i portàtils; a 360 px no hi ha desplaçament lateral.
+DEPENDÈNCIES: css/tokens.css.
+============================================================================
+*/
+* {
+    box-sizing: border-box;
+    min-width: 0;
+}
+html,
+body {
+    margin: 0;
+}
+body {
+    background: var(--fons);
+    color: var(--text);
+    font: 16px/1.5 var(--lletra-ui);
+    overflow-x: clip;
+}
+.barra {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 12px max(4vw, 16px);
+    background: var(--tinta);
+    color: #fff;
+}
+.barra h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+}
+.barra p {
+    margin: 2px 0 0;
+    color: #dfe5ff;
+    font-size: 15px;
+}
+.barra a.tornar {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 8px 12px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+}
+.barra a.tornar:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 1.5px #fff;
+}
+.pagina {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px max(3vw, 12px) 48px;
+}
+.b {
+    font: inherit;
+    font-size: 15px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--vora);
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+.b:hover {
+    background: var(--hover-fons);
+    border-color: var(--hover-vora);
+    box-shadow: 0 0 0 1.5px var(--hover-vora);
+}
+.b:focus-visible,
+.llibreta:focus-visible,
+.ln:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+.b.pri {
+    background: var(--tinta);
+    border-color: var(--tinta);
+    color: #fff;
+    font-weight: 700;
+}
+.b.pri:hover {
+    border-color: var(--hover-vora);
+    box-shadow: 0 0 0 1.5px var(--hover-vora);
+}
+.b:disabled {
+    opacity: 0.45;
+    cursor: default;
+    box-shadow: none;
+    background: var(--paper);
+    border-color: var(--vora);
+    color: var(--text);
+}
+.b.pri:disabled {
+    background: var(--tinta);
+    color: #fff;
+}
+.acc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+.final {
+    background: var(--paper);
+    border: 1px solid var(--vora);
+    border-radius: 16px;
+    padding: 24px clamp(16px, 4vw, 32px);
+}
+.final h2 {
+    margin: 0 0 8px;
+    font-size: 30px;
+}
+.nota {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 8px 0;
+}
+.nota span {
+    color: var(--text-suau);
+    font-weight: 700;
+}
+.nota strong {
+    font-size: 56px;
+    line-height: 1;
+    color: var(--encert);
+}
+.resum {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    max-width: 360px;
+}
+.resum li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--vora);
+}
+.resum li span:last-child {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}

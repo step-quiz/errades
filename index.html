@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Localitza l'errada · Step Quiz</title>
+    <meta name="description" content="Activitats per localitzar l'errada en la resolució d'un alumne.">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/pagina.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <header class="portada">
+        <div class="pagina">
+            <h1>Localitza l'errada</h1>
+            <p>Un alumne ha resolt un exercici i s'ha equivocat. On? Per què? Com havia de quedar? Tria l'activitat i copia l'enllaç per a la classe.</p>
+        </div>
+    </header>
+    <main class="pagina">
+        <section class="activitat" aria-labelledby="t-eq">
+            <div class="mostra" aria-hidden="true">
+                <span class="m1">2·(x + 4) = 13 − 7x</span>
+                <span class="m2">2x <span class="cercle">+ 4</span> = 13 − 7x</span>
+                <span class="m3">2x + 8 = 13 − 7x</span>
+            </div>
+            <div class="cos">
+                <h2 id="t-eq">Equacions de 1r grau</h2>
+                <p>L'alumne fictici resol una equació en una llibreta i es descuida alguna cosa: un parèntesi, un signe en passar un terme, una divisió… L'alumne real toca la línia que no es pot deduir de l'anterior, diu per què és una errada i com havia de quedar.</p>
+                <form class="opcions" id="form-eq">
+                    <fieldset>
+                        <legend>Nivell</legend>
+                        <label><input type="radio" name="nivell" value="1" checked> 1 · una errada, 4–5 línies</label>
+                        <label><input type="radio" name="nivell" value="2"> 2 · una errada, amb parèntesis, 6–8 línies</label>
+                    </fieldset>
+                    <div class="fila">
+                        <label for="eq-total">Exemples</label>
+                        <input id="eq-total" name="totaloperations" type="number" min="1" max="20" value="6" inputmode="numeric">
+                        <label for="eq-intents">Intents per exemple</label>
+                        <input id="eq-intents" name="maxintents" type="number" min="1" max="5" value="3" inputmode="numeric">
+                    </div>
+                    <label for="eq-enllac" class="lbl">Enllaç per a l'alumnat</label>
+                    <input id="eq-enllac" class="enllac" type="text" readonly>
+                    <div class="acc">
+                        <button type="button" class="b pri" id="eq-copia">Copia l'enllaç</button>
+                        <a class="b" id="eq-obre" href="equacions.html">Obre l'activitat</a>
+                        <span id="eq-copiat" class="avis" aria-live="polite"></span>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <p class="peu">Step Quiz · Localitza l'errada. Les noves activitats (fraccions, prioritat d'operacions…) sortiran aquí.</p>
+    </main>
+    <script type="module" src="js/index.js"></script>
+</body>
+</html>
