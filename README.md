@@ -13,18 +13,22 @@ The real student must:
 2. **explain** it («Per què és una errada?», 4 sentences about that very line: one true, three false);
 3. **fix** it («Com hauria de quedar la línia?», 3 options).
 
-Status: **stage 1 of 7** (see [`docs/STATE.md`](docs/STATE.md)). One activity: first-degree equations,
-levels 1–2, one announced error per example.
+Status: **stage 2 of 7** (see [`docs/STATE.md`](docs/STATE.md)). One activity: first-degree equations,
+levels 1–5 (one or two errors, announced or not, compensating pairs, error-free examples with `noerrors=1`,
+and a term phase at levels 4–5), plus a curated bank (`data/banc.json`).
 
 ## Files
 
 | Path | Role |
 |---|---|
 | `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers. `enllac()` is pure (tested). |
-| `equacions.html`, `js/equacions/pagina.js` | The first-degree equations activity (reads the URL, loads `data/errors.json`, starts a session). |
+| `equacions.html`, `js/equacions/pagina.js` | The first-degree equations activity (reads the URL, loads `data/errors.json` and `data/banc.json`, starts a session). `exempleSessio()` is pure (tested). |
+| `js/equacions/nivells.js` | What each level means (`parametres`: statement type, number of errors, compensating pairs, announced or not, term phase) and which bank examples fit a level (`encaixaBanc`). Pure. |
+| `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format; about 1 example in 3 comes from here when one fits the level. |
 | `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, all texts, `valida()`). |
 | `data/errors.json` | Error taxonomy: name and description of each type. Keys = `REGLES`. |
-| `js/motor/estat.js` | Pure state machine of one example (select, check, attempts ladder, phases, points). |
+| `js/motor/estat.js` | Pure state machine of one example (select, check, attempts ladder, term phase, «Per què?», «Corregeix-la» by choice or typing, points). |
+| `js/motor/escriure.js` | Pure: is a correction typeable (`escrivible`), reading what the student typed (`llegeix`), comparing values (`correcte`). |
 | `js/motor/llibreta.js` | DOM: draws the notebook, handles mouse, touch and keyboard. |
 | `js/motor/sessio.js` | A session of N examples: progress line, «Següent» band, final screen with the mark. |
 | `css/tokens.css` | Colours with meaning (two layers, R1) and the self-hosted fonts. |
@@ -40,7 +44,9 @@ levels 1–2, one announced error per example.
 
 | Parameter | Values | Default | Meaning |
 |---|---|---|---|
-| `nivell` | 1, 2 | 1 | 1: `ax + b = c` / `ax + b = dx + e`, 4–5 lines. 2: with brackets, 6–8 lines. |
+| `nivell` | 1–5 | 1 | 1: one error, no brackets (4–5 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating; term phase. 5: one or two, not announced, ≈30 % of the two-error ones compensating; term phase. |
+| `escriu` | 0, 1 | 0 | 1: in «Corregeix-la» the student types the circled term, corrected (on-page keypad: digits, x, +, −, /), instead of choosing the line. Any writing with the same value is accepted (10/2 = 5). Errors that change the line's structure (`TERMES_NO_SEMBLANTS`) still use the 3 options. |
+| `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No n'hi ha cap més»). |
 | `totaloperations` | 1–20 | 6 | Examples per session. |
 | `maxintents` | 1–5 | 3 | Attempts per example: 1st miss explains the tapped line, 2nd adds the direction, the last one shows the error (0 points). |
 | `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (for testing and, later, fixed sessions). |

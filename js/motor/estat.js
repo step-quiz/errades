@@ -8,8 +8,9 @@
  * ARQUITECTURA:
  * - Les funcions reben l'estat S, l'exemple ex (el de js/equacions/generador.js)
  *   i la configuració cfg, i modifiquen S (i el tornen).
- * - Fases: 'busca' → (encert) 'perque' → 'corregeix' → 'busca' (si en queden)
- *   → 'fi'. Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
+ * - Fases: 'busca' → (encert) ['terme'] → 'perque' → 'corregeix' → 'busca' (si en
+ *   queden) → 'fi'. La fase 'terme' (R4, nivells 4 i 5: cfg.terme) demana el terme
+ *   equivocat de la línia; no treu punts, i al segon intent fallit l'ensenya. Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
  *   l'alumne ha de prémer «No n'hi ha cap més» / «No hi ha cap errada».
  * - Escala (docs/SPEC.md §2, F1/F2/F3): cada línia bona assenyalada s'explica
  *   i queda marcada (revisades); des del segon error s'hi afegeix cap on és
@@ -24,14 +25,15 @@
  * ============================================================================
  */
 import { puntsAmbErrors } from '../comu/punts.js';
+import { escrivible, correcte } from './escriure.js';
 
-export const CONFIG_PER_DEFECTE = { anuncia: true, perque: true, corregeix: true, maxIntents: 3 };
+export const CONFIG_PER_DEFECTE = { anuncia: true, perque: true, corregeix: true, terme: false, escriu: false, maxIntents: 3 };
 
 export const errades = ex => Object.keys(ex.errades).map(Number).sort((a, b) => a - b);
 export const pendents = (S, ex) => errades(ex).filter(k => !S.trobades.includes(k));
 
 export function nouEstat() {
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, fi: false, msg: null, msgLinia: null };
+    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsTerme: 0, intentsEscriu: 0, fi: false, msg: null, msgLinia: null };
 }
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
@@ -76,18 +78,13 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
         S.trobades.push(i);
         S.actual = i;
         S.msgLinia = i;
-        if (cfg.perque) {
-            S.fase = 'perque';
-            S.msg = { tipus: 'encert', text: "Sí! L'errada és aquí." };
-        } else if (cfg.corregeix) {
-            S.fase = 'corregeix';
-            S.msg = { tipus: 'encert', text: `Sí! L'errada és aquí. ${ex.errades[i].expl}` };
-        } else {
-            S.corregides[i] = true;
-            S.msg = { tipus: 'encert', text: `Sí! L'errada és aquí. ${ex.errades[i].expl}` };
-            return despres(S, ex, cfg);
+        if (cfg.terme) {
+            S.fase = 'terme';
+            S.intentsTerme = 0;
+            S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia. Compara-la amb la de sobre." };
+            return S;
         }
-        return S;
+        return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí.");
     }
     // una línia bona
     S.errors++;
@@ -107,6 +104,42 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     return S;
 }
 
+/** Després de trobar la línia (i el terme): «Per què?», «Corregeix-la» o, sense fases, s'acaba. */
+function faseSeguent(S, ex, cfg, text) {
+    const i = S.actual;
+    if (cfg.perque) {
+        S.fase = 'perque';
+        S.msg = { tipus: 'encert', text };
+        return S;
+    }
+    S.msg = { tipus: 'encert', text: `${text} ${ex.errades[i].expl}` };
+    if (cfg.corregeix) {
+        S.fase = 'corregeix';
+        S.intentsEscriu = 0;
+        return S;
+    }
+    S.corregides[i] = true;
+    return despres(S, ex, cfg);
+}
+
+/** Fase del terme: j és la posició del terme tocat dins de la línia. */
+export function triaTerme(S, ex, cfg, j) {
+    if (S.fase !== 'terme') return S;
+    const i = S.actual,
+        bo = ex.errades[i].terme;
+    if (j === bo) {
+        S.termes[i] = true;
+        return faseSeguent(S, ex, cfg, 'Exacte: aquest és el terme equivocat.');
+    }
+    S.intentsTerme++;
+    if (S.intentsTerme >= 2) {
+        S.termes[i] = true;
+        return faseSeguent(S, ex, cfg, `No: el terme equivocat és el que ara està encerclat, $${ex.linies[i][bo]}$.`);
+    }
+    S.msg = { tipus: 'noEncert', text: 'Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.' };
+    return S;
+}
+
 export function triaPerque(S, ex, cfg, j) {
     if (S.fase !== 'perque') return S;
     const e = ex.errades[S.actual],
@@ -114,10 +147,33 @@ export function triaPerque(S, ex, cfg, j) {
     S.msg = { tipus: bona ? 'encert' : 'noEncert', text: (bona ? 'Exacte. ' : 'No ben bé. ') + e.expl };
     if (cfg.corregeix) {
         S.fase = 'corregeix';
+        S.intentsEscriu = 0;
         return S;
     }
     S.corregides[S.actual] = true;
     return despres(S, ex, cfg);
+}
+
+/** A «Corregeix-la», l'alumne escriu el terme encerclat (cfg.escriu) si l'errada és d'un sol terme. */
+export const escriuAra = (S, ex, cfg) => S.fase === 'corregeix' && !!cfg.escriu && escrivible(ex.errades[S.actual], ex.linies[S.actual]);
+
+export function escriuCorreccio(S, ex, cfg, text) {
+    if (!escriuAra(S, ex, cfg)) return S;
+    const e = ex.errades[S.actual],
+        bo = e.fitxesBona[e.terme];
+    if (correcte(text, bo)) {
+        S.corregides[S.actual] = true;
+        S.msg = { tipus: 'encert', text: 'Molt bé: així havia de quedar.' };
+        return despres(S, ex, cfg);
+    }
+    S.intentsEscriu++;
+    if (S.intentsEscriu >= 2) {
+        S.corregides[S.actual] = true;
+        S.msg = { tipus: 'noEncert', text: `No. Havia de ser $${bo}$, i la línia quedava així: $${e.bona}$.` };
+        return despres(S, ex, cfg);
+    }
+    S.msg = { tipus: 'noEncert', text: 'No és així. Torna-ho a provar.' };
+    return S;
 }
 
 export function triaCorreccio(S, ex, cfg, j) {

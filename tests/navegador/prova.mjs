@@ -154,6 +154,78 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await clica('#llibreta [data-pq="0"]');
     await clica('#llibreta [data-co="0"]');
     ok(await pg.evaluate(e => [...Array(e).keys()].slice(1).every(i => document.querySelector(`#llibreta .fila[data-i="${i}"] .mk.c`)), LT), "en acabar, ✓ a totes les línies bones d'abans de l'errada");
+    // Nivell 4: dues errades, amb la fase del terme
+    await pg.goto(BASE + 'equacions.html?nivell=4&totaloperations=1&llavor=21');
+    await pg.waitForSelector('#llibreta .ln');
+    const ex4 = await pg.evaluate(async () => {
+        const m = await import('./js/equacions/pagina.js');
+        const t = await (await fetch('data/errors.json')).json();
+        return m.exempleSessio(0, { base: 21, nivell: 4, noerrors: false, tipus: t, banc: [] });
+    });
+    const [e1, e2] = Object.keys(ex4.errades).map(Number);
+    ok(/Errades: 2/.test(await pg.textContent('#llibreta .chips')), 'nivell 4: «Errades: 2»');
+    for (const [k, e] of [[0, e1], [1, e2]]) {
+        await clica(`#llibreta [data-l="${e}"]`);
+        await clica('#llibreta [data-a=comprova]');
+        ok((await pg.locator('#llibreta .tb').count()) > 1, `nivell 4, errada ${k + 1}: els termes de la línia es poden tocar`);
+        const bo = ex4.errades[e].terme;
+        const dolent = ex4.linies[e].findIndex((t, j) => t !== '=' && j !== bo);
+        await clica(`#llibreta [data-tm="${dolent}"]`);
+        ok(/Aquest terme està bé/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: un terme bo no és l'equivocat`);
+        await clica(`#llibreta [data-tm="${bo}"]`);
+        ok(/Exacte: aquest és el terme equivocat/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
+        await clica('#llibreta [data-pq="0"]');
+        await clica('#llibreta [data-co="0"]');
+        if (k === 0) {
+            ok(/Encara en queda una/.test(await pg.textContent('#llibreta .msg')), 'nivell 4: després de la primera, en queda una');
+            ok((await pg.locator('#llibreta .arrossega').count()) === 0, 'nivell 4: mentre en queda una, no hi ha cap línia esvaïda');
+        }
+    }
+    ok(await pg.isVisible('.franja-final'), 'nivell 4: franja en acabar');
+    const xs = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila .ln > .ex > .t')].map(e => Math.round(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2)));
+    ok(xs.every(x => Math.abs(x - xs[0]) <= 1), `nivell 4: tots els «=» a la mateixa vertical (${xs})`);
+    ok(await pg.locator(`#llibreta .fila[data-i="${e2}"]`).evaluate(el => getComputedStyle(el).opacity === '1'), 'nivell 4: la segona errada es continua veient sencera');
+
+    // Nivell 3: no es diu quantes n'hi ha; cal dir «No n'hi ha cap més»
+    await pg.goto(BASE + 'equacions.html?nivell=3&totaloperations=1&llavor=8');
+    await pg.waitForSelector('#llibreta .ln');
+    const ex3 = await pg.evaluate(async () => {
+        const m = await import('./js/equacions/pagina.js');
+        const t = await (await fetch('data/errors.json')).json();
+        return m.exempleSessio(0, { base: 8, nivell: 3, noerrors: false, tipus: t, banc: [] });
+    });
+    const e3 = Number(Object.keys(ex3.errades)[0]);
+    ok(!/Errades:/.test(await pg.textContent('#llibreta .chips')), 'nivell 3: no es diu quantes errades hi ha');
+    await clica(`#llibreta [data-l="${e3}"]`);
+    await clica('#llibreta [data-a=comprova]');
+    await clica('#llibreta [data-pq="0"]');
+    await clica('#llibreta [data-co="0"]');
+    ok(!(await pg.isVisible('.franja-final')), "nivell 3: trobar-la no acaba l'exemple");
+    await clica('#llibreta [data-a=cap]');
+    ok(await pg.isVisible('.franja-final'), "nivell 3: «No n'hi ha cap més» l'acaba");
+    if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `n3-${mida.width}.png`), fullPage: true });
+
+    // escriu=1: «Corregeix-la» escrivint el terme amb el teclat de la pàgina
+    await pg.goto(BASE + `equacions.html?escriu=1&totaloperations=1&llavor=${LT_LLAVOR}`);
+    await pg.waitForSelector('#llibreta .ln');
+    await clica(`#llibreta [data-l="${LT}"]`);
+    await clica('#llibreta [data-a=comprova]');
+    await clica('#llibreta [data-pq="0"]');
+    ok(await pg.isVisible('#escrit') && (await pg.locator('#llibreta .tk').count()) === 15, 'escriu=1: casella i teclat');
+    const bo = await pg.evaluate(async ll => {
+        const m = await import('./js/equacions/pagina.js');
+        const t = await (await fetch('data/errors.json')).json();
+        const e = m.exempleSessio(0, { base: ll, nivell: 1, noerrors: false, tipus: t, banc: [] });
+        const [j, er] = Object.entries(e.errades)[0];
+        return er.fitxesBona[er.terme];
+    }, LT_LLAVOR);
+    const tecles = bo.replace(/\{([^|]+)\|([^}]+)\}/, '$1/$2').replace(/\s+/g, '').split('');
+    await clica('#llibreta [data-k="0"]');
+    await clica('#llibreta [data-k="⌫"]');
+    for (const k of tecles) await clica(`#llibreta [data-k="${k === '-' ? '−' : k}"]`);
+    await clica('#llibreta [data-escriu] button[type=submit]');
+    ok(/Molt bé: així havia de quedar/.test(await pg.textContent('#llibreta .msg')), `escriu=1: el terme «${bo}» escrit amb el teclat és correcte`);
+
     ok(fallades.length === 0, 'errors o peticions externes: ' + fallades.join(' | '));
     await ctx.close();
 }

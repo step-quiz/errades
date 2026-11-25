@@ -31,7 +31,12 @@
                         <legend>Nivell</legend>
                         <label><input type="radio" name="nivell" value="1" checked> 1 · una errada, 4–5 línies</label>
                         <label><input type="radio" name="nivell" value="2"> 2 · una errada, amb parèntesis, 6–8 línies</label>
+                        <label><input type="radio" name="nivell" value="3"> 3 · una errada, però no es diu quantes n'hi ha</label>
+                        <label><input type="radio" name="nivell" value="4"> 4 · dues errades; cal tocar també el terme equivocat</label>
+                        <label><input type="radio" name="nivell" value="5"> 5 · una o dues, sense dir-ho; de vegades es compensen</label>
                     </fieldset>
+                    <label class="casella"><input type="checkbox" name="noerrors" value="1"> Hi pot haver exemples sense cap errada (aleshores la consigna no diu mai quantes n'hi ha)</label>
+                    <label class="casella"><input type="checkbox" name="escriu" value="1"> Per corregir l'errada, l'alumne escriu el terme ben fet en lloc de triar la línia bona</label>
                     <div class="fila">
                         <label for="eq-total">Exemples</label>
                         <input id="eq-total" name="totaloperations" type="number" min="1" max="20" value="6" inputmode="numeric">

@@ -70,6 +70,55 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
 .arrossega .fila {
     opacity: 0.25;
 }
+/* una segona errada, ja trobada, dins del parèntesi: es continua veient sencera */
+.arrossega .fila.trobada {
+    opacity: 1;
+}
+/* la línia de sobre, a la fase del terme: la que s'ha de comparar */
+.ln.ref {
+    background: rgba(30, 34, 48, 0.05);
+}
+/* «Corregeix-la» escrivint (escriu=1): la casella, «Comprova» i un teclat propi (x, +, −, /) */
+.escriu-fila {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.escrit {
+    font: 24px Kalam, cursive;
+    color: var(--tinta);
+    width: 9em;
+    padding: 6px 12px;
+    border: 1.5px solid var(--vora);
+    border-radius: 10px;
+}
+.escrit:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+.teclat {
+    display: grid;
+    grid-template-columns: repeat(4, 56px);
+    gap: 6px;
+    margin-top: 12px;
+}
+.teclat .tk {
+    font: 700 20px var(--lletra-ui);
+    min-height: 48px;
+    padding: 0;
+}
+.vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+.fase .pista {
+    margin: -4px 0 0;
+    color: var(--text-suau);
+}
 .sota {
     margin-left: calc(7.5rem + 8px);
 }
@@ -183,8 +232,8 @@ button.ln:hover {
 }
 /* Les línies que vénen d'una errada ja corregida: esvaïdes i entre dos grans parèntesis negres */
 .arrossega {
+    /* sense marges propis: si en tingués, les línies de dins serien més estretes i el «=» es desalinearia */
     position: relative;
-    padding-right: 30px;
 }
 .parent {
     position: absolute;
@@ -200,9 +249,32 @@ button.ln:hover {
     border-radius: 100% 0 0 100% / 50% 0 0 50%;
 }
 .parent.dre {
-    right: 4px;
+    right: -22px;
     border-right-width: 3px;
     border-radius: 0 100% 100% 0 / 0 50% 50% 0;
+}
+/* Fase del terme: cada terme de la línia és un botó, a la mateixa mida (R4) */
+.tb {
+    font: inherit;
+    color: inherit;
+    background: var(--paper);
+    border: 1.5px dashed var(--text-suau);
+    border-radius: 8px;
+    padding: 0 0.22em;
+    margin: 2px 0.06em;
+    min-height: 44px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.tb:hover {
+    background: var(--hover-fons);
+    border: 1.5px solid var(--hover-vora);
+    box-shadow: inset 0 0 0 1.5px var(--hover-vora);
+}
+.tb.sel,
+.tb:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
 }
 .tags {
     display: flex;
@@ -316,7 +388,8 @@ i {
         display: none;
     }
     .corr {
-        font-size: 20px;
+        /* més petita que a l'ordinador: si un membre passa de la meitat, el «=» ja no quedaria alineat */
+        font-size: 17px;
     }
     /* sense la columna de «Comprova»: el botó surt a sota de la línia triada, a l'esquerra */
     .fila {
@@ -336,10 +409,12 @@ i {
     .sota {
         margin-left: 0;
     }
-    .arrossega {
-        padding-left: 22px;
-    }
     .parent.esq {
-        left: 2px;
+        left: -12px;
+        width: 12px;
+    }
+    .parent.dre {
+        right: -12px;
+        width: 12px;
     }
 }

@@ -20,7 +20,7 @@
  * DEPENDÈNCIES: js/motor/estat.js.
  * ============================================================================
  */
-import { nouEstat, selecciona, comprova, triaPerque, triaCorreccio, capMes, errades, punts, seleccionable } from './estat.js';
+import { nouEstat, selecciona, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable } from './estat.js';
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 /** Una expressió: fraccions {a|b} apilades i la x en cursiva. */
@@ -38,7 +38,9 @@ const maj = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const S = nouEstat();
-    let acabat = false;
+    let acabat = false,
+        tsel = null, // terme amb el focus del teclat a la fase del terme
+        valorEscrit = ''; // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
     const n = errades(ex).length;
 
     /** La consigna en dues files: què ha fet l'alumne fictici i, a sota, què ha de fer l'alumne (el David, 25/11/2026). */
@@ -54,7 +56,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             q = L.indexOf('='),
             e = ex.errades[i],
             trobada = S.trobades.includes(i);
-        const terme = (t, j) => `<span class="t${trobada && e && e.terme === j ? ' mal' : ''}">${fm(t)}</span>`;
+        // A la fase del terme, els termes de la línia són botons al mateix lloc (sense ampliar-la, R4)
+        const tria = S.fase === 'terme' && S.actual === i;
+        const cercle = trobada && e && (!cfg.terme || S.termes[i] || S.ajuda.includes(i));
+        const terme = (t, j) =>
+            tria
+                ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(t)}">${fm(t)}</button>`
+                : `<span class="t${cercle && e.terme === j ? ' mal' : ''}">${fm(t)}</span>`;
         const a = L.slice(0, q).map((t, j) => terme(t, j)).join(''),
             b = L.slice(q + 1).map((t, j) => terme(t, j + q + 1)).join('');
         // Corregida: només es ratlla el membre que no coincideix amb el de la línia bona (el David, 25/11/2026)
@@ -97,6 +105,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (trobada) cls += ' err';
         if (S.sel === i) cls += ' sel';
         if (trobada && S.corregides[i]) cls += ' tat';
+        if (S.fase === 'terme' && i === S.actual - 1) cls += ' ref';
         let marques = '';
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
         else if (revisada || bonaFinal) marques += '<span class="mk c" title="Línia correcta">✓</span>';
@@ -108,16 +117,26 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026)
         const cv = S.sel === i && S.fase === 'busca' && !S.fi ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
         const atenua = S.fase !== 'busca' && S.fase !== 'fi' && !enJoc(i);
-        return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}" data-i="${i}"><div class="cv">${cv}</div>${ln}</div>`;
+        return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}${trobada ? ' trobada' : ''}" data-i="${i}"><div class="cv">${cv}</div>${ln}</div>`;
     }
 
     const msgHTML = () => `<div class="msg ${S.msg.tipus}" role="status" aria-live="polite">${txt(S.msg.text)}</div>`;
 
     function faseHTML() {
         const e = ex.errades[S.actual];
+        if (S.fase === 'terme')
+            return `<div class="fase"><h3>Quin terme està malament?</h3><p class="pista">Toca'l a la línia ${S.actual}.</p></div>`;
         if (S.fase === 'perque')
             return `<div class="fase"><h3>Per què és una errada?</h3><div class="opc">${e.perque
                 .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
+                .join('')}</div></div>`;
+        if (escriuAra(S, ex, cfg))
+            return `<div class="fase escriu"><h3>Com havia de ser el terme encerclat?</h3>
+<form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme ben fet</label>
+<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="p. ex. +8">
+<button type="submit" class="b pri">Comprova</button></form>
+<div class="teclat" aria-label="Teclat">${['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−']
+                .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
                 .join('')}</div></div>`;
         if (S.fase === 'corregeix')
             return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3><div class="opc">${e.opcions
@@ -164,7 +183,11 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button></div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
         contenidor.innerHTML = h;
-        if (teniaFocus && !S.fi) {
+        const escrit = contenidor.querySelector('#escrit');
+        if (escrit) {
+            escrit.value = valorEscrit;
+            if (!matchMedia('(pointer: coarse)').matches) escrit.focus({ preventScroll: true });
+        } else if (teniaFocus && !S.fi) {
             const b = contenidor.querySelector('.fase .b');
             (b || contenidor).focus({ preventScroll: true });
         }
@@ -183,7 +206,17 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const b = ev.target.closest('button');
         if (!b || !contenidor.contains(b)) return;
         const d = b.dataset;
-        if (d.l !== undefined) selecciona(S, ex, +d.l);
+        if (d.k !== undefined) {
+            const inp = contenidor.querySelector('#escrit');
+            if (!inp) return;
+            inp.value = d.k === '⌫' ? inp.value.slice(0, -1) : inp.value + d.k;
+            valorEscrit = inp.value;
+            return;
+        }
+        if (d.tm !== undefined) {
+            tsel = null;
+            triaTerme(S, ex, cfg, +d.tm);
+        } else if (d.l !== undefined) selecciona(S, ex, +d.l);
         else if (d.pq !== undefined) triaPerque(S, ex, cfg, +d.pq);
         else if (d.co !== undefined) triaCorreccio(S, ex, cfg, +d.co);
         else if (d.a === 'comprova') comprova(S, ex, cfg);
@@ -192,7 +225,23 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         pinta();
     }
 
+    /** Fase del terme amb el teclat: ←/→ recorren els termes de la línia, Enter tria. */
+    function teclaTerme(ev) {
+        const L = ex.linies[S.actual],
+            ids = L.map((t, j) => (t === '=' ? -1 : j)).filter(j => j >= 0);
+        if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') {
+            ev.preventDefault();
+            let p = ids.indexOf(tsel);
+            p = p < 0 ? (ev.key === 'ArrowRight' ? 0 : ids.length - 1) : (p + (ev.key === 'ArrowRight' ? 1 : ids.length - 1)) % ids.length;
+            tsel = ids[p];
+            pinta();
+            const b = contenidor.querySelector(`[data-tm="${tsel}"]`);
+            if (b) b.focus({ preventScroll: true });
+        }
+    }
+
     function tecla(ev) {
+        if (!S.fi && S.fase === 'terme') return teclaTerme(ev);
         if (S.fi || S.fase !== 'busca') return;
         const k = ev.key,
             ult = ex.linies.length - 1;
@@ -229,6 +278,19 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const teclaDocument = ev => {
         if (document.activeElement === document.body || document.activeElement === null) tecla(ev);
     };
+    function envia(ev) {
+        if (!ev.target.matches('[data-escriu]')) return;
+        ev.preventDefault();
+        const inp = contenidor.querySelector('#escrit');
+        valorEscrit = '';
+        escriuCorreccio(S, ex, cfg, inp ? inp.value : '');
+        pinta();
+    }
+    const escriuInput = ev => {
+        if (ev.target.id === 'escrit') valorEscrit = ev.target.value;
+    };
+    contenidor.addEventListener('submit', envia);
+    contenidor.addEventListener('input', escriuInput);
     contenidor.addEventListener('click', clic);
     contenidor.addEventListener('keydown', tecla);
     document.addEventListener('keydown', teclaDocument);
@@ -237,6 +299,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         estat: S,
         destrueix() {
             contenidor.removeEventListener('click', clic);
+            contenidor.removeEventListener('submit', envia);
+            contenidor.removeEventListener('input', escriuInput);
             contenidor.removeEventListener('keydown', tecla);
             document.removeEventListener('keydown', teclaDocument);
         },

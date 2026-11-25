@@ -10,8 +10,8 @@
  * DEPENDÈNCIES: Cap.
  * ============================================================================
  */
-export const PER_DEFECTE = { nivell: '1', totaloperations: '6', maxintents: '3' };
-const LIMITS = { nivell: [1, 2], totaloperations: [1, 20], maxintents: [1, 5] };
+export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', totaloperations: '6', maxintents: '3' };
+const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], totaloperations: [1, 20], maxintents: [1, 5] };
 
 export function enllac(base, valors) {
     const p = new URLSearchParams();

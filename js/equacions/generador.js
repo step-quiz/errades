@@ -776,6 +776,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
             terme,
             expl: regla.expl(c.res.dades, bona),
             bona: text(bona),
+            fitxesBona: bonaF,
             perque,
             opcions,
         };

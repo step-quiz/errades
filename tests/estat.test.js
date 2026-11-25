@@ -1,5 +1,5 @@
 // tests/estat.test.js — la màquina d'estats d'un exemple (js/motor/estat.js).
-import { nouEstat, selecciona, comprova, triaPerque, triaCorreccio, capMes, punts, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
+import { nouEstat, selecciona, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
 import { ok, igual, informe } from './lib.js';
 
 // L'exemple del David: 2·(x + 4) = 13 − 7x, errada a la línia 2 (índex 1)
@@ -71,4 +71,58 @@ S = nouEstat();
 selecciona(S, EX, 3);
 comprova(S, EX, { ...cfg, maxIntents: 1 });
 igual([S.fi, punts(S), S.ajuda], [true, 0, [1]], 'maxIntents 1');
+// Fase del terme (nivells 4 i 5): l'encert va a «Per què?», sense treure punts
+const ct = { ...cfg, terme: true };
+S = nouEstat();
+selecciona(S, EX, 1);
+comprova(S, EX, ct);
+igual(S.fase, 'terme', 'amb cfg.terme, després de trobar la línia es demana el terme');
+triaTerme(S, EX, ct, 0);
+igual([S.fase, S.msg.tipus, punts(S)], ['terme', 'noEncert', 10], 'un terme bo: es torna a demanar, sense treure punts');
+triaTerme(S, EX, ct, 1);
+igual([S.fase, S.termes[1]], ['perque', true], 'el terme equivocat → «Per què?»');
+S = nouEstat();
+selecciona(S, EX, 1);
+comprova(S, EX, ct);
+triaTerme(S, EX, ct, 0);
+triaTerme(S, EX, ct, 3);
+ok(S.fase === 'perque' && S.termes[1] && /encerclat/.test(S.msg.text), "al segon terme equivocat, s'ensenya el bo i es continua");
+
+// Dues errades, anunciades: després de la primera, se'n continua buscant una altra
+const EX2 = {
+    ...EX,
+    errades: { ...EX.errades, 3: { tipus: 'CALCUL', terme: 2, expl: 'e', bona: '9x = 5', perque: [['a', true], ['b', false], ['c', false], ['d', false]], opcions: [['9x = 5', true], ['y', false], ['z', false]] } },
+    correctes: { 2: 'ok2', 4: 'ok4' },
+};
+S = nouEstat();
+selecciona(S, EX2, 1);
+comprova(S, EX2, cfg);
+triaPerque(S, EX2, cfg, 1);
+triaCorreccio(S, EX2, cfg, 2);
+ok(!S.fi && S.fase === 'busca' && /Encara en queda una\./.test(S.msg.text), 'dues errades: després de la primera, en queda una');
+selecciona(S, EX2, 3);
+comprova(S, EX2, cfg);
+triaPerque(S, EX2, cfg, 0);
+triaCorreccio(S, EX2, cfg, 0);
+igual([S.fi, punts(S), S.trobades], [true, 10, [1, 3]], 'dues errades trobades → fi');
+// «Corregeix-la» escrivint el terme (escriu=1)
+const EXE = { ...EX, errades: { 1: { ...EX.errades[1], fitxesBona: ['2x', '+ 8', '=', '13', '− 7x'] } } };
+const ce = { ...cfg, escriu: true };
+S = nouEstat();
+selecciona(S, EXE, 1);
+comprova(S, EXE, ce);
+triaPerque(S, EXE, ce, 1);
+ok(escriuAra(S, EXE, ce), 'amb escriu=1, «Corregeix-la» es fa escrivint');
+escriuCorreccio(S, EXE, ce, '+4');
+igual([S.fi, S.msg.tipus], [false, 'noEncert'], 'escriure malament: es pot tornar a provar');
+escriuCorreccio(S, EXE, ce, '8');
+igual([S.fi, punts(S), S.corregides[1]], [true, 10, true], 'escriure el terme bo: corregida, sense treure punts');
+S = nouEstat();
+selecciona(S, EXE, 1);
+comprova(S, EXE, ce);
+triaPerque(S, EXE, ce, 1);
+escriuCorreccio(S, EXE, ce, '4');
+escriuCorreccio(S, EXE, ce, '6');
+ok(S.fi && /Havia de ser/.test(S.msg.text), "al segon intent fallit s'ensenya el terme bo");
+ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria)');
 informe('estat');

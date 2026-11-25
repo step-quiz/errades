@@ -7,8 +7,8 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 
 | Stage (SPEC §9) | Status |
 |---|---|
-| 1 Skeleton, taxonomy, generator + tests, notebook page (tap + «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» by choice, points) | **DONE** — delivered as ZIP 1, waiting for David's test |
-| 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | PENDING (the generator already supports 0/1/2 errors and compensating pairs, tested) |
+| 1 Skeleton, taxonomy, generator + tests, notebook page (tap + «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» by choice, points) | **DONE** — tested and accepted by David after six rounds of corrections |
+| 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | **DONE** (ZIP «etapa2»); bank batch 1 waiting for David's review |
 | 3 Verification code `LE` + analyser in `operacions` | PENDING |
 | 4 Projector mode | PENDING |
 | 5 Lasso (R3) | PENDING (prototype logic in the review artifact) |
@@ -100,6 +100,35 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
    container scrolls horizontally, so it clips anything outside it).
 2. At the end of an example, every correct line before the first error gets the pencil ✓.
 3. The statement (line 0) is in print (serif, black): the pupil did not write it. Same grid, so «=» stays aligned.
+
+## Stage 2 (2026-11-25)
+
+- **Levels** (`js/equacions/nivells.js`, pure, tested): 1 one error no brackets; 2 one error brackets; 3 one error,
+  not announced; 4 two errors announced (≈30 % compensating) + term phase; 5 one or two, not announced (≈30 % of
+  the two-error ones compensating) + term phase. `noerrors=1`: ≈1 in 5 error-free at every level and the count is
+  never announced (R5). Statements: level 1 uses the simple forms, 2–5 the bracket forms.
+- **Term phase** (R4, levels 4–5): after the line is found, its terms become buttons in place (no zoom), the line
+  above is lightly shaded; a correct term → «Per què?»; a wrong term → message, no points lost; the second wrong
+  term reveals it (circled). Keyboard: ←/→ and Enter. The red circle only appears once the term is found.
+- **Two errors**: after the first is corrected, «Encara en queda una»; nothing is faded until all are found. At the
+  end the bracketed group starts after the first error; a second error inside it stays at full opacity.
+- **Bracketed group** has no padding of its own (padding made its lines narrower and broke the «=» alignment); the
+  parentheses sit in the notebook's margin. On phones the teacher's correction is 17 px so that a member does not
+  exceed half the width (else «=» would shift).
+- **Bank (R6)**: `data/banc.json` (`{"exemples": [...]}`, `perPagina()` format). `exempleSessio()` takes ≈1 in 3
+  from the bank when an example fits the level (`encaixaBanc`: error count and brackets). Batch 1 (21 candidates,
+  small numbers, two per error type + two-error + compensating + error-free) is in the review artifact
+  «Banc d'errades, lot 1» (https://claude.ai/artifact/KUf6CzSQsc95SgjKsMJzSn, slug
+  95a10d23-a842-4bb3-b7f2-d0882ea62883; decisions in db collection `banc`, David's real errors in `reals/notes`,
+  Claude's replies in `rep`). Approved ones go to `data/banc.json` after «Revisa artifact».
+- **Typed correction** (E3; David chose: type only the circled term; the teacher decides with `escriu=1`, checkbox in
+  the index): `js/motor/escriure.js` (pure). Only when the wrong and correct lines differ in exactly the circled term
+  (`fitxesBona` from the generator); otherwise the 3 options. Same value accepted (5 = 10/2 = 15/3; 9/−3 = −3). First
+  wrong attempt: «Torna-ho a provar»; second: the term and the line are shown. No points. Own keypad (digits, x, +,
+  −, /, ⌫), not `operacions/js/teclat.js` (it has no x, + or /); on touch devices the input has `inputmode="none"`.
+  The bank batch was regenerated with `fitxesBona` (same 21 examples, deterministic).
+- `pagina.js` only starts a session on `equacions.html` and only once (`window.__erradesEngegat`), so the browser
+  test can import it to compute the same examples.
 
 ## Setup still to do by David (once)
 
