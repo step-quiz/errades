@@ -7,7 +7,7 @@ A fictitious pupil («la Marta», «en Pau»…) solves an exercise in a squared
 The real student must:
 
 1. **find** the first line that cannot be deduced from the line above (tap it, then «Comprova»; keyboard:
-   ↑/↓ or the line number 1–9, Enter, Esc). Lines are numbered 0, 1, 2…: line 0 is the statement and cannot
+   ↑/↓ or the line number 1–9, Enter, Esc). «Comprova» appears only next to the selected line, on its left. Lines are numbered 0, 1, 2…: line 0 is the statement and cannot
    be selected (not-allowed cursor). A circled number means «the error can still be here»: line 0 and the lines
    already checked have no circle;
 2. **explain** it («Per què és una errada?», 4 sentences about that very line: one true, three false);

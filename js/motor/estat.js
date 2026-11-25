@@ -17,7 +17,8 @@
  * - Punts: puntsAmbErrors(errors) de js/comu/punts.js (10, 2 menys per error);
  *   0 si s'ha hagut d'ensenyar alguna errada. «Per què?» i «Corregeix-la» no
  *   compten (E5).
- * - Missatges: { tipus: 'encert' | 'noEncert' | 'info', text } (R1: colors
+ * - Missatges: { tipus: 'encert' | 'noEncert' | 'info', text } i S.msgLinia, la línia
+ *   de què parla (la llibreta el posa just a sota d'aquella línia; null = a baix) (R1: colors
  *   d'encert / no encert, mai vermell ni verd). Text amb $…$ per a les fórmules.
  * DEPENDÈNCIES: js/comu/punts.js.
  * ============================================================================
@@ -30,7 +31,7 @@ export const errades = ex => Object.keys(ex.errades).map(Number).sort((a, b) => 
 export const pendents = (S, ex) => errades(ex).filter(k => !S.trobades.includes(k));
 
 export function nouEstat() {
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, fi: false, msg: null };
+    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, fi: false, msg: null, msgLinia: null };
 }
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
@@ -43,6 +44,7 @@ export function selecciona(S, ex, i) {
     if (!seleccionable(S, ex, i)) return S;
     S.sel = S.sel === i ? null : i;
     S.msg = null; // en triar una altra línia, el missatge d'abans ja no hi pinta res (el David, 25/11/2026)
+    S.msgLinia = null;
     return S;
 }
 
@@ -58,6 +60,7 @@ function direccio(S, ex, i) {
 
 function ensenya(S, ex, cfg, k, text) {
     S.msg = { tipus: 'noEncert', text: `${text} Mira-ho: l'errada és a la línia ${k}. ${ex.errades[k].expl}` };
+    S.msgLinia = k;
     S.ajuda.push(k);
     S.trobades.push(k);
     S.corregides[k] = true;
@@ -72,6 +75,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     if (ex.errades[i]) {
         S.trobades.push(i);
         S.actual = i;
+        S.msgLinia = i;
         if (cfg.perque) {
             S.fase = 'perque';
             S.msg = { tipus: 'encert', text: "Sí! L'errada és aquí." };
@@ -91,6 +95,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     if (S.errors >= cfg.maxIntents) {
         if (p.length) return ensenya(S, ex, cfg, p[0], 'Tampoc és aquí.');
         S.msg = { tipus: 'noEncert', text: 'Aquest cop totes les línies són correctes: no hi havia cap errada.' };
+        S.msgLinia = null;
         S.ajuda.push(-1);
         return acaba(S);
     }
@@ -98,6 +103,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     let t = ex.correctes[i] || "En aquesta línia no s'ha comès cap errada.";
     if (S.errors >= 2 && p.length) t += '\n' + direccio(S, ex, i);
     S.msg = { tipus: 'noEncert', text: t };
+    S.msgLinia = i;
     return S;
 }
 
@@ -138,6 +144,7 @@ function despres(S, ex, cfg) {
 export function capMes(S, ex, cfg = CONFIG_PER_DEFECTE) {
     if (S.fase !== 'busca' || S.fi) return S;
     S.sel = null;
+    S.msgLinia = null;
     const p = pendents(S, ex);
     if (!p.length) {
         if (!S.msg || S.msg.tipus !== 'noEncert')

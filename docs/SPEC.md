@@ -41,13 +41,13 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | G2 | **No** step arrows between lines. |
 | G3 | Term-level phase: under discussion → see R4 (no zoom; previous line highlighted). |
 | G4 | **No** sequential ✓/✗ mode. |
-| G5 | Two-step answer: tap selects (neutral dashed outline), «Comprova» answers. |
+| G5 | Two-step answer: tap selects (neutral dashed outline), «Comprova» answers. «Comprova» exists only while a line is selected, just left of it (2026-11-25). |
 | G6 | Keyboard always on: ↑/↓ and 1–9 select a line, Enter = Comprova, Esc = clear; ←/→ in the term phase. aria-live for messages. |
 | G7 | Circle with the finger: David wants to try it → R3 (prototype exists). |
 | E1 | Mark the found error, but **separate two colour layers** → R1. |
 | E2 | Phase «Per què?»: **4 sentences about that very line** (one true, three plausible false ones, built from its numbers; David's model, 2026-11-25); a wrong choice costs nothing and shows the explanation. |
 | E3 | Phase «Corregeix-la»: choose among 3 (1r–2n ESO); type it with the touch keypad from 3r ESO on (stage 2). The wrong line is struck through and the correct one is written below in the teacher's hand. |
-| E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 40 % inside a big red parenthesis «Ve d'una errada: no té sentit» (STATE.md). |
+| E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 25 % between two big black parentheses (STATE.md). During «Per què?»/«Corregeix-la» only the wrong line and the one above stay unfaded, and they, the message and the options are kept on screen. |
 | E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
 | G8 | Lines are numbered **0, 1, 2…**; line 0 is the statement: no circle, not-allowed cursor, cannot be selected. A circled number = still a candidate; checked lines lose the circle (2026-11-25). |
 | F1 | Wrong tap on a correct line → «En aquesta línia no s'ha comès cap errada:» + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |

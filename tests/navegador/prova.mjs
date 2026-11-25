@@ -74,7 +74,9 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         return Object.keys(g.generaExemple({ llavor: 11, nivell: 1, errades: 1 }, t).errades).map(Number)[0];
     });
     const bona = errada === 1 ? 2 : 1;
+    ok((await pg.locator('#llibreta [data-a=comprova]').count()) === 0, 'al principi no hi ha cap botó «Comprova»');
     await clica(`#llibreta [data-l="${bona}"]`);
+    ok((await pg.locator(`#llibreta .fila[data-i="${bona}"] .cv [data-a=comprova]`).count()) === 1, '«Comprova» surt a l\'esquerra de la línia triada');
     await clica('#llibreta [data-a=comprova]');
     ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta');
     ok(await pg.locator('#llibreta .ln.enunciat').evaluate(e => getComputedStyle(e).cursor) === 'not-allowed', 'la línia 0 té el cursor de prohibit');
@@ -83,11 +85,27 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await clica(`#llibreta [data-l="${errada}"]`);
     await clica('#llibreta [data-a=comprova]');
     ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'línia dolenta: encert');
+    await pg.waitForTimeout(700); // el desplaçament suau
+    const vista = await pg.evaluate(e => {
+        const r = s => document.querySelector(s).getBoundingClientRect();
+        const a = r(`#llibreta .fila[data-i="${e - 1}"]`), b = r(`#llibreta .fila[data-i="${e}"]`), f = r('#llibreta .fase');
+        const atenuades = [...document.querySelectorAll('#llibreta .fila')].filter(x => x.classList.contains('atenua')).map(x => +x.dataset.i);
+        return { dins: a.top >= 0 && b.bottom <= innerHeight && f.top >= 0 && f.bottom <= innerHeight, atenuades, n: document.querySelectorAll('#llibreta .fila').length, opcions: document.querySelectorAll('#llibreta .fase .b').length };
+    }, errada);
+    ok(vista.dins, 'la línia anterior, la línia equivocada i les opcions es veuen a la pantalla');
+    ok(vista.opcions === 4, '«Per què?» amb 4 opcions');
+    ok(vista.atenuades.length === vista.n - 2 && !vista.atenuades.includes(errada) && !vista.atenuades.includes(errada - 1), 'les altres línies queden esvaïdes');
     await clica('#llibreta [data-pq="0"]');
     await clica('#llibreta [data-co="0"]');
     ok(await pg.isVisible('.franja-final'), 'franja «Següent» a la vista');
     ok(/punts/.test(await pg.textContent('.franja-final')), 'la franja diu els punts');
     ok((await pg.locator('#llibreta .corr').count()) === 1, 'la correcció del professor és a la llibreta');
+    const ratlles = await pg.evaluate(() => {
+        const ln = document.querySelector('#llibreta .ln.tat'), c = ln.querySelector('.corr');
+        const tx = el => el.textContent.replace(/\s+/g, '');
+        return ['ma', 'mb'].map(m => ({ ratllat: ln.querySelector(`.ex:not(.corr) > .${m}`).classList.contains('ratlla'), igual: tx(ln.querySelector(`.ex:not(.corr) > .${m}`)) === tx(c.querySelector(`.${m}`)) }));
+    });
+    ok(ratlles.every(r => r.ratllat !== r.igual) && ratlles.some(r => r.ratllat), 'només es ratlla el membre que està malament');
     ok(await lateral(), 'exemple 1: desplaçament lateral');
     await clica('#btn-next');
 

@@ -51,6 +51,29 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     white-space: nowrap;
     background: var(--paper);
 }
+/* Cada línia va dins d'una .fila: a l'esquerra, la columna on surt «Comprova» quan la línia està triada */
+.fila {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: center;
+}
+.cv .b {
+    width: 100%;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+/* Esvaïdes al 25 % (el David, 25/11/2026): les que no compten en una fase i les que vénen d'una errada */
+.fila.atenua,
+.arrossega .fila {
+    opacity: 0.25;
+}
+.sota {
+    margin-left: calc(7.5rem + 8px);
+}
+.sota.sense-linia {
+    margin-left: 0;
+}
 .ln {
     display: grid;
     grid-template-columns: 2.4em minmax(0, 1fr) 8.5rem;
@@ -129,13 +152,12 @@ button.ln:hover {
     outline-offset: 3px;
     border-radius: 50%;
 }
-/* La línia equivocada es ratlla en diagonal, cada membre: una ratlla horitzontal taparia els signes «−» */
-.tat > .ex:not(.corr) > .ma,
-.tat > .ex:not(.corr) > .mb {
+/* De la línia equivocada es ratlla en diagonal NOMÉS el membre que està malament (.ratlla, el posa
+   llibreta.js comparant-lo amb la línia bona): una ratlla horitzontal taparia els signes «−» */
+.ex > .ratlla {
     position: relative;
 }
-.tat > .ex:not(.corr) > .ma::after,
-.tat > .ex:not(.corr) > .mb::after {
+.ex > .ratlla::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -148,35 +170,28 @@ button.ln:hover {
     font: 24px/1.3 var(--lletra-correccio);
     color: var(--errada);
 }
-/* Les línies que vénen d'una errada ja corregida: esvaïdes i dins d'un gran parèntesi */
+/* Les línies que vénen d'una errada ja corregida: esvaïdes i entre dos grans parèntesis negres */
 .arrossega {
     position: relative;
-    padding-right: 34px;
-}
-.arrossega .ln {
-    opacity: 0.4;
+    padding-right: 30px;
 }
 .parent {
     position: absolute;
-    right: 6px;
     top: 4px;
     bottom: 4px;
-    width: 22px;
-    border-right: 4px solid var(--errada);
-    border-radius: 0 100% 100% 0 / 0 50% 50% 0;
+    width: 20px;
+    border: 0 solid #000;
 }
-.nota-arr {
-    position: absolute;
-    right: 38px;
-    top: 50%;
-    transform: translateY(-50%);
-    max-width: 8rem;
-    font: 17px/1.15 var(--lletra-correccio);
-    color: var(--errada);
-    text-align: right;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 2px 4px;
-    border-radius: 6px;
+.parent.esq {
+    /* just a l'esquerra del número de línia (després de la columna de «Comprova») */
+    left: calc(7.5rem - 14px);
+    border-left-width: 3px;
+    border-radius: 100% 0 0 100% / 50% 0 0 50%;
+}
+.parent.dre {
+    right: 4px;
+    border-right-width: 3px;
+    border-radius: 0 100% 100% 0 / 0 50% 50% 0;
 }
 .tags {
     display: flex;
@@ -292,12 +307,28 @@ i {
     .corr {
         font-size: 20px;
     }
-    .nota-arr {
-        position: static;
-        display: block;
-        transform: none;
-        max-width: none;
-        font-size: 15px;
-        background: none;
+    /* sense la columna de «Comprova»: el botó surt a sota de la línia triada, a l'esquerra */
+    .fila {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .cv {
+        order: 2;
+    }
+    .fila:not(.amb-cv) .cv {
+        display: none;
+    }
+    .cv .b {
+        width: auto;
+        padding: 8px 16px;
+        margin: 2px 0 6px;
+    }
+    .sota {
+        margin-left: 0;
+    }
+    .arrossega {
+        padding-left: 22px;
+    }
+    .parent.esq {
+        left: 2px;
     }
 }

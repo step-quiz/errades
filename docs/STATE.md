@@ -69,6 +69,21 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 5. Selecting another line clears the previous message.
 6. «Per què?» = 4 specific sentences (see above).
 
+## Third round of corrections (2026-11-25, ZIP 4)
+
+1. No «Comprova» button until a line is selected; then it appears **just left of that line** (a 7.5rem gutter
+   column in every `.fila`; below 560 px the button goes under the selected line).
+2. Messages go **right under the line they talk about** (`S.msgLinia`); in a phase, the question follows the
+   message there. So the previous line, the wrong line, the message and the 4 options are one block, and
+   `fesVisible()` scrolls so the whole block is on screen (if it cannot fit, its top). All the other lines are
+   faded while a phase is open.
+3. Fading is **25 %** (David asked to change it from 40 %), for the phase and for the lines that come from a
+   corrected error.
+4. Those lines sit between **two big black parentheses** «(» «)»; no text label any more.
+
+5. Only the **side that is wrong** is crossed out (`.ratlla`, set by comparing each side with the correct line);
+   a side that was right stays as it is (David: «per quin motiu tatxes −9x + 10? aquesta part estava bé!»).
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

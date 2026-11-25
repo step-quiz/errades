@@ -57,7 +57,15 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const terme = (t, j) => `<span class="t${trobada && e && e.terme === j ? ' mal' : ''}">${fm(t)}</span>`;
         const a = L.slice(0, q).map((t, j) => terme(t, j)).join(''),
             b = L.slice(q + 1).map((t, j) => terme(t, j + q + 1)).join('');
-        return `<span class="ex"><span class="ma">${a}</span><span class="t">=</span><span class="mb">${b}</span></span>`;
+        // Corregida: només es ratlla el membre que no coincideix amb el de la línia bona (el David, 25/11/2026)
+        let ra = '',
+            rb = '';
+        if (trobada && S.corregides[i]) {
+            const k = e.bona.indexOf(' = ');
+            if (L.slice(0, q).join(' ') !== e.bona.slice(0, k)) ra = ' ratlla';
+            if (L.slice(q + 1).join(' ') !== e.bona.slice(k + 3)) rb = ' ratlla';
+        }
+        return `<span class="ex"><span class="ma${ra}">${a}</span><span class="t">=</span><span class="mb${rb}">${b}</span></span>`;
     }
 
     /** La línia bona, amb la lletra del professor i el «=» a la mateixa vertical que els altres (R4). */
@@ -74,6 +82,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         return j < ex.linies.length - 1 ? j + 1 : null;
     }
 
+    /** En una fase («Per què?», «Corregeix-la») només compten la línia equivocada i l'anterior. */
+    const enJoc = i => S.actual !== null && (i === S.actual || i === S.actual - 1);
+
     function liniaHTML(i) {
         const trobada = S.trobades.includes(i),
             revisada = S.revisades.includes(i);
@@ -89,9 +100,41 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         else if (revisada) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
         const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
-        if (seleccionable(S, ex, i))
-            return `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`;
-        return `<div class="${cls}"${i === 0 ? ' title="És l\'enunciat: aquí no hi pot haver cap errada"' : ''}>${dins}</div>`;
+        const ln = seleccionable(S, ex, i)
+            ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`
+            : `<div class="${cls}"${i === 0 ? ' title="És l\'enunciat: aquí no hi pot haver cap errada"' : ''}>${dins}</div>`;
+        // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026)
+        const cv = S.sel === i && S.fase === 'busca' && !S.fi ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
+        const atenua = S.fase !== 'busca' && S.fase !== 'fi' && !enJoc(i);
+        return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}" data-i="${i}"><div class="cv">${cv}</div>${ln}</div>`;
+    }
+
+    const msgHTML = () => `<div class="msg ${S.msg.tipus}" role="status" aria-live="polite">${txt(S.msg.text)}</div>`;
+
+    function faseHTML() {
+        const e = ex.errades[S.actual];
+        if (S.fase === 'perque')
+            return `<div class="fase"><h3>Per què és una errada?</h3><div class="opc">${e.perque
+                .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
+                .join('')}</div></div>`;
+        if (S.fase === 'corregeix')
+            return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3><div class="opc">${e.opcions
+                .map(([t], j) => `<button type="button" class="b mat" data-co="${j}">${fm(t)}</button>`)
+                .join('')}</div></div>`;
+        return '';
+    }
+
+    /** Desplaça la finestra el mínim perquè es vegi el bloc [des, fins]; si no hi cap, n'ensenya el començament. */
+    function fesVisible(des, fins) {
+        if (!des || !fins) return;
+        const marge = 12,
+            a = des.getBoundingClientRect().top - marge,
+            b = fins.getBoundingClientRect().bottom + marge,
+            alt = innerHeight;
+        let dy = 0;
+        if (b - a > alt || a < 0) dy = a;
+        else if (b > alt) dy = b - alt;
+        if (dy) scrollBy({ top: dy, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     }
 
     function pinta() {
@@ -100,48 +143,33 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (cfg.anuncia && n > 0) h += `<span class="chip">Errades trobades: ${S.trobades.length} de ${n}</span>`;
         h += `<span class="chip">Punts: ${punts(S)}</span></div></div><div class="linies">`;
         const arr = inicArrossega();
+        let msgPosat = false;
         for (let i = 0; i < ex.linies.length; i++) {
             if (i === arr) h += '<div class="arrossega">';
             h += liniaHTML(i);
+            // El missatge i la fase, just a sota de la línia de què parlen: així la línia anterior, la línia,
+            // el missatge i les opcions queden junts i caben a la pantalla
+            if (S.msg && S.msgLinia === i) {
+                h += `<div class="sota">${msgHTML()}${S.actual === i ? faseHTML() : ''}</div>`;
+                msgPosat = true;
+            }
         }
-        if (arr !== null)
-            h += `<span class="parent" aria-hidden="true"></span><span class="nota-arr">Ve d'una errada:<br>no té sentit</span></div>`;
+        if (arr !== null) h += '<span class="parent esq" aria-hidden="true"></span><span class="parent dre" aria-hidden="true"></span></div>';
         h += '</div>';
-        // El missatge, abans de la pregunta de la fase: així «Sí! L'errada és aquí.» i la pregunta es veuen junts
-        const m = S.msg;
-        h += `<div class="msg${m ? ' ' + m.tipus : ''}" role="status" aria-live="polite">${m ? txt(m.text) : ''}</div>`;
-        if (S.fase === 'perque') {
-            const e = ex.errades[S.actual];
-            h += `<div class="fase"><h3>Per què és una errada?</h3><div class="opc">${e.perque
-                .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
-                .join('')}</div></div>`;
-        }
-        if (S.fase === 'corregeix') {
-            const e = ex.errades[S.actual];
-            h += `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3><div class="opc">${e.opcions
-                .map(([t], j) => `<button type="button" class="b mat" data-co="${j}">${fm(t)}</button>`)
-                .join('')}</div></div>`;
-        }
-        if (!S.fi && S.fase === 'busca') {
-            let a = `<button type="button" class="b pri" data-a="comprova"${S.sel === null ? ' disabled' : ''}>Comprova</button>`;
-            if (n === 0 || !cfg.anuncia)
-                a += `<button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button>`;
-            h += `<div class="acc">${a}</div>`;
-        }
+        if (S.msg && !msgPosat) h += `<div class="sota sense-linia">${msgHTML()}</div>`;
+        if (!S.fi && S.fase === 'busca' && (n === 0 || !cfg.anuncia))
+            h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button></div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
         contenidor.innerHTML = h;
         if (teniaFocus && !S.fi) {
             const b = contenidor.querySelector('.fase .b');
             (b || contenidor).focus({ preventScroll: true });
         }
-        // Amb una fase oberta, el missatge i la pregunta han de quedar a la vista
+        // Amb una fase oberta, s'han de veure la línia anterior, la línia equivocada, el missatge i totes les opcions
         const fase = contenidor.querySelector('.fase');
-        if (fase) {
-            const msg = contenidor.querySelector('.msg'),
-                a = msg.getBoundingClientRect(),
-                b = fase.getBoundingClientRect();
-            if (a.top < 0 || b.bottom > innerHeight) msg.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        }
+        if (fase) fesVisible(contenidor.querySelector(`.fila[data-i="${Math.max(0, S.actual - 1)}"]`), fase);
+        else if (S.msg && S.msgLinia !== null && !S.fi)
+            fesVisible(contenidor.querySelector(`.fila[data-i="${S.msgLinia}"]`), contenidor.querySelector('.sota'));
         if (S.fi && !acabat) {
             acabat = true;
             if (typeof onAcaba === 'function') onAcaba(punts(S), S);
