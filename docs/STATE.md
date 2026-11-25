@@ -84,6 +84,16 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
 5. Only the **side that is wrong** is crossed out (`.ratlla`, set by comparing each side with the correct line);
    a side that was right stays as it is (David: «per quin motiu tatxes −9x + 10? aquesta part estava bé!»).
 
+## Fourth round (2026-11-25, ZIP 5)
+
+1. Instruction in two rows: «La Noa ha resolt aquesta equació i ha comès una errada.» + chips «Errades: 1»
+   «Localitzades: 0» on the right; second row «Toca la primera línia…». Without an announced count, only
+   «Localitzades».
+2. No «Punts» chip in the notebook (the session total stays in the top bar) and no «enunciat» tag.
+3. Softer blue: top bar and index header `--blau-suau` (#e3e9fb) with dark text; `.b.pri` (Comprova and the
+   other main buttons) = blue border, white background, blue text; focus ring #8fa3e8. The shared «Següent»
+   button keeps the shared CSS, now with `--primary` = `--blau` (#2f45b8).
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

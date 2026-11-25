@@ -32,8 +32,9 @@ body {
     align-items: center;
     flex-wrap: wrap;
     padding: 12px max(4vw, 16px);
-    background: var(--tinta);
-    color: #fff;
+    background: var(--blau-suau);
+    color: var(--text);
+    border-bottom: 1px solid var(--vora);
 }
 .barra h1 {
     margin: 0;
@@ -42,20 +43,22 @@ body {
 }
 .barra p {
     margin: 2px 0 0;
-    color: #dfe5ff;
+    color: var(--text-suau);
     font-size: 15px;
 }
 .barra a.tornar {
-    color: #fff;
+    color: var(--blau);
+    background: var(--paper);
     text-decoration: none;
     font-weight: 700;
     padding: 8px 12px;
-    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border: 1.5px solid var(--blau);
     border-radius: 10px;
 }
 .barra a.tornar:hover {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 0 1.5px #fff;
+    background: var(--hover-fons);
+    border-color: var(--hover-vora);
+    box-shadow: 0 0 0 1.5px var(--hover-vora);
 }
 .pagina {
     max-width: 900px;
@@ -93,9 +96,10 @@ select:focus-visible {
     outline-offset: 2px;
 }
 .b.pri {
-    background: var(--tinta);
-    border-color: var(--tinta);
-    color: #fff;
+    /* vora blava, fons blanc i lletra blava (el David, 25/11/2026) */
+    background: var(--paper);
+    border-color: var(--blau);
+    color: var(--blau);
     font-weight: 700;
 }
 .b.pri:hover {
@@ -111,8 +115,8 @@ select:focus-visible {
     color: var(--text);
 }
 .b.pri:disabled {
-    background: var(--tinta);
-    color: #fff;
+    background: var(--paper);
+    color: var(--blau);
 }
 .acc {
     display: flex;

@@ -26,12 +26,14 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     padding: 20px clamp(12px, 3vw, 28px) 24px;
 }
 .cap-ex {
+    margin-bottom: 14px;
+}
+/* Primera fila: què ha fet l'alumne fictici i, a la dreta, «Errades: 1» «Localitzades: 0» */
+.fila-ins {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 10px;
-    align-items: baseline;
-    margin-bottom: 12px;
+    gap: 6px 14px;
+    align-items: center;
 }
 .ins {
     font: 600 18px/1.4 var(--lletra-ui);

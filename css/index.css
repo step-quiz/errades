@@ -7,8 +7,9 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
 ============================================================================
 */
 .portada {
-    background: var(--tinta);
-    color: #fff;
+    background: var(--blau-suau);
+    color: var(--text);
+    border-bottom: 1px solid var(--vora);
 }
 .portada .pagina {
     padding-top: 28px;
@@ -23,7 +24,7 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
 .portada p {
     margin: 0;
     max-width: 62ch;
-    color: #dfe5ff;
+    color: var(--text-suau);
 }
 .activitat {
     display: grid;

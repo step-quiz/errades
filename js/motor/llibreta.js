@@ -41,12 +41,12 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     let acabat = false;
     const n = errades(ex).length;
 
+    /** La consigna en dues files: què ha fet l'alumne fictici i, a sota, què ha de fer l'alumne (el David, 25/11/2026). */
     function consigna() {
-        let t = `${maj(ex.alumne)} ha resolt aquesta equació`;
-        if (n === 0 || !cfg.anuncia) t += ". Si hi ha alguna línia que no es pot deduir de l'anterior, toca-la; si no n'hi ha cap, digues-ho.";
-        else if (n === 1) t += " i ha comès una errada. Toca la primera línia que no es pot deduir de l'anterior.";
-        else t += ' i ha comès dues errades. Toca les dues línies que no es poden deduir de la línia anterior.';
-        return t;
+        const qui = `${maj(ex.alumne)} ha resolt aquesta equació`;
+        if (n === 0 || !cfg.anuncia) return [qui + '.', "Si hi ha alguna línia que no es pot deduir de l'anterior, toca-la; si no n'hi ha cap, digues-ho."];
+        if (n === 1) return [qui + ' i ha comès una errada.', "Toca la primera línia que no es pot deduir de l'anterior."];
+        return [qui + ' i ha comès dues errades.', 'Toca les dues línies que no es poden deduir de la línia anterior.'];
     }
 
     function expr(i) {
@@ -95,7 +95,6 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (S.sel === i) cls += ' sel';
         if (trobada && S.corregides[i]) cls += ' tat';
         let marques = '';
-        if (i === 0) marques += '<span class="tag">enunciat</span>';
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
         else if (revisada) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
@@ -139,9 +138,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
 
     function pinta() {
         const teniaFocus = contenidor.contains(document.activeElement) || document.activeElement === contenidor;
-        let h = `<div class="cap-ex"><p class="ins">${esc(consigna())}</p><div class="chips">`;
-        if (cfg.anuncia && n > 0) h += `<span class="chip">Errades trobades: ${S.trobades.length} de ${n}</span>`;
-        h += `<span class="chip">Punts: ${punts(S)}</span></div></div><div class="linies">`;
+        const [f1, f2] = consigna();
+        let h = `<div class="cap-ex"><div class="fila-ins"><p class="ins">${esc(f1)}</p><div class="chips">`;
+        if (cfg.anuncia) h += `<span class="chip">Errades: ${n}</span>`;
+        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies">`;
         const arr = inicArrossega();
         let msgPosat = false;
         for (let i = 0; i < ex.linies.length; i++) {

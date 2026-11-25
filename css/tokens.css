@@ -48,7 +48,10 @@ DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
     --quadricula: #e2ebf7;
     --hover-fons: #ebebeb;
     --hover-vora: #000000;
-    --focus: #2340c8;
+    --focus: #8fa3e8;
+    /* Blau suau (amb més blanc) per a la barra de dalt i els botons principals (el David, 25/11/2026) */
+    --blau: #2f45b8;
+    --blau-suau: #e3e9fb;
 
     /* La llibreta */
     --tinta: #1f2f86;
@@ -66,7 +69,7 @@ DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
     --success-light: var(--encert-fons);
     --danger: var(--noencert);
     --danger-light: var(--noencert-fons);
-    --primary: var(--tinta);
+    --primary: var(--blau);
     --primary-dark: #14205e;
     --primary-hover: #14205e;
 
