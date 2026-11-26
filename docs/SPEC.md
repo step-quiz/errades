@@ -181,7 +181,7 @@ the README has examples and sources):
 | `SUMA_ABANS_RESTA` | addition before a subtraction on its left | `10 − 3 + 2 → 10 − 5` |
 | `PRODUCTE_ABANS_DIVISIO` | multiplication before a division on its left | `24 : 2 · 3 → 24 : 6` |
 | `PARENTESI_IGNORAT` | the factor multiplies only the first number in the bracket | `2 · (11 − 1) → 22 − 1` |
-| `POTENCIA_PER_EXPONENT` | base times exponent | `3^2 → 6` |
+| `POTENCIA_PER_EXPONENT` | base times exponent, in every power of the step | `3^2 → 6` |
 | `POTENCIA_DESPRES` | multiplies before the power | `2 · 3^2 → 6^2` |
 | `RESTA_NEGATIVA` | negative difference written positive | `15 − 27 → 12` |
 | `SIGNE_PRODUCTE` | sign rule of the product ignored | `(−8) · 8 → 64` |

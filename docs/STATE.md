@@ -282,6 +282,27 @@ bank examples' stored sentences by matching the old templates (3 lot-1 examples 
     applies (the trap was there and the student avoided it). Probed with `creaAtzar(i)`, so the main RNG is untouched.
     PARENTESI_IGNORAT (C6 rejected), RESTA_NEGATIVA and SIGNE_PRODUCTE (D1, D2: real distractions) unfiltered.
 
+## Teachers' review page `banc-errors.html` (2026-11-26, ZIP «banc-errors»)
+
+- David's request: a stand-alone page to share with his department's maths teachers so they rate whether the error
+  situations are well chosen. Two sections (equations, order of operations), one concrete example per error type,
+  numbered 1–20 continuously (1–12 equations, 13–20 order of operations, so codes are unambiguous). No interaction
+  with the exercise (the error is shown circled, with the correct line and the student-facing explanation; a
+  checkbox hides them for teachers who want to look first). Per example: «M'agrada molt», «M'agrada», «No m'agrada»
+  + optional comment; optional teacher name. Top fixed bar: counter, section links, «Copia codi amb les
+  preferències» (clipboard, fallback: a dialog with the text selected).
+- Code format (David will paste teachers' codes back to an AI): first line `BANC-ERRORS v1`, `Nom: …`, a legend line,
+  then `n VOTE` or `n VOTE | comment` for every example (`VOTE` ∈ MM, M, N, `-`), last line `FI`. Numbers refer to
+  the example list printed by `node eines/banc-errors.mjs` for that version.
+- v1 content: equations 1–12 are bank examples except 10 (COEFICIENT_OBLIDAT, generated); 13–20 generated.
+- Bug found while building it and fixed: POTENCIA_PER_EXPONENT counted the target power inside `ws` (powers with
+  b·e ≠ b^e) but `pas()` counts every power, so with a 2^2 before it the wrong power was spoilt (9 + 3·2² − 4² →
+  9 + 3·8 − 16). Now indexed among all powers; regression test in `tests/prioritat.test.js`.
+- POTENCIA_PER_EXPONENT now spoils EVERY power of the step (David, 26/11/2026: a pupil who believes 3² = 3·2 does it
+  to all of them; one right and one wrong in the same step is not plausible): 9 − 2·3² + 5² → 9 − 2·6 + 10. Powers
+  with b·e = b^e (2²) come out the same. `dades.ws` lists the spoilt powers; `expl` and the «Per què?» sentence name
+  all of them. This also removes the index bug above (the hook no longer picks one power).
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

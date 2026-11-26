@@ -18,7 +18,7 @@
   },
   "POTENCIA_PER_EXPONENT": {
     "nom": "Potència com a multiplicació",
-    "descripcio": "Multiplica la base per l'exponent: 3² → 6."
+    "descripcio": "Multiplica la base per l'exponent, a totes les potències d'aquell pas: 3² → 6."
   },
   "POTENCIA_DESPRES": {
     "nom": "La multiplicació abans que la potència",

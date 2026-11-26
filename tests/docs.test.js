@@ -24,5 +24,5 @@ for (const f of ['js/comu/punts.js', 'js/comu/seguent.js', 'css/seguent.css']) o
 // El bloc de regles comunes de CLAUDE.md
 ok(/<!-- regles-comunes:inici -->[\s\S]*<!-- regles-comunes:fi -->/.test(llegeix('CLAUDE.md')), 'CLAUDE.md no té el bloc de regles comunes');
 // Cap petició a tercers a les pàgines
-for (const f of ['index.html', 'equacions.html', 'prioritat.html', 'css/tokens.css']) ok(!/https?:\/\/(?!errades\.step-quiz)/.test(llegeix(f).replace(/<!--[\s\S]*?-->/g, '')), `${f} fa peticions a un altre domini`);
+for (const f of ['index.html', 'equacions.html', 'prioritat.html', 'banc-errors.html', 'css/tokens.css']) ok(!/https?:\/\/(?!errades\.step-quiz)/.test(llegeix(f).replace(/<!--[\s\S]*?-->/g, '')), `${f} fa peticions a un altre domini`);
 informe('docs');

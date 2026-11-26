@@ -279,18 +279,20 @@ export const REGLES = {
         expl: d => `El parèntesi vol dir que primer s'ha de fer $${opTxt(d.b, d.o, d.c)}$: el $${menys(d.a)}$ multiplica tot el parèntesi.`,
     },
     POTENCIA_PER_EXPONENT: {
+        // Qui creu que 3² = 3·2 ho aplica a TOTES les potències del pas (el David, 26/11/2026): una de ben feta i una
+        // altra com a base·exponent, en el mateix pas, no és versemblant. Les 2^2 (2·2 = 2²) surten igual.
         pes: 4,
-        fes(E, r) {
+        fes(E) {
             if (etapa(E) !== 'pot') return null;
-            const ws = E.map((t, i) => i).filter(i => E[i].x.k === 'w' && E[i].x.b * E[i].x.e !== E[i].x.b ** E[i].x.e);
+            const ws = E.filter(t => t.x.k === 'w' && t.x.b * t.x.e !== t.x.b ** t.x.e).map(t => ({ b: t.x.b, e: t.x.e }));
             if (!ws.length) return null;
-            const i = tria(r, ws),
-                { b, e } = E[i].x;
-            let n = -1;
-            const p = pas(E, { calc: (a, o, c) => (o === '^' && ++n === ws.indexOf(i) ? b * e : undefined) });
-            return p && { E: p.E, dades: { b, e } };
+            const p = pas(E, { calc: (a, o, c) => (o === '^' ? a * c : undefined) });
+            return p && { E: p.E, dades: { b: ws[0].b, e: ws[0].e, ws } };
         },
-        expl: d => `$${d.b}^${d.e}$ no vol dir multiplicar la base per l'exponent.`,
+        expl: d =>
+            d.ws.length > 1
+                ? `${d.ws.map(w => `$${w.b}^${w.e}$`).join(' i ')} no volen dir multiplicar la base per l'exponent.`
+                : `$${d.b}^${d.e}$ no vol dir multiplicar la base per l'exponent.`,
     },
     POTENCIA_DESPRES: {
         pes: 3,
@@ -387,7 +389,7 @@ const PERQUE = {
     },
     POTENCIA_PER_EXPONENT(d) {
         return {
-            bona: `Ha multiplicat la base per l'exponent: ha fet $${d.b} · ${d.e}$.`,
+            bona: d.ws && d.ws.length > 1 ? `Ha multiplicat la base per l'exponent: ha fet ${d.ws.map(w => `$${w.b} · ${w.e}$`).join(' i ')}.` : `Ha multiplicat la base per l'exponent: ha fet $${d.b} · ${d.e}$.`,
             dolentes: [`Ha sumat la base i l'exponent.`, `Havia de fer la potència després de les multiplicacions.`, `Ha fet bé la potència, però s'ha equivocat en una altra operació.`],
         };
     },

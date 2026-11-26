@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banc d'errades · Localitza l'errada</title>
+<meta name="description" content="Un exemple de cada tipus d'errada de «Localitza l'errada», perquè el professorat en valori les situacions.">
+<!-- Fitxer generat per eines/banc-errors.mjs a partir de eines/banc-errors.plantilla.html: no l'editis a mà. -->
+<style>
+@font-face{font-family:'Kalam';font-weight:400;font-display:swap;src:url(data:font/woff2;base64,/*KALAM*/) format('woff2')}
+@font-face{font-family:'Permanent Marker';font-weight:400;font-display:swap;src:url(data:font/woff2;base64,/*MARKER*/) format('woff2')}
+:root{--bg:#f4f4f8;--paper:#fff;--grid:#e6e8f2;--ink:#1d1d2b;--mut:#5d5f70;--line:#d9dbe6;--pen:#1f3a93;--red:#c62828;--acc:#5b3fd6;--accs:#ece7fd;--barh:64px}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--barh) + 12px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.barra{position:fixed;top:0;left:0;right:0;z-index:10;height:var(--barh);background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.barra .dins{max-width:900px;margin:0 auto;height:100%;padding:0 16px;display:flex;align-items:center;gap:14px}
+.barra .titol{font-weight:700;white-space:nowrap}
+.barra .compta{color:var(--mut);font-size:.92rem;white-space:nowrap}
+.barra .esp{flex:1}
+.barra nav{display:flex;gap:10px;font-size:.92rem}
+.barra nav a{color:var(--acc);text-decoration:none;white-space:nowrap}
+.barra nav a:hover{text-decoration:underline}
+button{font:inherit;cursor:pointer;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 14px;transition:background .1s}
+button:hover{box-shadow:0 0 0 2px #000;background:#eee}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.copia{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600;white-space:nowrap}
+.copia:hover{background:#4a31b8;color:#fff}
+main{max-width:900px;margin:0 auto;padding:calc(var(--barh) + 20px) 16px 80px}
+h1{font-size:1.6rem;margin:0 0 8px}
+.intro p{margin:0 0 10px}
+.intro .nom{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 4px}
+.intro input{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;min-width:240px;background:var(--paper);color:var(--ink)}
+.intro label.amaga{display:inline-flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer}
+h2{font-size:1.35rem;margin:36px 0 4px;padding-top:4px}
+.sub{color:var(--mut);margin:0 0 14px}
+.fitxa{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;margin:16px 0;scroll-margin-top:calc(var(--barh) + 12px)}
+.fitxa.valorada{border-left:5px solid var(--acc)}
+.cap{display:flex;gap:12px;align-items:baseline}
+.num{font-size:1.5rem;font-weight:800;color:var(--acc);min-width:1.6em}
+.cap h3{margin:0;font-size:1.12rem}
+.desc{color:var(--mut);margin:4px 0 12px 0;font-size:.95rem}
+.enunciat{margin:0 0 6px;font-size:.95rem}
+.llibreta{background-color:#fff;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;border:1px solid var(--line);border-radius:8px;padding:12px 10px;overflow-x:auto}
+.linies{display:grid;grid-template-columns:2.2em max-content 1.6em max-content 2em;justify-content:center;align-items:center;row-gap:6px;column-gap:6px}
+.ln{font:600 .85rem system-ui,sans-serif;color:var(--mut);text-align:center}
+.mb{display:flex;gap:.35em;justify-content:flex-end;white-space:nowrap}
+.mb.d{justify-content:flex-start}
+.ig{text-align:center}
+.f{font-family:'Kalam',cursive;font-size:1.45rem;color:var(--pen);line-height:1.6}
+.l0 .f{color:#6b6e80}
+.t{position:relative;padding:0 .12em}
+.t.mal{border:2.5px solid var(--red);border-radius:50%;padding:0 .3em;margin:0 -.1em}
+.creu{font-family:'Permanent Marker',cursive;color:var(--red);font-size:1.5rem;text-align:center}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;font-size:.85em}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 .15em}
+sup{font-size:.6em}
+.correccio{margin:12px 0 0;padding:10px 12px;border-radius:8px;background:#fff5f5;border:1px dashed #e7b4b4}
+.correccio .bona{font-family:'Permanent Marker',cursive;color:var(--red);font-size:1.12rem}
+.correccio .bona .fx{font-family:'Permanent Marker',cursive}
+.correccio .expl{margin-top:4px;font-size:.95rem}
+.fx{white-space:nowrap}
+.fx i{font-family:Georgia,'Times New Roman',serif}
+body.sense .t.mal{border-color:transparent}
+body.sense .creu,body.sense .correccio{visibility:hidden}
+body.sense .correccio{display:none}
+.vots{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
+.vots button[aria-pressed=true]{background:var(--accs);border-color:var(--acc);color:var(--acc);font-weight:700}
+.vots button[aria-pressed=true]:hover{background:#ddd5fb}
+textarea{width:100%;min-height:44px;font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+.origen{font-size:.78rem;color:var(--mut);margin-top:6px}
+.avis{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1d1d2b;color:#fff;padding:10px 16px;border-radius:10px;z-index:20;max-width:90vw;font-size:.95rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .caixa{background:var(--paper);border-radius:12px;padding:16px;max-width:620px;width:100%}
+.modal textarea{min-height:240px;font-family:ui-monospace,monospace;font-size:.85rem}
+.modal .peu{display:flex;justify-content:flex-end;margin-top:10px}
+@media (max-width:640px){
+ :root{--barh:96px}
+ .barra .dins{flex-wrap:wrap;align-content:center;gap:6px 10px;padding:6px 12px}
+ .barra .titol{display:none}
+ .barra nav{order:3;width:100%}
+ .f{font-size:1.2rem}
+ .linies{grid-template-columns:1.8em max-content 1.2em max-content 1.6em;column-gap:3px}
+}
+@media print{.barra,.vots,textarea,.copia{display:none}main{padding-top:0}.fitxa{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="barra"><div class="dins">
+ <span class="titol">Banc d'errades</span>
+ <nav><a href="#equacions">Equacions</a><a href="#prioritat">Prioritat</a></nav>
+ <span class="compta" id="compta" aria-live="polite"></span>
+ <span class="esp"></span>
+ <button type="button" class="copia" id="copia">Copia codi amb les preferències</button>
+</div></header>
+<main>
+<section class="intro">
+ <h1>Banc d'errades · Localitza l'errada</h1>
+ <p>A l'activitat «Localitza l'errada», un alumne fictici resol un exercici a la llibreta i s'equivoca. L'alumne de veritat ha de trobar la línia equivocada, dir per què és una errada i com havia de ser.</p>
+ <p>Aquí tens <b>un exemple de cada tipus d'errada</b>, numerats. L'errada està encerclada en vermell, amb la correcció i l'explicació que veu l'alumne. Valora cada situació: és una errada que fan de veritat els nostres alumnes? Està ben triada?</p>
+ <p>Quan acabis, prem <b>«Copia codi amb les preferències»</b>, a dalt de tot, i enganxa el codi en un correu per al David. Les valoracions es queden guardades en aquest navegador i no s'envien enlloc.</p>
+ <div class="nom"><label for="nom">El teu nom (opcional):</label><input id="nom" type="text" autocomplete="name" placeholder="Nom i cognom"></div>
+ <label class="amaga"><input type="checkbox" id="amaga"> Amaga les errades, per buscar-les tu primer</label>
+</section>
+<div id="seccions"></div>
+</main>
+<script>
+const DADES = /*DADES*/;
+const SECCIONS = [
+ { id: 'equacions', nom: 'Equacions de 1r grau', sub: "Una línia és una errada quan no es pot deduir de l'anterior tal com està escrita (té una altra solució)." },
+ { id: 'prioritat', nom: "Prioritat d'operacions", sub: 'Una línia és una errada quan no té el mateix valor que la de sobre.' }
+];
+const VOTS = [['MM', "M'agrada molt"], ['M', "M'agrada"], ['N', "No m'agrada"]];
+const CLAU = 'banc-errors-' + DADES.versio;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const fm = s => esc(s).replace(/\{([^|{}]+)\|([^|{}]+)\}/g, '<span class="fr"><span>$1</span><span>$2</span></span>').replace(/x/g, '<i>x</i>').replace(/\^(\d+)/g, '<sup>$1</sup>');
+const txt = s => String(s).split('$').map((p, k) => (k % 2 ? `<span class="fx">${fm(p)}</span>` : esc(p))).join('');
+
+let E = { nom: '', v: {}, c: {} };
+try { const t = localStorage.getItem(CLAU); if (t) E = Object.assign(E, JSON.parse(t)); } catch (e) {}
+const desa = () => { try { localStorage.setItem(CLAU, JSON.stringify(E)); } catch (e) {} };
+
+function linia(it, L, i) {
+ const q = L.indexOf('=');
+ const esq = q < 0 ? [] : L.slice(0, q), dre = q < 0 ? L : L.slice(q + 1), off = q < 0 ? 0 : q + 1;
+ const mal = i === it.j;
+ const t = (tok, k) => `<span class="t${mal && it.termes.includes(k) ? ' mal' : ''}">${fm(tok)}</span>`;
+ return `<span class="ln">${i}</span>`
+  + `<span class="mb f${i === 0 ? ' l0' : ''}">${esq.map((tok, k) => t(tok, k)).join('')}</span>`
+  + `<span class="ig f">${q < 0 ? '' : '='}</span>`
+  + `<span class="mb d f">${dre.map((tok, k) => t(tok, k + off)).join('')}</span>`
+  + `<span class="creu">${mal ? '✗' : ''}</span>`;
+}
+function fitxa(it) {
+ const fet = it.seccio === 'equacions' ? 'ha resolt aquesta equació' : 'ha calculat aquesta expressió';
+ const v = E.v[it.n] || '';
+ return `<article class="fitxa${v ? ' valorada' : ''}" id="e${it.n}">
+ <div class="cap"><span class="num">${it.n}</span><h3>${esc(it.nom)}</h3></div>
+ <p class="desc">${txt(it.descripcio)}</p>
+ <p class="enunciat">${esc(it.alumne.charAt(0).toUpperCase() + it.alumne.slice(1))} ${fet}:</p>
+ <div class="llibreta"><div class="linies">${it.linies.map((L, i) => linia(it, L, i).replace(/<span class="(mb|ig)/g, i === 0 ? '<span class="$1 l0' : '<span class="$1')).join('')}</div></div>
+ <div class="correccio"><div class="bona">Havia de ser: <span class="fx">${fm(it.bona)}</span></div><div class="expl">${txt(it.expl)}</div></div>
+ <div class="vots" role="group" aria-label="Valoració de l'exemple ${it.n}">${VOTS.map(([k, t]) => `<button type="button" data-n="${it.n}" data-v="${k}" aria-pressed="${v === k}">${t}</button>`).join('')}</div>
+ <label class="vh" for="c${it.n}" style="position:absolute;left:-9999px">Comentari de l'exemple ${it.n}</label>
+ <textarea id="c${it.n}" data-n="${it.n}" placeholder="Comentari (opcional): per què t'agrada o no, quina errada hi posaries…">${esc(E.c[it.n] || '')}</textarea>
+ <div class="origen">${it.origen === 'banc' ? 'Exemple revisat a mà' : 'Exemple del generador'} · tipus ${esc(it.id)}</div>
+</article>`;
+}
+function pinta() {
+ $('#seccions').innerHTML = SECCIONS.map(s => {
+  const its = DADES.items.filter(i => i.seccio === s.id);
+  return `<section id="${s.id}"><h2>${esc(s.nom)} <small style="color:var(--mut);font-weight:400">(${its[0].n}–${its[its.length - 1].n})</small></h2><p class="sub">${esc(s.sub)}</p>${its.map(fitxa).join('')}</section>`;
+ }).join('');
+ compta();
+}
+function compta() {
+ const n = DADES.items.filter(i => E.v[i.n]).length;
+ $('#compta').textContent = `Valorats: ${n} de ${DADES.items.length}`;
+}
+function codi() {
+ const net = s => String(s || '').replace(/\s+/g, ' ').trim();
+ const l = [`BANC-ERRORS ${DADES.versio}`, 'Nom: ' + (net(E.nom) || '(sense nom)'), 'Llegenda: MM = M\'agrada molt · M = M\'agrada · N = No m\'agrada · - = sense valorar'];
+ for (const it of DADES.items) {
+  const c = net(E.c[it.n]);
+  l.push(`${it.n} ${E.v[it.n] || '-'}${c ? ' | ' + c : ''}`);
+ }
+ l.push('FI');
+ return l.join('\n');
+}
+function avis(t) {
+ const d = document.createElement('div'); d.className = 'avis'; d.setAttribute('role', 'status'); d.textContent = t;
+ document.body.appendChild(d); setTimeout(() => d.remove(), 3200);
+}
+function modal(t) {
+ const m = document.createElement('div'); m.className = 'modal';
+ m.innerHTML = `<div class="caixa" role="dialog" aria-label="Codi amb les preferències"><p>Selecciona tot el text i copia'l (Ctrl+C o ⌘C):</p><textarea readonly></textarea><div class="peu"><button type="button">Tanca</button></div></div>`;
+ document.body.appendChild(m);
+ const ta = m.querySelector('textarea'); ta.value = t; ta.focus(); ta.select();
+ const tanca = () => m.remove();
+ m.querySelector('button').addEventListener('click', tanca);
+ m.addEventListener('click', ev => { if (ev.target === m) tanca(); });
+}
+$('#copia').addEventListener('click', () => {
+ const t = codi();
+ const n = DADES.items.filter(i => E.v[i.n]).length;
+ const queden = DADES.items.length - n;
+ const msg = queden ? `Codi copiat. Encara en queden ${queden} sense valorar.` : 'Codi copiat. Enganxa\'l en un correu per al David.';
+ try {
+  navigator.clipboard.writeText(t).then(() => avis(msg), () => modal(t));
+ } catch (e) { modal(t); }
+});
+document.addEventListener('click', ev => {
+ const b = ev.target.closest('button[data-v]'); if (!b) return;
+ const n = b.dataset.n;
+ E.v[n] = E.v[n] === b.dataset.v ? '' : b.dataset.v;
+ desa();
+ const f = document.getElementById('e' + n);
+ f.classList.toggle('valorada', !!E.v[n]);
+ f.querySelectorAll('button[data-v]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === E.v[n])));
+ compta();
+});
+document.addEventListener('input', ev => {
+ const t = ev.target;
+ if (t.matches('textarea[data-n]')) { E.c[t.dataset.n] = t.value; desa(); }
+ if (t.id === 'nom') { E.nom = t.value; desa(); }
+});
+$('#amaga').addEventListener('change', ev => document.body.classList.toggle('sense', ev.target.checked));
+$('#nom').value = E.nom || '';
+pinta();
+</script>
+</body>
+</html>

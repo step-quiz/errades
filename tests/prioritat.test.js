@@ -96,4 +96,16 @@ for (const nivell of [1, 2, 3, 4, 5])
     ok(versemblant('ESQUERRA_DRETA', [E1, E1], 1), 'versemblança: sense cap pas anterior, la regla es pot aplicar');
 }
 
+// POTENCIA_PER_EXPONENT amb un 2^2 al davant (2·2 = 2²: no és a la llista): s'ha d'espatllar el 4^2, no el 2^2
+{
+    const { N, W, it } = T;
+    const E = [it(null, W(2, 2)), it('+', W(4, 2)), it('+', N(1))];
+    const res = REGLES.POTENCIA_PER_EXPONENT.fes(E, creaAtzar(1));
+    igual(res && text(res.E), '4 + 8 + 1', 'POTENCIA_PER_EXPONENT: 2^2 + 4^2 + 1 → 4 + 8 + 1 (el 2^2 surt igual)');
+    const E2 = [it(null, N(9)), it('−', N(2)), it('·', W(3, 2)), it('+', W(5, 2))];
+    const r2 = REGLES.POTENCIA_PER_EXPONENT.fes(E2, creaAtzar(1));
+    igual(r2 && text(r2.E), '9 − 2 · 6 + 10', 'POTENCIA_PER_EXPONENT: totes les potències del pas malament (9 − 2·3² + 5² → 9 − 2·6 + 10)');
+    ok(/3\^2\$ i \$5\^2/.test(REGLES.POTENCIA_PER_EXPONENT.expl(r2.dades)), "POTENCIA_PER_EXPONENT: l'explicació parla de les dues");
+}
+
 informe('prioritat');
