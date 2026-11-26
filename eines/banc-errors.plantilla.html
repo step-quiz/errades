@@ -26,6 +26,7 @@ button:hover{box-shadow:0 0 0 2px #000;background:#eee}
 button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .copia{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600;white-space:nowrap}
 .copia:hover{background:#4a31b8;color:#fff}
+.copia.fet,.copia.fet:hover{background:#2e7d32;border-color:#2e7d32;color:#fff}
 main{max-width:900px;margin:0 auto;padding:calc(var(--barh) + 20px) 16px 80px}
 h1{font-size:1.6rem;margin:0 0 8px}
 .intro p{margin:0 0 10px}
@@ -95,11 +96,7 @@ textarea{width:100%;min-height:44px;font:inherit;font-size:.95rem;padding:8px 10
 </div></header>
 <main>
 <section class="intro">
- <h1>Banc d'errades · Localitza l'errada</h1>
- <p>A l'activitat «Localitza l'errada», un alumne fictici resol un exercici a la llibreta i s'equivoca. L'alumne de veritat ha de trobar la línia equivocada, dir per què és una errada i com havia de ser.</p>
- <p>Aquí tens <b>un exemple de cada tipus d'errada</b>, numerats. L'errada està encerclada en vermell, amb la correcció i l'explicació que veu l'alumne. Valora cada situació: és una errada que fan de veritat els nostres alumnes? Està ben triada?</p>
- <p>Quan acabis, prem <b>«Copia codi amb les preferències»</b>, a dalt de tot, i enganxa el codi en un correu per al David. Les valoracions es queden guardades en aquest navegador i no s'envien enlloc.</p>
- <div class="nom"><label for="nom">El teu nom (opcional):</label><input id="nom" type="text" autocomplete="name" placeholder="Nom i cognom"></div>
+ <h1>Banc d'errades</h1>
  <label class="amaga"><input type="checkbox" id="amaga"> Amaga les errades, per buscar-les tu primer</label>
 </section>
 <div id="seccions"></div>
@@ -107,8 +104,8 @@ textarea{width:100%;min-height:44px;font:inherit;font-size:.95rem;padding:8px 10
 <script>
 const DADES = /*DADES*/;
 const SECCIONS = [
- { id: 'equacions', nom: 'Equacions de 1r grau', sub: "Una línia és una errada quan no es pot deduir de l'anterior tal com està escrita (té una altra solució)." },
- { id: 'prioritat', nom: "Prioritat d'operacions", sub: 'Una línia és una errada quan no té el mateix valor que la de sobre.' }
+ { id: 'equacions', nom: 'Equacions de 1r grau', sub: "" },
+ { id: 'prioritat', nom: "Prioritat d'operacions", sub: '' }
 ];
 const VOTS = [['MM', "M'agrada molt"], ['M', "M'agrada"], ['N', "No m'agrada"]];
 const CLAU = 'banc-errors-' + DADES.versio;
@@ -150,7 +147,7 @@ function fitxa(it) {
 function pinta() {
  $('#seccions').innerHTML = SECCIONS.map(s => {
   const its = DADES.items.filter(i => i.seccio === s.id);
-  return `<section id="${s.id}"><h2>${esc(s.nom)} <small style="color:var(--mut);font-weight:400">(${its[0].n}–${its[its.length - 1].n})</small></h2><p class="sub">${esc(s.sub)}</p>${its.map(fitxa).join('')}</section>`;
+  return `<section id="${s.id}"><h2>${esc(s.nom)} <small style="color:var(--mut);font-weight:400">(${its[0].n}–${its[its.length - 1].n})</small></h2>${s.sub ? `<p class="sub">${esc(s.sub)}</p>` : ''}${its.map(fitxa).join('')}</section>`;
  }).join('');
  compta();
 }
@@ -160,7 +157,7 @@ function compta() {
 }
 function codi() {
  const net = s => String(s || '').replace(/\s+/g, ' ').trim();
- const l = [`BANC-ERRORS ${DADES.versio}`, 'Nom: ' + (net(E.nom) || '(sense nom)'), 'Llegenda: MM = M\'agrada molt · M = M\'agrada · N = No m\'agrada · - = sense valorar'];
+ const l = [`BANC-ERRORS ${DADES.versio}`, 'Llegenda: MM = M\'agrada molt · M = M\'agrada · N = No m\'agrada · - = sense valorar'];
  for (const it of DADES.items) {
   const c = net(E.c[it.n]);
   l.push(`${it.n} ${E.v[it.n] || '-'}${c ? ' | ' + c : ''}`);
@@ -181,13 +178,20 @@ function modal(t) {
  m.querySelector('button').addEventListener('click', tanca);
  m.addEventListener('click', ev => { if (ev.target === m) tanca(); });
 }
+let temps = null;
+function copiat() {
+ const b = $('#copia');
+ b.classList.add('fet'); b.textContent = 'Codi copiat';
+ clearTimeout(temps);
+ temps = setTimeout(() => { b.classList.remove('fet'); b.textContent = 'Copia codi amb les preferències'; }, 5000);
+}
 $('#copia').addEventListener('click', () => {
  const t = codi();
  const n = DADES.items.filter(i => E.v[i.n]).length;
  const queden = DADES.items.length - n;
  const msg = queden ? `Codi copiat. Encara en queden ${queden} sense valorar.` : 'Codi copiat. Enganxa\'l en un correu per al David.';
  try {
-  navigator.clipboard.writeText(t).then(() => avis(msg), () => modal(t));
+  navigator.clipboard.writeText(t).then(() => { avis(msg); copiat(); }, () => modal(t));
  } catch (e) { modal(t); }
 });
 document.addEventListener('click', ev => {
@@ -203,10 +207,8 @@ document.addEventListener('click', ev => {
 document.addEventListener('input', ev => {
  const t = ev.target;
  if (t.matches('textarea[data-n]')) { E.c[t.dataset.n] = t.value; desa(); }
- if (t.id === 'nom') { E.nom = t.value; desa(); }
 });
 $('#amaga').addEventListener('change', ev => document.body.classList.toggle('sense', ev.target.checked));
-$('#nom').value = E.nom || '';
 pinta();
 </script>
 </body>
