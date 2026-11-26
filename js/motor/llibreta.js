@@ -102,7 +102,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             trobada = S.trobades.includes(i);
         // A la fase del terme, els termes de la línia són botons al mateix lloc (sense ampliar-la, R4)
         const tria = S.fase === 'terme' && S.actual === i;
-        const cercle = trobada && e && (!cfg.terme || S.termes[i] || S.ajuda.includes(i));
+        const cercle = trobada && e && (S.termes[i] || S.ajuda.includes(i));
         const terme = (t, j) =>
             tria
                 ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(t)}">${fm(t)}</button>`

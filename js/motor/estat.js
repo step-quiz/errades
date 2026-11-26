@@ -9,8 +9,11 @@
  * - Les funcions reben l'estat S, l'exemple ex (el de js/equacions/generador.js)
  *   i la configuració cfg, i modifiquen S (i el tornen).
  * - Fases: 'busca' → (encert) ['terme'] → 'perque' → 'corregeix' → 'busca' (si en
- *   queden) → 'fi'. La fase 'terme' (R4, nivells 4 i 5: cfg.terme) demana el terme
- *   equivocat de la línia; no treu punts, i al segon intent fallit l'ensenya. Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
+ *   queden) → 'fi'. La fase 'terme' (R4) demana el terme equivocat de la línia
+ *   (a tots els nivells, amb toc o amb traç, si el traç no l'ha encerclat ja). Cada
+ *   terme bo triat (també el que s'ha encerclat amb la línia) és un intent fallat; a
+ *   cfg.maxIntents s'ensenya el terme, l'exemple val 0 i es continua (el David,
+ *   26/11/2026). Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
  *   l'alumne ha de prémer «No n'hi ha cap més» / «No hi ha cap errada».
  * - Escala (docs/SPEC.md §2, F1/F2/F3): cada línia bona assenyalada s'explica
  *   i queda marcada (revisades); des del segon error s'hi afegeix cap on és
@@ -27,7 +30,7 @@
 import { puntsAmbErrors } from '../comu/punts.js';
 import { escrivible, correcte } from './escriure.js';
 
-export const CONFIG_PER_DEFECTE = { anuncia: true, perque: true, corregeix: true, terme: false, escriu: false, maxIntents: 3 };
+export const CONFIG_PER_DEFECTE = { anuncia: true, perque: true, corregeix: true, escriu: false, maxIntents: 3 };
 
 export const errades = ex => Object.keys(ex.errades).map(Number).sort((a, b) => a - b);
 export const pendents = (S, ex) => errades(ex).filter(k => !S.trobades.includes(k));
@@ -122,26 +125,20 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
         S.trobades.push(i);
         S.actual = i;
         S.msgLinia = i;
-        // Amb el traç (R3): si ha encerclat el terme equivocat, ja no cal la fase del terme
+        S.fase = 'terme';
+        S.intentsTerme = 0;
+        // Amb el traç (R3): si ha encerclat el terme equivocat, ja no cal la fase del terme;
+        // si n'ha encerclat un de bo, és un intent fallat i ha de tocar el terme equivocat.
         if (lt.length) {
             const bons = ex.errades[i].termes || [ex.errades[i].terme];
             if (lt.some(j => bons.includes(j))) {
                 S.termes[i] = true;
                 return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí. I has encerclat just el terme equivocat.");
             }
-            if (!cfg.terme) return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí, encara que el terme equivocat no és el que has encerclat.");
-            S.fase = 'terme';
-            S.intentsTerme = 0;
-            S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia, encara que el terme equivocat no és el que has encerclat. Compara-la amb la de sobre." };
-            return S;
+            return termeFallat(S, ex, cfg, 'La línia és aquesta, però el terme que has encerclat està bé. Toca el terme equivocat: compara la línia amb la de sobre.', 'La línia és aquesta, però el terme que has encerclat està bé.');
         }
-        if (cfg.terme) {
-            S.fase = 'terme';
-            S.intentsTerme = 0;
-            S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia. Compara-la amb la de sobre." };
-            return S;
-        }
-        return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí.");
+        S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia. Ara toca el terme equivocat: compara la línia amb la de sobre." };
+        return S;
     }
     // una línia bona
     S.errors++;
@@ -189,13 +186,25 @@ export function triaTerme(S, ex, cfg, j) {
         S.termes[i] = true;
         return faseSeguent(S, ex, cfg, bons.length > 1 ? 'Exacte: aquest és un dels termes equivocats. Hi ha un altre terme equivocat a la mateixa línia, i ara tots dos estan encerclats.' : 'Exacte: aquest és el terme equivocat.');
     }
+    return termeFallat(S, ex, cfg, 'Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.', 'Aquest terme està bé.');
+}
+
+/**
+ * Un terme bo triat a la fase del terme (tocat, o encerclat amb la línia): és un intent fallat.
+ * Si s'han acabat els intents, s'ensenya el terme equivocat, l'exemple val 0 i es continua.
+ */
+function termeFallat(S, ex, cfg, text, textFi) {
+    const i = S.actual,
+        bons = ex.errades[i].termes || [ex.errades[i].terme];
+    S.errors++;
     S.intentsTerme++;
-    if (S.intentsTerme >= 2) {
+    if (S.errors >= cfg.maxIntents) {
         S.termes[i] = true;
-        if (bons.length > 1) return faseSeguent(S, ex, cfg, `No: els termes equivocats són els que ara estan encerclats, ${bons.map(k => `$${ex.linies[i][k]}$`).join(' i ')}.`);
-        return faseSeguent(S, ex, cfg, `No: el terme equivocat és el que ara està encerclat, $${ex.linies[i][bo]}$.`);
+        if (!S.ajuda.includes(i)) S.ajuda.push(i);
+        if (bons.length > 1) return faseSeguent(S, ex, cfg, `${textFi} Els termes equivocats són els que ara estan encerclats, ${bons.map(k => `$${ex.linies[i][k]}$`).join(' i ')}.`);
+        return faseSeguent(S, ex, cfg, `${textFi} El terme equivocat és el que ara està encerclat, $${ex.linies[i][bons[0]]}$.`);
     }
-    S.msg = { tipus: 'noEncert', text: 'Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.' };
+    S.msg = { tipus: 'noEncert', text };
     return S;
 }
 

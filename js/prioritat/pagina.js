@@ -7,7 +7,7 @@
  * ARQUITECTURA:
  * - Paràmetres: js/motor/parametres.js (els mateixos que les equacions).
  * - Nivells: els de js/equacions/nivells.js (quantes errades, si es diu quantes
- *   n'hi ha, fase del terme); la forma 1 (nivell 1) és sense parèntesis ni
+ *   n'hi ha); la forma 1 (nivell 1) és sense parèntesis ni
  *   potències, i la forma 2 (nivells 2–5) en té.
  * - No hi ha banc: tots els exemples surten del generador.
  * DEPENDÈNCIES: generador.js, js/equacions/nivells.js, js/motor/*.
@@ -23,7 +23,7 @@ export const NIVELLS = {
     1: 'una errada, sense parèntesis',
     2: 'una errada, amb parèntesis i potències',
     3: 'una errada, sense dir-ho',
-    4: 'dues errades i el terme equivocat',
+    4: 'dues errades',
     5: 'una o dues errades, sense dir-ho',
 };
 
@@ -48,7 +48,6 @@ function engega() {
         activitat: 'prioritat',
         maxIntents: par.maxIntents,
         anuncia: sessio.anuncia,
-        terme: sessio.terme,
         escriu: par.escriu,
         encercla: encerclaDe(par, esTactil()),
     };

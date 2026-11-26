@@ -76,7 +76,7 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | R1 | Two colour layers. **Notebook:** E (error) = teacher's red pen (ellipse around the wrong term, ✗ in the margin, correction text); C (correct line) = grey pencil ✓. **Student:** right = **lilac**, wrong = **grey** (David's choice); never red/green; always with text. Selection before «Comprova» is neutral (black dashed). Code names: `errada`/`correcta` vs `encert`/`noEncert`. |
 | R2 | Pupil: Kalam (blue ink). Teacher's correction: **Permanent Marker**. Both self-hosted. |
 | R3 | Lasso approved (closed stroke → term centres inside the polygon; one line → select it and remember 1–2 terms; ≥ 2 lines, too small or unclear → «Torna a marcar-ho, si us plau»; open underline accepted over one line; then «Comprova»). Default gesture on touch devices; tap for mouse/keyboard. **Stage 5.** |
-| R4 | All lines aligned at «=» (grid `1fr auto 1fr`), always. Term phase (no zoom, previous line shaded «compara-la amb aquesta») only at high levels — stage 2. |
+| R4 | All lines aligned at «=» (grid `1fr auto 1fr`), always. Term phase (no zoom, previous line shaded «compara-la amb aquesta»): at every level since 26/11/2026 (STATE, «Term phase at every level»). |
 | R5 | `noerrors=1`: absent → every example has ≥ 1 error and the count is announced; present → ≈ 1 in 5 error-free, count not announced, button «No hi ha cap errada». Checkbox in the link generator. Stage 2. |
 | R6 | Curated bank: Claude proposes candidate batches in a review artifact, David approves/edits and adds real errors; approved items go to `data/banc.json`. Stage 2. |
 | R7 | New repository `step-quiz/errades`. Shared code via **`step-quiz/step-quiz-commons`** (David: «m'agrada molt la idea d'aprofitar codi»): `punts.js`, `seguent.js`, `seguent.css` now live in commons (`fitxers/esm/`, `fitxers/seguent.css`) and reach this repo through `comuns.json` (web `errades`) and the daily workflow `comuns.yml`. Operacions still keeps its own copies (migrating it is a separate decision). |
@@ -206,7 +206,9 @@ Parameters (`js/motor/parametres.js`, both activities; the index sets every one)
 
 ## 7. Interaction (as prototyped)
 
-- States per example: `busca` → (hit) `perque` → `corregeix` → `busca` (if errors remain) → `fi`.
+- States per example: `busca` → (hit) `terme` → `perque` → `corregeix` → `busca` (if errors remain) → `fi`.
+  The `terme` phase runs at every level (David 26/11/2026); each correct term chosen there, or enclosed with the
+  line, is a failed attempt; at `maxintents` the term is shown and the example is worth 0.
 - Hit with a lasso that enclosed exactly the wrong term: append «I has encerclat just el terme equivocat.»
 - After the last error (announced count): band «Molt bé! +N punts» / «0 punts» + «Següent» (Enter).
   With unannounced count the student must press «No n'hi ha cap més» / «No hi ha cap errada».
