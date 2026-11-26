@@ -107,9 +107,9 @@ Spec: [`SPEC.md`](SPEC.md). Where they disagree, this file wins.
   not announced; 4 two errors announced (≈30 % compensating) + term phase; 5 one or two, not announced (≈30 % of
   the two-error ones compensating) + term phase. `noerrors=1`: ≈1 in 5 error-free at every level and the count is
   never announced (R5). Statements: level 1 uses the simple forms, 2–5 the bracket forms.
-- **Term phase** (R4, levels 4–5): after the line is found, its terms become buttons in place (no zoom), the line
-  above is lightly shaded; a correct term → «Per què?»; a wrong term → message, no points lost; the second wrong
-  term reveals it (circled). Keyboard: ←/→ and Enter. The red circle only appears once the term is found.
+- **Term phase** (R4; levels 4–5 at first, every level since 26/11/2026 — see «Term phase at every level» below):
+  after the line is found, its terms become buttons in place (no zoom), the line above is lightly shaded; the wrong
+  term → «Per què?»; a correct term → message (originally no points lost and the second miss revealed it). Keyboard: ←/→ and Enter. The red circle only appears once the term is found.
 - **Two errors**: after the first is corrected, «Encara en queda una»; nothing is faded until all are found. At the
   end the bracketed group starts after the first error; a second error inside it stays at full opacity.
 - **Bracketed group** has no padding of its own (padding made its lines narrower and broke the «=» alignment); the
@@ -357,3 +357,22 @@ una activitat»; every other row and the link stay hidden until one is chosen); 
 files himself), what this session delivered, and the open work (sentence editor integration first). The editor's
 sources moved into `eines/frases-editor/`.
 
+
+## Term phase at every level (2026-11-26, David)
+
+On touch devices pupils circle; they either circle the whole line (case 1) or the line *and* the wrong term
+(case 2). David's rules (dialog answers: every level, costs an attempt, both gestures):
+
+- Case 1 (whole line circled, or a tap / mouse click): the line is confirmed («Sí! L'errada és en aquesta línia.
+  Ara toca el terme equivocat…») and the term phase always follows, at every level (`cfg.terme` removed from
+  `CONFIG_PER_DEFECTE`, `parametres`, both pages and `llibreta.js`).
+- Case 2 (lasso enclosed terms): a wrong term among them → term phase skipped, as before; only correct terms → the
+  line counts as found, `S.errors++` and the term phase asks again («La línia és aquesta, però el terme que has
+  encerclat està bé…»).
+- In the term phase every correct term chosen is a failed attempt (`termeFallat` in `js/motor/estat.js`), sharing
+  `S.errors` / `maxintents` with wrong lines. When attempts run out: the wrong term(s) are circled, the line goes
+  into `S.ajuda` (points 0, «amb ajuda» mark) and the example continues with «Per què?». The old «second miss
+  reveals it, no points lost» rule is gone (`intentsTerme` is still counted but no longer decides anything).
+- Level labels: level 4 is now «dues errades» in both activities.
+- Tests: `tests/estat.test.js` (helper `troba`), `tests/nivells.test.js`, `tests/navegador/prova.mjs` (helper
+  `tocaTerme`, keyboard ←/→ + Enter).

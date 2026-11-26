@@ -16,7 +16,7 @@ The real student must:
 
 Status: stages 1, 2 and 5 (lasso) and the order-of-operations part of stage 7 done (see
 [`docs/STATE.md`](docs/STATE.md)). Two activities with the same engine and the same levels 1–5 (one or two
-errors, announced or not, compensating pairs, error-free examples with `noerrors=1`, a term phase at levels 4–5):
+errors, announced or not, compensating pairs, error-free examples with `noerrors=1`, a term phase at every level):
 **first-degree equations** (`equacions.html`, plus a curated bank `data/banc.json`) and **order of operations**
 (`prioritat.html`, generated only). The index (`index.html`) chooses the activity and every URL parameter.
 
@@ -56,7 +56,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 
 | Parameter | Values | Default | Meaning |
 |---|---|---|---|
-| `nivell` | 1–5 | 1 | 1: one error, no brackets (4–6 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating; term phase. 5: one or two, not announced, ≈30 % of the two-error ones compensating; term phase. |
+| `nivell` | 1–5 | 1 | 1: one error, no brackets (4–6 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating. 5: one or two, not announced, ≈30 % of the two-error ones compensating. Every level asks for the wrong term after the line. |
 | `escriu` | 0, 1 | 0 | 1: in «Corregeix-la» the student types the circled term, corrected (on-page keypad: digits, x, +, −, /), instead of choosing the line. Any writing with the same value is accepted (10/2 = 5). Errors that change the line's structure (`TERMES_NO_SEMBLANTS`) still use the 3 options. |
 | `encercla` | 0, 1 | (absent = auto) | R3. 1: the student circles the line with the finger or by dragging the mouse (a short tap still selects); 0: tap only; absent: circle on touch screens (`pointer: coarse`), tap with a mouse. |
 | `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No n'hi ha cap més»). |
@@ -72,7 +72,14 @@ stroke → the terms whose centre is inside the polygon; terms of one line → t
 remembered; terms of several lines, too small, or no clear line → «Torna a marcar-ho, si us plau: …» (`llacDubtos`).
 An open stroke (underline) or a closed one with no term inside picks the line it covers vertically. The stroke stays
 drawn (dashed, black) until «Comprova». On a hit (`comprova`): if a remembered term is a wrong term, «I has encerclat
-just el terme equivocat» and the term phase is skipped; if not, the term phase runs as usual (levels 4–5).
+just el terme equivocat» and the term phase is skipped; if only correct terms were enclosed, the line counts as
+found but it is a failed attempt and the term phase runs («La línia és aquesta, però el terme que has encerclat
+està bé…»). With no enclosed term (or a tap / mouse click) the term phase runs without losing points.
+
+**Term phase (every level, David 26/11/2026).** After the line is found, its terms become buttons in place; the
+student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
+counter with wrong lines (`S.errors`, `maxintents`); when the attempts run out, the wrong term is circled, the
+example is worth 0 («amb ajuda») and the example goes on to «Per què?».
 
 ## Order of operations (`js/prioritat/generador.js`)
 

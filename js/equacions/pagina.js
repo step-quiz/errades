@@ -55,7 +55,7 @@ async function engega() {
     let base = par.llavor ?? llavorNova();
     const sessio = parametres(par.nivell, par.noerrors, 0);
     const encercla = encerclaDe(par, esTactil());
-    const cfg = { ...CONFIG_PER_DEFECTE, activitat: 'equacions', maxIntents: par.maxIntents, anuncia: sessio.anuncia, terme: sessio.terme, escriu: par.escriu, encercla };
+    const cfg = { ...CONFIG_PER_DEFECTE, activitat: 'equacions', maxIntents: par.maxIntents, anuncia: sessio.anuncia, escriu: par.escriu, encercla };
     document.getElementById('nivell').textContent = `Nivell ${par.nivell} · ${NIVELLS[par.nivell]}${par.noerrors ? ' · pot ser que no n\'hi hagi cap' : ''}`;
     iniciaSessio({
         llibreta,

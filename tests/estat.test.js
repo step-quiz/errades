@@ -12,7 +12,9 @@ const EX = {
     correctes: { 2: 'Aquesta línia és correcta (2).', 3: 'Aquesta línia és correcta (3).', 4: 'Aquesta línia és correcta (4).' },
 };
 const cfg = { ...CONFIG_PER_DEFECTE };
-const tria = (S, i) => (selecciona(S, EX, i), comprova(S, EX, cfg));
+// troba: assenyala la línia i, «Comprova» i, si demana el terme, toca el bo (fase del terme, a tots els nivells)
+const troba = (S, ex, c, i) => (selecciona(S, ex, i), comprova(S, ex, c), S.fase === 'terme' && triaTerme(S, ex, c, ex.errades[i].terme), S);
+const tria = (S, i) => troba(S, EX, cfg, i);
 
 // Encert a la primera: Per què? → Corregeix-la → fi, 10 punts
 let S = nouEstat();
@@ -45,8 +47,7 @@ igual([S.trobades, S.ajuda, S.fi, punts(S)], [[1], [1], true, 0], "3r error: ens
 
 // Sense fases
 S = nouEstat();
-selecciona(S, EX, 1);
-comprova(S, EX, { ...cfg, perque: false, corregeix: false });
+troba(S, EX, { ...cfg, perque: false, corregeix: false }, 1);
 igual([S.fi, punts(S)], [true, 10], 'sense fases: encert → fi');
 
 // Sense dir quantes n'hi ha: cal prémer «No n'hi ha cap més»
@@ -54,8 +55,7 @@ const sense = { ...cfg, anuncia: false, perque: false, corregeix: false };
 S = nouEstat();
 capMes(S, EX, sense);
 igual([S.fi, S.errors], [false, 1], "«No hi ha cap errada» quan n'hi ha: compta com a error");
-selecciona(S, EX, 1);
-comprova(S, EX, sense);
+troba(S, EX, sense, 1);
 ok(!S.fi, "sense anunciar, trobar-la no acaba l'exemple");
 capMes(S, EX, sense);
 igual([S.fi, punts(S)], [true, 8], "«No n'hi ha cap més» → fi");
@@ -71,22 +71,30 @@ S = nouEstat();
 selecciona(S, EX, 3);
 comprova(S, EX, { ...cfg, maxIntents: 1 });
 igual([S.fi, punts(S), S.ajuda], [true, 0, [1]], 'maxIntents 1');
-// Fase del terme (nivells 4 i 5): l'encert va a «Per què?», sense treure punts
-const ct = { ...cfg, terme: true };
+// Fase del terme (a tots els nivells): l'encert va a «Per què?»; cada terme bo triat és un intent fallat
 S = nouEstat();
 selecciona(S, EX, 1);
-comprova(S, EX, ct);
-igual(S.fase, 'terme', 'amb cfg.terme, després de trobar la línia es demana el terme');
-triaTerme(S, EX, ct, 0);
-igual([S.fase, S.msg.tipus, punts(S)], ['terme', 'noEncert', 10], 'un terme bo: es torna a demanar, sense treure punts');
-triaTerme(S, EX, ct, 1);
-igual([S.fase, S.termes[1]], ['perque', true], 'el terme equivocat → «Per què?»');
+comprova(S, EX, cfg);
+igual([S.fase, S.msg.tipus], ['terme', 'encert'], 'després de trobar la línia es demana el terme');
+triaTerme(S, EX, cfg, 0);
+igual([S.fase, S.msg.tipus, punts(S)], ['terme', 'noEncert', 8], 'un terme bo: es torna a demanar i és un intent fallat');
+triaTerme(S, EX, cfg, 1);
+igual([S.fase, S.termes[1], punts(S)], ['perque', true, 8], 'el terme equivocat → «Per què?»');
 S = nouEstat();
 selecciona(S, EX, 1);
-comprova(S, EX, ct);
-triaTerme(S, EX, ct, 0);
-triaTerme(S, EX, ct, 3);
-ok(S.fase === 'perque' && S.termes[1] && /encerclat/.test(S.msg.text), "al segon terme equivocat, s'ensenya el bo i es continua");
+comprova(S, EX, cfg);
+triaTerme(S, EX, cfg, 0);
+triaTerme(S, EX, cfg, 3);
+igual([S.fase, punts(S)], ['terme', 6], 'dos termes bons: 6 punts, encara es demana');
+triaTerme(S, EX, cfg, 4);
+ok(S.fase === 'perque' && S.termes[1] && S.ajuda.includes(1) && punts(S) === 0 && /encerclat/.test(S.msg.text), "a maxIntents s'ensenya el terme, val 0 i es continua");
+S = nouEstat();
+tria(S, 3);
+tria(S, 4);
+selecciona(S, EX, 1);
+comprova(S, EX, cfg);
+triaTerme(S, EX, cfg, 0);
+ok(S.fase === 'perque' && punts(S) === 0, 'els intents de la línia i del terme es compten junts');
 
 // Dues errades, anunciades: després de la primera, se'n continua buscant una altra
 const EX2 = {
@@ -95,13 +103,11 @@ const EX2 = {
     correctes: { 2: 'ok2', 4: 'ok4' },
 };
 S = nouEstat();
-selecciona(S, EX2, 1);
-comprova(S, EX2, cfg);
+troba(S, EX2, cfg, 1);
 triaPerque(S, EX2, cfg, 1);
 triaCorreccio(S, EX2, cfg, 2);
 ok(!S.fi && S.fase === 'busca' && /Encara en queda una\./.test(S.msg.text), 'dues errades: després de la primera, en queda una');
-selecciona(S, EX2, 3);
-comprova(S, EX2, cfg);
+troba(S, EX2, cfg, 3);
 triaPerque(S, EX2, cfg, 0);
 triaCorreccio(S, EX2, cfg, 0);
 igual([S.fi, punts(S), S.trobades], [true, 10, [1, 3]], 'dues errades trobades → fi');
@@ -109,8 +115,7 @@ igual([S.fi, punts(S), S.trobades], [true, 10, [1, 3]], 'dues errades trobades �
 const EXE = { ...EX, errades: { 1: { ...EX.errades[1], fitxesBona: ['2x', '+ 8', '=', '13', '− 7x'] } } };
 const ce = { ...cfg, escriu: true };
 S = nouEstat();
-selecciona(S, EXE, 1);
-comprova(S, EXE, ce);
+troba(S, EXE, ce, 1);
 triaPerque(S, EXE, ce, 1);
 ok(escriuAra(S, EXE, ce), 'amb escriu=1, «Corregeix-la» es fa escrivint');
 escriuCorreccio(S, EXE, ce, '+4');
@@ -118,8 +123,7 @@ igual([S.fi, S.msg.tipus], [false, 'noEncert'], 'escriure malament: es pot torna
 escriuCorreccio(S, EXE, ce, '8');
 igual([S.fi, punts(S), S.corregides[1]], [true, 10, true], 'escriure el terme bo: corregida, sense treure punts');
 S = nouEstat();
-selecciona(S, EXE, 1);
-comprova(S, EXE, ce);
+troba(S, EXE, ce, 1);
 triaPerque(S, EXE, ce, 1);
 escriuCorreccio(S, EXE, ce, '4');
 escriuCorreccio(S, EXE, ce, '6');
@@ -132,23 +136,24 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     ex2.errades = { 2: { ...EX.errades[1], tipus: 'SIGNE_TRANSPOSAR', terme: 1, termes: [1, 4] } };
     for (const j of [1, 4]) {
         const S = nouEstat();
-        const cfg = { ...CONFIG_PER_DEFECTE, terme: true };
+        const cfg = { ...CONFIG_PER_DEFECTE };
         selecciona(S, ex2, 2);
         comprova(S, ex2, cfg);
         triaTerme(S, ex2, cfg, j);
         ok(S.fase === 'perque' && /un dels termes equivocats/.test(S.msg.text), `dos termes: el terme ${j} també és bo`);
     }
     const S = nouEstat();
-    const cfg = { ...CONFIG_PER_DEFECTE, terme: true };
+    const cfg = { ...CONFIG_PER_DEFECTE };
     selecciona(S, ex2, 2);
     comprova(S, ex2, cfg);
     triaTerme(S, ex2, cfg, 0);
     triaTerme(S, ex2, cfg, 3);
-    ok(S.fase === 'perque' && /els termes equivocats són/.test(S.msg.text), 'dos termes: després de dos intents, es diuen tots dos');
+    triaTerme(S, ex2, cfg, 0);
+    ok(S.fase === 'perque' && /Els termes equivocats són/.test(S.msg.text), 'dos termes: en acabar els intents, es diuen tots dos');
 }
 // Encerclar amb el dit (R3)
 {
-    const cfgT = { ...CONFIG_PER_DEFECTE, terme: true };
+    const cfgT = { ...CONFIG_PER_DEFECTE };
     const bo = EX.errades[1].terme;
     let S = nouEstat();
     marcaLlac(S, EX, 1, [bo], [[0, 0], [1, 1]]);
@@ -159,11 +164,13 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     const altre = EX.linies[1].findIndex((t, j) => t !== '=' && j !== bo);
     marcaLlac(S, EX, 1, [altre]);
     comprova(S, EX, cfgT);
-    ok(S.fase === 'terme' && /no és el que has encerclat/.test(S.msg.text), "traç amb un altre terme: la fase del terme continua");
+    ok(S.fase === 'terme' && S.msg.tipus === 'noEncert' && /el terme que has encerclat està bé/.test(S.msg.text) && S.errors === 1, 'traç amb un terme bo: línia trobada, intent fallat i es torna a demanar el terme');
+    triaTerme(S, EX, cfgT, bo);
+    ok(S.fase === 'perque' && punts(S) === 8, 'traç amb un terme bo i després el terme equivocat: 8 punts');
     S = nouEstat();
     marcaLlac(S, EX, 1, []);
     comprova(S, EX, cfgT);
-    ok(S.fase === 'terme', 'traç sense termes (tota la línia): fase del terme, com amb un toc');
+    ok(S.fase === 'terme' && S.msg.tipus === 'encert' && S.errors === 0, 'traç sense termes (tota la línia): fase del terme, com amb un toc, sense treure punts');
     S = nouEstat();
     marcaLlac(S, EX, 2, [1]);
     selecciona(S, EX, 3);
@@ -182,7 +189,7 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
         correctes: { 3: 'ok', 4: 'ok' },
         compensades: true,
     };
-    const t2 = (S, i) => (selecciona(S, EX2, i), comprova(S, EX2, cfg));
+    const t2 = (S, i) => (selecciona(S, EX2, i), comprova(S, EX2, cfg), S.fase === 'terme' && triaTerme(S, EX2, cfg, EX2.errades[i].terme), S);
     let S = nouEstat();
     t2(S, 2);
     igual([S.fase, S.errors, S.trobades.length, S.msg.tipus], ['busca', 0, 0, 'info'], "errada de baix abans d'hora: no compta i no es dona per trobada");

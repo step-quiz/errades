@@ -58,6 +58,16 @@ Teachers' review page
   les preferències» (turns green «Codi copiat» for 5 s). Code format: `BANC-ERRORS v3`, legend line,
   `n VOTE[ | comment]`, `FI`. David's own v1 feedback is fully applied (items 9, 12, 13, 17).
 
+## 1b. Term phase at every level (2026-11-26, after the handout was first written) — DONE, awaiting David's test
+
+Task from David: on touch devices pupils circle either (1) the whole error line, or (2) the line and the wrong
+term. (1) → confirm the line and ask for the term; (2) right term → fine; wrong (correct) term but right line →
+ask again for the term, and it costs one attempt. Dialog answers: at **every level**; a correct term chosen
+**costs an attempt** (shared with wrong lines; at `maxintents` the term is shown and the example is worth 0); the
+same for **mouse clicks** (= case 1). Implemented in `js/motor/estat.js` (`termeFallat`), `cfg.terme` removed
+everywhere; details in `docs/STATE.md` «Term phase at every level». `node tests/run-all.js` and the browser test
+(130 checks) pass. If David reports problems after testing, fix them before item 2.1 below.
+
 ## 2. Open work, in priority order
 
 1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug

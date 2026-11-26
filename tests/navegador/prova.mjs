@@ -70,6 +70,8 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         if (!r.url().startsWith(BASE)) fallades.push('petició externa: ' + r.url());
     });
     const clica = async sel => (tactil ? pg.tap(sel) : pg.click(sel));
+    // fase del terme (a tots els nivells): després de trobar la línia i, toca el terme equivocat
+    const tocaTerme = async (ex, i) => clica(`#llibreta [data-tm="${ex.errades[i].terme}"]`);
     const lateral = async () => pg.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
     // Índex: fins que no es tria l'activitat, els paràmetres són amagats
@@ -108,7 +110,10 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok((await pg.locator('#llibreta .mk.c').count()) === 1, 'línia bona: ✓ de llapis');
     await clica(`#llibreta [data-l="${errada}"]`);
     await clica('#llibreta [data-a=comprova]');
-    ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'línia dolenta: encert');
+    ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'línia dolenta: encert');
+    ok((await pg.locator('#llibreta .tb').count()) > 1, 'nivell 1: després de la línia es demana el terme');
+    await tocaTerme(sessio(11, 0), errada);
+    ok(/Exacte: aquest és el terme equivocat/.test(await pg.textContent('#llibreta .msg')), 'nivell 1: terme encertat');
     await pg.waitForTimeout(700); // el desplaçament suau
     const vista = await pg.evaluate(e => {
         const r = s => document.querySelector(s).getBoundingClientRect();
@@ -140,7 +145,14 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.focus('#llibreta');
     await pg.keyboard.press(String(errada2));
     await pg.keyboard.press('Enter');
-    ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'teclat: encert');
+    ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'teclat: encert');
+    {
+        // fase del terme amb el teclat: → fins al terme equivocat, Enter
+        const ex2 = sessio(11, 1), ids = ex2.linies[errada2].map((t, j) => (t === '=' ? -1 : j)).filter(j => j >= 0);
+        for (let k = 0; k <= ids.indexOf(ex2.errades[errada2].terme); k++) await pg.keyboard.press('ArrowRight');
+        await pg.keyboard.press('Enter');
+        ok(/Exacte: aquest és/.test(await pg.textContent('#llibreta .msg')), 'teclat: terme encertat amb ← / →');
+    }
     await pg.keyboard.press('Enter'); // «Per què?»: primer botó amb focus
     await pg.keyboard.press('Enter'); // «Corregeix-la»: primer botó amb focus
     ok(await pg.isVisible('.franja-final'), 'teclat: franja a la vista');
@@ -162,6 +174,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.waitForSelector('#llibreta .ln');
     await clica(`#llibreta [data-l="${LT}"]`);
     await clica('#llibreta [data-a=comprova]');
+    await tocaTerme(sessio(LT_LLAVOR), LT);
     await clica('#llibreta [data-pq="0"]');
     await clica('#llibreta [data-co="0"]');
     ok(await pg.evaluate(e => [...Array(e).keys()].slice(1).every(i => document.querySelector(`#llibreta .fila[data-i="${i}"] .mk.c`)), LT), "en acabar, ✓ a totes les línies bones d'abans de l'errada");
@@ -202,6 +215,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(!/Errades:/.test(await pg.textContent('#llibreta .chips')), 'nivell 3: no es diu quantes errades hi ha');
     await clica(`#llibreta [data-l="${e3}"]`);
     await clica('#llibreta [data-a=comprova]');
+    await tocaTerme(ex3, e3);
     await clica('#llibreta [data-pq="0"]');
     await clica('#llibreta [data-co="0"]');
     ok(!(await pg.isVisible('.franja-final')), "nivell 3: trobar-la no acaba l'exemple");
@@ -214,6 +228,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.waitForSelector('#llibreta .ln');
     await clica(`#llibreta [data-l="${LT}"]`);
     await clica('#llibreta [data-a=comprova]');
+    await tocaTerme(sessio(LT_LLAVOR), LT);
     await clica('#llibreta [data-pq="0"]');
     ok(await pg.isVisible('#escrit') && (await pg.locator('#llibreta .tk').count()) === 15, 'escriu=1: casella i teclat');
     const bo = (() => {
@@ -267,7 +282,8 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'prioritat: una línia bona s\'explica');
         await clica(`#llibreta [data-l="${eP}"]`);
         await clica('#llibreta [data-a=comprova]');
-        ok(/Sí! L'errada és aquí/.test(await pg.textContent('#llibreta .msg')), 'prioritat: encert');
+        ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'prioritat: encert');
+        await tocaTerme(exP, eP);
         await clica('#llibreta [data-pq="0"]');
         await clica('#llibreta [data-co="0"]');
         ok(await pg.isVisible('.franja-final'), 'prioritat: franja en acabar');
