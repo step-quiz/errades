@@ -9,10 +9,10 @@
 // - La pàgina és autònoma: dades, CSS, JS i lletres (Kalam, Permanent Marker, en base64) dins del mateix fitxer.
 // - VERSIO: canvia-la si canvia el conjunt d'exemples, perquè els codis de preferències diguin a quina versió responen.
 import fs from 'node:fs';
-import { generaExemple as generaEq, perPagina as perPaginaEq, valida as validaEq } from '../js/equacions/generador.js';
-import { generaExemple as generaPr, perPagina as perPaginaPr, valida as validaPr } from '../js/prioritat/generador.js';
+import { generaExemple as generaEq, perPagina as perPaginaEq, valida as validaEq, T as TE, text as textEq } from '../js/equacions/generador.js';
+import { generaExemple as generaPr, perPagina as perPaginaPr, valida as validaPr, T as TP } from '../js/prioritat/generador.js';
 
-const VERSIO = 'v1';
+const VERSIO = 'v2';
 const arrel = new URL('../', import.meta.url);
 const llegeix = f => fs.readFileSync(new URL(f, arrel), 'utf8');
 const json = f => JSON.parse(llegeix(f));
@@ -29,23 +29,50 @@ function triaMillor(cands) {
     return cands.sort((a, b) => punts(a) - punts(b))[0] || null;
 }
 
-function equacio(id) {
-    const delBanc = BANC.filter(ex => tipusDe(ex).length === 1 && tipusDe(ex)[0] === id && !ex.nota);
+// Peticions del David (banc d'errades v1, 26/11/2026): exemples concrets per a alguns tipus, i casos de més.
+const EQ13 = TE.linia([TE.N(3), TE.P(2, -4)], [TE.X(3), TE.X(1), TE.N(-2)]); // 3 + 2·(x − 4) = 3x + x − 2
+const EXTRA_EQ = {
+    // 9: sense la complexitat d'un nombre negatiu: 4x = 20 → x = 16
+    OPERACIO_INVERSA: [{ banc: false, e0: TE.linia([TE.X(4), TE.N(3)], [TE.N(23)]), filtre: c => textEq(c.res.linia) === 'x = 16' }],
+    // 12: el cas de sempre i el «bessó»: 12x = 3 → x = 12/3 (no es pot fer 3 entre 12)
+    QUOCIENT_INVERTIT: [{}, { titol: 'cas bessó', banc: false, e0: TE.linia([TE.X(12), TE.N(-5)], [TE.N(-2)]) }],
+    // 13 (regla nova): les dues variants
+    SUMA_ABANS_PRODUCTE: [
+        { titol: 'suma abans de multiplicar', banc: false, e0: EQ13, filtre: c => c.res.dades.variant === 'parentesi' },
+        { titol: 'i, a més, només multiplica la x', banc: false, e0: EQ13, filtre: c => c.res.dades.variant === 'x' },
+    ],
+};
+function equacio(id, o = {}) {
+    const pred = o.pred || (() => true);
+    const delBanc = o.banc === false ? [] : BANC.filter(ex => tipusDe(ex).length === 1 && tipusDe(ex)[0] === id && !ex.nota && pred(ex));
     if (delBanc.length) return { ex: triaMillor(delBanc), origen: 'banc' };
+    const origen = o.e0 ? 'fix' : 'generador';
     const cands = [];
     for (let s = 1; s <= 3000 && cands.length < 40; s++)
         for (const nivell of [1, 2]) {
             try {
-                const ex = generaEq({ llavor: s, nivell, errades: 1, filtre: c => c.id === id }, TIPUS_EQ);
-                if (!validaEq(ex).length && Math.max(...nombres(ex)) <= 40) cands.push(perPaginaEq(ex));
+                const ex = generaEq({ llavor: s, nivell, errades: 1, e0: o.e0 || null, filtre: c => c.id === id && (!o.filtre || o.filtre(c)) }, TIPUS_EQ);
+                if (!validaEq(ex).length && Math.max(...nombres(ex)) <= 40 && pred(ex)) cands.push(perPaginaEq(ex));
             } catch (e) {
                 /* una altra llavor */
             }
         }
-    return { ex: triaMillor(cands), origen: 'generador' };
+    return { ex: triaMillor(cands), origen };
 }
 
-function prioritat(id) {
+// 17: una sola potència (el David): 5^2 − 6 : 2 + 3 → 10 − 6 : 2 + 3
+const { N: pN, W: pW, it: pit } = TP;
+const EXTRA_PR = { POTENCIA_PER_EXPONENT: [{ e0: [pit(null, pW(5, 2)), pit('−', pN(6)), pit(':', pN(2)), pit('+', pN(3))] }] };
+function prioritat(id, o = {}) {
+    if (o.e0) {
+        for (let s = 1; s <= 500; s++)
+            try {
+                const ex = generaPr({ llavor: s, nivell: 2, errades: 1, e0: o.e0, filtre: c => c.id === id });
+                if (!validaPr(ex).length) return { ex: perPaginaPr(ex), origen: 'fix' };
+            } catch (e) {
+                /* una altra llavor */
+            }
+    }
     const cands = [];
     for (let s = 1; s <= 4000 && cands.length < 60; s++)
         for (const nivell of [1, 2]) {
@@ -61,19 +88,20 @@ function prioritat(id) {
 
 const items = [];
 let n = 0;
-for (const [seccio, T, fes] of [
-    ['equacions', TIPUS_EQ, equacio],
-    ['prioritat', TIPUS_PR, prioritat],
+for (const [seccio, T, fes, EXTRA] of [
+    ['equacions', TIPUS_EQ, equacio, EXTRA_EQ],
+    ['prioritat', TIPUS_PR, prioritat, EXTRA_PR],
 ]) {
-    for (const id of claus(T)) {
-        const { ex, origen } = fes(id);
-        if (!ex) throw new Error(`Cap exemple per a ${id}`);
+    for (const id of claus(T))
+    for (const o of EXTRA[id] || [{}]) {
+        const { ex, origen } = fes(id, o);
+        if (!ex) throw new Error(`Cap exemple per a ${id} ${o.titol || ''}`);
         const [j, e] = Object.entries(ex.errades)[0];
         items.push({
             n: ++n,
             seccio,
             id,
-            nom: T[id].nom,
+            nom: T[id].nom + (o.titol ? ` (${o.titol})` : ''),
             descripcio: T[id].descripcio,
             origen,
             alumne: ex.alumne,

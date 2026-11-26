@@ -122,6 +122,7 @@ Mal-rules (`REGLES`):
 |---|---|---|
 | `DISTRIBUTIVA` | exp | `2·(x + 4) → 2x + 4` |
 | `DIST_SIGNE` | exp | `−2·(x − 3) → −2x − 6` |
+| `SUMA_ABANS_PRODUCTE` | exp | `3 + 2·(x − 4) = 3x − 2 → 5·(x − 4) = 3x − 2` (65 %) or `→ 5x − 4 = 3x − 2` (adds the number before the bracket to its factor; only `a + c·(…)` with a, c > 0 and a single bracket in the line; form E now has a + sign 40 % of the time so it can appear; David, teachers' review page v1, item 13) |
 | `DIST_SUMA` | exp | `x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7` (outer factor added to the inner x-coefficient: sign(c)·(\|c\| + m); only for `c·(mx + b)` with m ≥ 2, \|c\| ≥ 2; David's real error) |
 | `SIGNE_TRANSPOSAR` | tra | `3x − 6 = x + 4 → 3x − x = 4 − 6`; 35 % of the time when ≥ 2 terms move, all keep their sign: `5x + 3 = 2x + 9 → 5x + 2x = 9 + 3` (Erbaş YK26). Errors with two wrong terms store `termes: [i, j]`; the term phase accepts either |
 | `SIGNE_COPIAT` | exp, red1, tra (30 %: two terms when possible) | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` (a term that is only copied in this step loses or gains a visible minus; never the leading positive term, whose sign is not written) |
@@ -131,10 +132,10 @@ Mal-rules (`REGLES`):
 | `OPERACIO_INVERSA` | div | `3x = 12 → x = 9` (B − A), `x = −9` (A − B, likelier when \|A\| > \|B\|), `x = 36` (A·B), `x = 15` (A + B) (Erbaş et al. 2009, YK06/YK03/YK05) |
 | `COEFICIENT_OBLIDAT` | div | `3x = 12 → x = 12` (Erbaş et al. 2009, YK01) |
 | `DIVISIO_SIGNE` | div | `−3x = 9 → x = 9/3` |
-| `QUOCIENT_INVERTIT` | div | `2x = 16 → x = 2/16` |
+| `QUOCIENT_INVERTIT` | div | `2x = 16 → x = 2/16`; the «twin» case `12x = 3 → x = 12/3` (pupil thinks 3 : 12 is impossible) gets its own explanation when \|A\| > \|B\| (David, review page v1, item 12) |
 
 At level 1 there are no brackets, so `DISTRIBUTIVA`, `DIST_SIGNE` and `DIST_SUMA` only appear at level 2. Level-2
-forms: C `c·(x + b) = dx + e`, D `c·(x + b) + fx = dx + e`, E `e − c·(x + b) = dx + f`, F `c·(x + b) = d·(x + e)`,
+forms: C `c·(x + b) = dx + e`, D `c·(x + b) + fx = dx + e`, E `e ∓ c·(x + b) = dx + f` (+ 40 %), F `c·(x + b) = d·(x + e)`,
 H `ax + c·(mx + b) = dx + e` (bracket term `P(c, b, m)`, m = 2…4; `DIST_SUMA` needs it). Level-1 statement
 forms: A `ax + b = c`, B `ax + b = dx + e`, G `ax + b + cx = e` (weights 2:1:1; G exists so that the red1 variant
 of `TERMES_NO_SEMBLANTS` and red1 `CALCUL`/`SIGNE_COPIAT` appear at level 1; G gives 5–6 lines, hence 4–6).

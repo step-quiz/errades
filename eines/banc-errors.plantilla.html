@@ -141,7 +141,7 @@ function fitxa(it) {
  <div class="vots" role="group" aria-label="Valoració de l'exemple ${it.n}">${VOTS.map(([k, t]) => `<button type="button" data-n="${it.n}" data-v="${k}" aria-pressed="${v === k}">${t}</button>`).join('')}</div>
  <label class="vh" for="c${it.n}" style="position:absolute;left:-9999px">Comentari de l'exemple ${it.n}</label>
  <textarea id="c${it.n}" data-n="${it.n}" placeholder="Comentari (opcional): per què t'agrada o no, quina errada hi posaries…">${esc(E.c[it.n] || '')}</textarea>
- <div class="origen">${it.origen === 'banc' ? 'Exemple revisat a mà' : 'Exemple del generador'} · tipus ${esc(it.id)}</div>
+ <div class="origen">${it.origen === 'banc' ? 'Exemple revisat a mà' : it.origen === 'fix' ? 'Enunciat triat a mà' : 'Exemple del generador'} · tipus ${esc(it.id)}</div>
 </article>`;
 }
 function pinta() {

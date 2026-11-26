@@ -154,4 +154,13 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
     ok(versemblant('CALCUL', [...ls2, ls2[1]], ops, 2, res('n:-3/1,7/1')), 'A3: un altre càlcul: sí');
 }
 
+// SUMA_ABANS_PRODUCTE i el cas bessó de QUOCIENT_INVERTIT (el David, banc d'errades v1, 26/11/2026)
+{
+    const l = tL([tN(3), T.P(2, -4)], [tX(4), tN(-2)]);
+    const rs = resultats('SUMA_ABANS_PRODUCTE', l, 'exp', 200).sort();
+    igual(rs, ['5x − 4 = 4x − 2', '5·(x − 4) = 4x − 2'].sort(), 'SUMA_ABANS_PRODUCTE: 3 + 2·(x − 4) → 5·(x − 4) o 5x − 4');
+    igual(resultats('SUMA_ABANS_PRODUCTE', tL([tN(3), T.P(-2, -4)], [tN(1)]), 'exp'), [null], 'SUMA_ABANS_PRODUCTE: no amb un − davant del parèntesi');
+    ok(/no vol dir que no es pugui fer/.test(REGLES.QUOCIENT_INVERTIT.expl({ A: 12, B: 3 })), 'QUOCIENT_INVERTIT: explicació del cas bessó (12x = 3 → x = 12/3)');
+}
+
 informe('generador');

@@ -567,7 +567,8 @@ const injecta = (linies, c) => [...linies.slice(0, c.j), c.res.E, ...c.pass.map(
 export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }) {
     const r = creaAtzar(llavor);
     const forma = nivell === 2 ? 2 : 1;
-    const [mn, mx0] = LIMITS[forma];
+    // amb un enunciat fix (eines del banc i del banc d'errades), el nombre de línies és el que surti
+    const [mn, mx0] = fix ? [2, 20] : LIMITS[forma];
     const mx = mx0 + (errades === 2 ? 1 : 0); // amb dues errades, una línia més
     for (let intent = 0; intent < 1500; intent++) {
         const e0 = fix || enunciat(r, forma);
@@ -626,7 +627,12 @@ function retoca(r, abans) {
         const vs = [a + b, a * b, ...(a >= b || a < 0 || b < 0 ? [a - b] : [])].filter(v => v !== 0 && v !== opera(a, o, b) && Math.abs(v) <= 200);
         return vs.length ? tria(r, vs) : a + b + 1;
     };
-    const q = pas(abans, { calc: (a, o, b) => (++n === k ? (o === '^' ? a * b : alt(a, o, b)) : undefined) });
+    // una potència: base·exponent, base + exponent o un exponent de més (amb una sola potència, cal més d'una variant)
+    const altW = (a, b) => {
+        const vs = [a * b, a + b, a ** (b + 1)].filter(v => v !== a ** b && Math.abs(v) <= 200);
+        return vs.length ? tria(r, vs) : a * b;
+    };
+    const q = pas(abans, { calc: (a, o, b) => (++n === k ? (o === '^' ? altW(a, b) : alt(a, o, b)) : undefined) });
     return q && q.E;
 }
 

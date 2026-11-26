@@ -303,6 +303,17 @@ bank examples' stored sentences by matching the old templates (3 lot-1 examples 
   with b·e = b^e (2²) come out the same. `dades.ws` lists the spoilt powers; `expl` and the «Per què?» sentence name
   all of them. This also removes the index bug above (the hook no longer picks one power).
 
+- **v1 feedback from David (26/11/2026) → v2 (23 examples; numbering changed, so v1 and v2 codes differ):**
+  item 9 (OPERACIO_INVERSA) now a fixed statement without negatives, 4x + 3 = 23 → … 4x = 20 → x = 16;
+  item 12 (QUOCIENT_INVERTIT) gets a «twin» example 12x = 3 → x = 12/3 = 4 (pupil thinks 3 : 12 is impossible), with
+  its own explanation in the generator when |A| > |B|; item 13 → NEW equation rule `SUMA_ABANS_PRODUCTE`
+  (3 + 2·(x − 4) → 5·(x − 4), or → 5x − 4), two examples with David's statement; item 17 (POTENCIA_PER_EXPONENT) uses
+  David's single-power statement 5² − 6 : 2 + 3 → 10 − 6 : 2 + 3. To make that possible: a fixed statement in the
+  order-of-operations generator skips the line-count limits, and `retoca` offers base + exponent and one exponent
+  more for a power (a single power gave only one wrong option for «Corregeix-la»). Level-2 statement form E now has
+  a + before the bracket 40 % of the time, so `SUMA_ABANS_PRODUCTE` can appear in the game. Example origins on the
+  page: `banc` (reviewed), `fix` (statement chosen by hand), `generador`.
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from

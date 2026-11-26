@@ -142,6 +142,7 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 | `COEFICIENT_OBLIDAT` | the coefficient vanishes without dividing | `3x = 12 → x = 12` |
 | `DIVISIO_SIGNE` | divides by the absolute value of a negative coefficient | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | divides the wrong way round | `9x = 5 → x = 9/5` |
+| `SUMA_ABANS_PRODUCTE` | number before the bracket added to its factor | `3 + 2·(x − 4) → 5·(x − 4)` or `→ 5x − 4` |
 | `DIST_SUMA` | outer factor added to the inner coefficient | `−2·(3x + 6) → −5x − 12` |
 | `COEFICIENT_U` | a lone x is not counted | `3x + x + 6x → 9x` |
 | `SIGNE_COPIAT` | a term only copied in this step changes sign | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` |

@@ -348,6 +348,32 @@ export const REGLES = {
             return `El $${menys(t.c)}$ multiplica tots els termes del parèntesi amb el seu signe: el $${menys(t.b)}$ també havia de canviar de signe.`;
         },
     },
+    SUMA_ABANS_PRODUCTE: {
+        // 3 + 2·(x − 4) → 5·(x − 4) (suma abans de multiplicar) o, fins i tot, → 5x − 4 (a més, només multiplica la x)
+        // (el David, banc d'errades, 26/11/2026). Només amb un sol parèntesi a la línia, «a + c·(…)», a i c positius.
+        op: 'exp',
+        pes: 2,
+        fes(l, r) {
+            const tots = [];
+            for (const c of ['L', 'R'])
+                l[c].forEach((t, i) => {
+                    const a = l[c][i - 1];
+                    if (t.k === 'p' && t.c > 0 && t.b !== 0 && a && esN(a) && a.v.n > 0 && a.v.d === 1) tots.push([c, i]);
+                });
+            if (tots.length !== 1 || [...l.L, ...l.R].filter(t => t.k === 'p').length !== 1) return null;
+            const [c, i] = tots[0];
+            const a = l[c][i - 1].v.n,
+                t = l[c][i];
+            const s = a + t.c;
+            const variant = r() < 0.65 ? 'parentesi' : 'x';
+            const nou = variant === 'parentesi' ? [P(s, t.b, t.m)] : [X(s * t.m), N(t.b)];
+            const ts = [...l[c].slice(0, i - 1), ...nou, ...l[c].slice(i + 1)];
+            return { linia: c === 'L' ? linia(ts, l.R) : linia(l.L, ts), dades: { a, t, s, variant } };
+        },
+        expl(d) {
+            return `La multiplicació va abans que la suma: el $${d.t.c}$ multiplica el parèntesi, i el $${d.a}$ no s'hi podia sumar abans.`;
+        },
+    },
     DIST_SUMA: {
         // El nombre de fora i el coeficient de dins se sumen (el David, errades reals:
         // x − 2·(3x + 6) = 3x + 7  →  x − 5x − 12 = 3x + 7). Només amb un coeficient a dins.
@@ -602,6 +628,9 @@ export const REGLES = {
             return { linia: linia([X(1)], [F(A, B)]), dades: { A, B } };
         },
         expl(d) {
+            // el cas «bessó» (el David, banc d'errades): 12x = 3 → x = 12/3, perquè «3 entre 12 no es pot fer»
+            if (Math.abs(d.A) > Math.abs(d.B))
+                return `Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient: $${menys(d.B)} : ${d.A < 0 ? '(' + menys(d.A) + ')' : d.A}$. Que el numerador sigui més petit no vol dir que no es pugui fer: dona una fracció.`;
             return `Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés.`;
         },
     },
@@ -669,6 +698,18 @@ const PERQUE = {
                 `El $${t}$ havia de passar a l'altre membre dividint.`,
                 `Havia de passar tots els termes, també els nombres, al membre de l'esquerra.`,
                 `Havia de sumar els termes de cada membre abans de passar-los a l'altre.`,
+            ],
+        };
+    },
+    SUMA_ABANS_PRODUCTE(d) {
+        const par = `${d.t.m === 1 ? '' : d.t.m}x ${d.t.b < 0 ? '−' : '+'} ${Math.abs(d.t.b)}`;
+        return {
+            bona: `Ha sumat $${d.a} + ${d.t.c}$ abans de multiplicar: el $${d.t.c}$ només multiplica el parèntesi.`,
+            dolentes: [
+                `El $${d.a}$ també s'havia de multiplicar per $(${par})$.`,
+                `Primer s'havia de sumar $${d.a} + ${d.t.c}$ i després multiplicar.`,
+                `Ha multiplicat bé, però s'ha equivocat en un signe.`,
+                `El $${d.t.c}$ s'havia de sumar a cada terme del parèntesi.`,
             ],
         };
     },
@@ -919,11 +960,14 @@ function enunciat(r, nivell) {
     if (forma === 'E') {
         const e = enter(r, 1, 20),
             d = enter(r, 1, 9) * signe(r);
-        const A = -c - d;
+        // e − c(x + b) o, un 40 %, e + c(x + b): amb el +, l'alumne pot sumar e + c abans de multiplicar
+        // (SUMA_ABANS_PRODUCTE, el David, banc d'errades, 26/11/2026)
+        const k = r() < 0.4 ? c : -c;
+        const A = k - d;
         if (Math.abs(A) < 2) return null;
         const B = s !== null ? A * s : fraccionari(r, A);
-        // e − c(x + b) = dx + f  →  −c x + (e − c b) = d x + f
-        return linia([N(e), P(-c, b)], [X(d), N(B + e - c * b)]);
+        // e + k(x + b) = dx + f  →  k x + (e + k b) = d x + f
+        return linia([N(e), P(k, b)], [X(d), N(B + e + k * b)]);
     }
     // c(x + b) = d(x + e)  →  (c − d)x = d·e − c·b: es tria e perquè surti el B buscat
     const d = enter(r, 2, 6);

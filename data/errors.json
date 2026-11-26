@@ -8,6 +8,10 @@
     "nom": "Signe davant d'un parèntesi",
     "descripcio": "El signe negatiu de davant del parèntesi no canvia el signe de tots els termes de dins."
   },
+  "SUMA_ABANS_PRODUCTE": {
+    "nom": "La suma abans que el producte",
+    "descripcio": "Suma el nombre de davant amb el que multiplica el parèntesi abans de multiplicar: 3 + 2·(x − 4) → 5·(x − 4), o fins i tot → 5x − 4."
+  },
   "DIST_SUMA": {
     "nom": "Suma en lloc de multiplicar",
     "descripcio": "El nombre de fora del parèntesi se suma al coeficient de la x de dins en lloc de multiplicar-s'hi: −2·(3x + 6) → −5x − 12."
@@ -46,6 +50,6 @@
   },
   "QUOCIENT_INVERTIT": {
     "nom": "Divisió al revés",
-    "descripcio": "Divideix el coeficient de la x entre el terme independent, i no al revés."
+    "descripcio": "Divideix el coeficient de la x entre el terme independent, i no al revés. Passa sobretot quan el coeficient és més gran (12x = 3 → x = 12/3 = 4): l'alumne creu que «3 entre 12 no es pot fer»."
   }
 }
