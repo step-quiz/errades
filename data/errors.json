@@ -51,5 +51,17 @@
   "QUOCIENT_INVERTIT": {
     "nom": "Divisió al revés",
     "descripcio": "Divideix el coeficient de la x entre el terme independent, i no al revés. Passa sobretot quan el coeficient és més gran (12x = 3 → x = 12/3 = 4): l'alumne creu que «3 entre 12 no es pot fer»."
+  },
+  "INVERS_X": {
+    "nom": "La x al denominador",
+    "descripcio": "Amb la x al denominador, la passa a l'altre membre multiplicant i hi passa el nombre: 30/x = 5 → x = 30·5, en lloc de 30 = 5x."
+  },
+  "CANVI_SIGNE_PARCIAL": {
+    "nom": "Canvi de signe incomplet",
+    "descripcio": "En canviar el signe de tota l'equació, n'hi ha algun terme que no el canvia: −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x."
+  },
+  "DENOMINADORS": {
+    "nom": "Treure denominadors",
+    "descripcio": "En treure els denominadors, el signe − de davant d'una fracció no canvia tot el numerador ((3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x), o els termes sense denominador no es multipliquen."
   }
 }

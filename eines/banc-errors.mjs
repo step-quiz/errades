@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import { generaExemple as generaEq, perPagina as perPaginaEq, valida as validaEq, T as TE, text as textEq } from '../js/equacions/generador.js';
 import { generaExemple as generaPr, perPagina as perPaginaPr, valida as validaPr, T as TP } from '../js/prioritat/generador.js';
 
-const VERSIO = 'v2';
+const VERSIO = 'v3';
 const arrel = new URL('../', import.meta.url);
 const llegeix = f => fs.readFileSync(new URL(f, arrel), 'utf8');
 const json = f => JSON.parse(llegeix(f));
@@ -31,7 +31,20 @@ function triaMillor(cands) {
 
 // Peticions del David (banc d'errades v1, 26/11/2026): exemples concrets per a alguns tipus, i casos de més.
 const EQ13 = TE.linia([TE.N(3), TE.P(2, -4)], [TE.X(3), TE.X(1), TE.N(-2)]); // 3 + 2·(x − 4) = 3x + x − 2
+// Tres errades noves (el David, 26/11/2026), amb els seus enunciats
+const EQ_INV = TE.linia([TE.I(30)], [TE.N(5)]); // 30/x = 5
+const EQ_NEG = TE.linia([TE.X(-4), TE.N(5), TE.X(-3)], [TE.N(6), TE.X(-1)]); // −4x + 5 − 3x = 6 − x
+const EQ_DEN = TE.linia([TE.D(1, 3, 5, 2), TE.D(-1, 1, -4, 3)], [TE.X(5)]); // (3x + 5)/2 − (x − 4)/3 = 5x
 const EXTRA_EQ = {
+    INVERS_X: [{ banc: false, e0: EQ_INV }],
+    CANVI_SIGNE_PARCIAL: [
+        { titol: 'un terme de la dreta', banc: false, e0: EQ_NEG, filtre: c => textEq(c.res.linia) === '4x − 5 + 3x = 6 + x' },
+        { titol: "un terme de l'esquerra", banc: false, e0: EQ_NEG, filtre: c => textEq(c.res.linia) === '4x + 5 + 3x = −6 + x' },
+    ],
+    DENOMINADORS: [
+        { titol: 'el signe de davant de la fracció', banc: false, e0: EQ_DEN, filtre: c => c.res.dades.variant === 'signe' },
+        { titol: 'els termes sense denominador', banc: false, e0: EQ_DEN, filtre: c => c.res.dades.variant === 'sense' },
+    ],
     // 9: sense la complexitat d'un nombre negatiu: 4x = 20 → x = 16
     OPERACIO_INVERSA: [{ banc: false, e0: TE.linia([TE.X(4), TE.N(3)], [TE.N(23)]), filtre: c => textEq(c.res.linia) === 'x = 16' }],
     // 12: el cas de sempre i el «bessó»: 12x = 3 → x = 12/3 (no es pot fer 3 entre 12)
@@ -52,7 +65,7 @@ function equacio(id, o = {}) {
         for (const nivell of [1, 2]) {
             try {
                 const ex = generaEq({ llavor: s, nivell, errades: 1, e0: o.e0 || null, filtre: c => c.id === id && (!o.filtre || o.filtre(c)) }, TIPUS_EQ);
-                if (!validaEq(ex).length && Math.max(...nombres(ex)) <= 40 && pred(ex)) cands.push(perPaginaEq(ex));
+                if (!validaEq(ex).length && (o.e0 || Math.max(...nombres(ex)) <= 40) && pred(ex)) cands.push(perPaginaEq(ex));
             } catch (e) {
                 /* una altra llavor */
             }

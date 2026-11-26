@@ -133,24 +133,8 @@ Mal-rules (`REGLES`):
 | `COEFICIENT_OBLIDAT` | div | `3x = 12 → x = 12` (Erbaş et al. 2009, YK01) |
 | `DIVISIO_SIGNE` | div | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | div | `2x = 16 → x = 2/16`; the «twin» case `12x = 3 → x = 12/3` (pupil thinks 3 : 12 is impossible) gets its own explanation when \|A\| > \|B\| (David, review page v1, item 12) |
+| `INVERS_X` | inv | `30/x = 5 → x = 30·5` (correct: `5x = 30`). New term kind `I(a)` = a/x (only with numbers around it; `solucio` handles it), product term `M(a, b)` = a·b (simplified by `simp`), new op `inv` (a/x = B → Bx = a); level-1 form I `a/x + c = d` (David, 26/11/2026) |
+| `CANVI_SIGNE_PARCIAL` | neg | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` or `→ 4x + 5 + 3x = −6 + x`: one term keeps its sign. New op `neg` (all signs changed) only when the left side starts with x-terms that are all negative and the right side has an x-term; level-2 form K `−ax + b − cx = d − ex` (David) |
+| `DENOMINADORS` | den | `(3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x` (variant `signe`: the − before a fraction does not change the numerator's second term) or `→ 9x + 15 − 2x + 8 = 5x` (variant `sense`: terms without a denominator not multiplied). New term kind `D(s, m, b, den)` = s·(mx + b)/den, new op `den` (multiply by the lcm, expanded directly); level-2 form L (David) |
 
-At level 1 there are no brackets, so `DISTRIBUTIVA`, `DIST_SIGNE` and `DIST_SUMA` only appear at level 2. Level-2
-forms: C `c·(x + b) = dx + e`, D `c·(x + b) + fx = dx + e`, E `e ∓ c·(x + b) = dx + f` (+ 40 %), F `c·(x + b) = d·(x + e)`,
-H `ax + c·(mx + b) = dx + e` (bracket term `P(c, b, m)`, m = 2…4; `DIST_SUMA` needs it). Level-1 statement
-forms: A `ax + b = c`, B `ax + b = dx + e`, G `ax + b + cx = e` (weights 2:1:1; G exists so that the red1 variant
-of `TERMES_NO_SEMBLANTS` and red1 `CALCUL`/`SIGNE_COPIAT` appear at level 1; G gives 5–6 lines, hence 4–6).
-
-Bank tooling: `generaExemple({ llavor, nivell, errades, e0, filtre }, TIPUS)` accepts a fixed statement
-`e0 = T.linia([T.X(8), T.N(-15)], [T.X(-4), T.N(-3)])` and a candidate filter
-`filtre = c => c.id === 'CALCUL' && text(c.res.linia) === '12x = −12'` (try successive seeds until it
-returns); this is how curated bank candidates are rebuilt after review.
-
-## Tests
-
-```
-node tests/run-all.js                 # generator (thousands of seeds), state machine, link generator, docs vs code
-npm install --no-save playwright      # once, for the browser test
-node tests/navegador/prova.mjs        # serves the folder, plays examples by tap and by keyboard at 1366×768 and 360×740
-```
-
-The GitHub workflow `tests.yml` (copy in `docs/workflows/`) runs `node tests/run-all.js` on every push.
+Lines containing the new kinds (`i`, `d`, `m`) only accept the three new rules (`NOVES` in `candidates`). With a fixed statement (`e0`) neither line-count limits nor number margins apply. `OPS` is now `den, exp, neg, red1, tra, red2, inv, div, simp`.

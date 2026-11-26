@@ -38,8 +38,8 @@ for (const nivell of [1, 2]) {
         }
         if (errades) {
             const esperats = nivell === 1
-                ? ['SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT']
-                : Object.keys(REGLES);
+                ? ['SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT', 'INVERS_X']
+                : Object.keys(REGLES).filter(t => t !== 'INVERS_X'); // a/x + c = d és de nivell 1
             for (const t of esperats) ok(vistos[t] > 0, `nivell ${nivell}: no surt mai el tipus ${t}`);
             console.log(`  nivell ${nivell}: ${JSON.stringify(vistos)}`);
         }
@@ -161,6 +161,23 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
     igual(rs, ['5x − 4 = 4x − 2', '5·(x − 4) = 4x − 2'].sort(), 'SUMA_ABANS_PRODUCTE: 3 + 2·(x − 4) → 5·(x − 4) o 5x − 4');
     igual(resultats('SUMA_ABANS_PRODUCTE', tL([tN(3), T.P(-2, -4)], [tN(1)]), 'exp'), [null], 'SUMA_ABANS_PRODUCTE: no amb un − davant del parèntesi');
     ok(/no vol dir que no es pugui fer/.test(REGLES.QUOCIENT_INVERTIT.expl({ A: 12, B: 3 })), 'QUOCIENT_INVERTIT: explicació del cas bessó (12x = 3 → x = 12/3)');
+}
+
+// Tres errades noves (el David, 26/11/2026)
+{
+    const { I, D } = T;
+    const e1 = tL([I(30)], [tN(5)]);
+    igual(resol(e1).map(p => text(p.linia)), ['5x = 30', 'x = {30|5}', 'x = 6'], '30/x = 5 → 5x = 30 → x = 30/5 → x = 6');
+    igual(resultats('INVERS_X', e1, 'inv'), ['x = 30·5'], 'INVERS_X: 30/x = 5 → x = 30·5');
+    const e2 = tL([tX(-4), tN(5), tX(-3)], [tN(6), tX(-1)]);
+    igual(text(aplica('neg', e2)), '4x − 5 + 3x = −6 + x', 'neg: −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = −6 + x');
+    const r2 = resultats('CANVI_SIGNE_PARCIAL', e2, 'neg', 300);
+    ok(r2.includes('4x − 5 + 3x = 6 + x') && r2.includes('4x + 5 + 3x = −6 + x'), 'CANVI_SIGNE_PARCIAL: les dues variants del David');
+    const e3 = tL([D(1, 3, 5, 2), D(-1, 1, -4, 3)], [tX(5)]);
+    igual(text(aplica('den', e3)), '9x + 15 − 2x + 8 = 30x', 'den: (3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x + 8 = 30x');
+    const r3 = resultats('DENOMINADORS', e3, 'den', 300);
+    ok(r3.includes('9x + 15 − 2x − 8 = 30x') && r3.includes('9x + 15 − 2x + 8 = 5x'), 'DENOMINADORS: signe i termes sense denominador');
+    ok(aplica('neg', tL([tX(3), tN(1)], [tX(1)])) === null, 'neg: no si no comença amb una x negativa');
 }
 
 informe('generador');

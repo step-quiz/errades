@@ -51,7 +51,8 @@ export function parametres(nivell, noerrors, llavor) {
  */
 export function encaixaBanc(ex, nivell, noerrors) {
     const n = Object.keys(ex.errades || {}).length;
-    const forma = ex.linies[0].some(t => t.includes('(')) ? 2 : 1;
+    // la forma de l'enunciat: la que diu l'exemple (el generador i el banc la porten); si no, amb parèntesis és la 2
+    const forma = ex.nivell === 1 || ex.nivell === 2 ? ex.nivell : ex.linies[0].some(t => t.includes('(')) ? 2 : 1;
     if (n === 0) return !!noerrors;
     if (nivell === 1) return forma === 1 && n === 1;
     if (nivell === 2) return forma === 2 && n === 1;

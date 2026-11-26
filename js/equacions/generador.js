@@ -86,6 +86,12 @@ const N = v => ({ k: 'n', v: v instanceof Q ? v : q(v) });
 /** c·(mx + b); m (el coeficient de dins) és 1 si no es diu (el David, errades reals: −2·(3x + 6)). */
 const P = (c, b, m = 1) => ({ k: 'p', c, b, m });
 const F = (num, den) => ({ k: 'f', num, den });
+/** a/x: la x al denominador (el David, 26/11/2026: 30/x = 5). */
+const I = a => ({ k: 'i', a });
+/** s·(mx + b)/den: una fracció amb un binomi al numerador, amb el signe s (±1) de davant (el David: (3x + 5)/2 − (x − 4)/3). */
+const D = (s, m, b, den) => ({ k: 'd', s, m, b, den });
+/** a·b sense calcular (x = 30·5). */
+const M = (a, b) => ({ k: 'm', a, b });
 const linia = (L, R) => ({ L, R });
 
 const menys = n => (n < 0 ? '−' + Math.abs(n) : String(n));
@@ -110,6 +116,12 @@ function cos(t) {
         }
         case 'f':
             return [false, `{${menys(t.num)}|${menys(t.den)}}`];
+        case 'i':
+            return [t.a < 0, `{${Math.abs(t.a)}|x}`];
+        case 'd':
+            return [t.s < 0, `{${t.m === 1 ? '' : t.m}x ${t.b < 0 ? '−' : '+'} ${Math.abs(t.b)}|${t.den}}`];
+        case 'm':
+            return [t.a < 0, `${Math.abs(t.a)}·${t.b < 0 ? '(' + menys(t.b) + ')' : t.b}`];
     }
     throw new Error('terme desconegut');
 }
@@ -139,11 +151,23 @@ function lineal(ts) {
             a = a.suma(q(t.c * t.m));
             b = b.suma(q(t.c * t.b));
         } else if (t.k === 'f') b = b.suma(q(t.num, t.den));
+        else if (t.k === 'd') {
+            a = a.suma(q(t.s * t.m, t.den));
+            b = b.suma(q(t.s * t.b, t.den));
+        } else if (t.k === 'm') b = b.suma(q(t.a * t.b));
     }
     return { a, b };
 }
 /** La solució de la línia (un Q), o null si no en té exactament una. */
 export function solucio(l) {
+    // a/x + n = m: l'única x és al denominador (x = a / (el que queda))
+    const is = [...l.L, ...l.R].filter(t => t.k === 'i');
+    if (is.length) {
+        if (is.length > 1 || ![...l.L, ...l.R].every(t => t.k === 'i' || t.k === 'n')) return null;
+        const [c, o] = l.L.includes(is[0]) ? ['L', 'R'] : ['R', 'L'];
+        const B = lineal(l[o]).b.resta(lineal(l[c].filter(t => t.k !== 'i')).b);
+        return B.zero ? null : q(is[0].a).entre(B);
+    }
     const e = lineal(l.L),
         d = lineal(l.R);
     const A = e.a.resta(d.a),
@@ -157,7 +181,9 @@ export function equivalents(l1, l2) {
 }
 
 // ---------- El procediment de l'alumne ----------
-export const OPS = ['exp', 'red1', 'tra', 'red2', 'div', 'simp'];
+// den: treure denominadors (D); neg: canviar el signe de tots els termes (−4x + 5 − 3x = 6 − x);
+// inv: la x surt del denominador (a/x = B → Bx = a) (el David, 26/11/2026)
+export const OPS = ['den', 'exp', 'neg', 'red1', 'tra', 'red2', 'inv', 'div', 'simp'];
 const esX = t => t.k === 'x';
 const esN = t => t.k === 'n';
 const negT = t => (t.k === 'x' ? X(t.c.neg()) : N(t.v.neg()));
@@ -198,8 +224,40 @@ function agrupa(ts) {
 }
 const repetits = ts => ts.filter(esX).length > 1 || ts.filter(esN).length > 1;
 
+const mcm = (a, b) => (a * b) / mcd(a, b);
+/** El pas «neg» només quan l'equació comença amb termes en x negatius: −4x + 5 − 3x = 6 − x. */
+const negable = l =>
+    l.L.length > 0 &&
+    esX(l.L[0]) &&
+    l.L[0].c.n < 0 &&
+    l.L.filter(esX).length >= 2 &&
+    l.L.filter(esX).every(t => t.c.n < 0) &&
+    l.R.some(esX) &&
+    [...l.L, ...l.R].every(t => esX(t) || esN(t));
 export function aplica(op, l) {
     switch (op) {
+        case 'den': {
+            const ds = [...l.L, ...l.R].filter(t => t.k === 'd');
+            if (!ds.length) return null;
+            const Mx = ds.reduce((m, t) => mcm(m, t.den), 1);
+            const fes = ts =>
+                ts.flatMap(t => {
+                    if (t.k === 'd') {
+                        const k = Mx / t.den;
+                        return t.b ? [X(t.s * t.m * k), N(t.s * t.b * k)] : [X(t.s * t.m * k)];
+                    }
+                    if (esX(t)) return [X(t.c.per(q(Mx)))];
+                    return [N(t.v.per(q(Mx)))];
+                });
+            return linia(fes(l.L), buit(fes(l.R)));
+        }
+        case 'neg':
+            if (!negable(l)) return null;
+            return linia(l.L.map(negT), l.R.map(negT));
+        case 'inv': {
+            if (l.L.length !== 1 || l.L[0].k !== 'i' || l.R.length !== 1 || !esN(l.R[0]) || l.R[0].v.zero) return null;
+            return linia([X(l.R[0].v)], [N(l.L[0].a)]);
+        }
         case 'exp':
             if (![...l.L, ...l.R].some(t => t.k === 'p')) return null;
             return linia(expandeix(l.L), buit(expandeix(l.R)));
@@ -210,12 +268,14 @@ export function aplica(op, l) {
             const movN = l.L.filter(t => esN(t) && !t.v.zero),
                 movX = l.R.filter(esX);
             if (!movN.length && !movX.length) return null;
-            const L = [...l.L.filter(esX), ...movX.map(negT)];
+            const L = [...l.L.filter(t => esX(t) || t.k === 'i'), ...movX.map(negT)];
             const R = [...l.R.filter(t => esN(t) && !(t.v.zero && (l.R.length > 1 || movN.length))), ...movN.map(negT)];
             if (!L.length) return null;
             return linia(L, buit(R));
         }
         case 'red2': {
+            if (l.L.length === 1 && l.L[0].k === 'i' && l.R.length > 1 && l.R.every(esN))
+                return linia(l.L, [N(l.R.reduce((s, t) => s.suma(t.v), Q0))]);
             if (!l.L.every(esX) || !l.R.every(esN)) return null;
             if (l.L.length <= 1 && l.R.length <= 1) return null;
             const A = l.L.reduce((s, t) => s.suma(t.c), Q0),
@@ -232,6 +292,7 @@ export function aplica(op, l) {
             return linia([X(1)], [F(B.n, A.n)]);
         }
         case 'simp': {
+            if (l.R.length === 1 && l.R[0].k === 'm') return linia([X(1)], [N(l.R[0].a * l.R[0].b)]);
             if (l.R.length !== 1 || l.R[0].k !== 'f') return null;
             const { num, den } = l.R[0];
             if (den > 1 && mcd(num, den) === 1) return null;
@@ -372,6 +433,72 @@ export const REGLES = {
         },
         expl(d) {
             return `La multiplicació va abans que la suma: el $${d.t.c}$ multiplica el parèntesi, i el $${d.a}$ no s'hi podia sumar abans.`;
+        },
+    },
+    INVERS_X: {
+        // 30/x = 5 → x = 30·5 (el David, 26/11/2026): passa la x a l'altre membre «multiplicant», i hi passa el 5
+        op: 'inv',
+        pes: 3,
+        fes(l) {
+            if (!aplica('inv', l) || !l.R[0].v.enter) return null;
+            const a = l.L[0].a,
+                B = l.R[0].v.n;
+            return { linia: linia([X(1)], [M(a, B)]), dades: { a, B, marca: [2] } };
+        },
+        expl(d) {
+            return `La $x$ és al denominador: si $${menys(d.a)} : x = ${menys(d.B)}$, la $x$ és el nombre que fa aquesta divisió, és a dir, $${menys(d.a)} : ${d.B < 0 ? '(' + menys(d.B) + ')' : d.B}$. No s'havia de multiplicar.`;
+        },
+    },
+    CANVI_SIGNE_PARCIAL: {
+        // −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x (el David, 26/11/2026): canvia els signes, però no de tots els termes
+        op: 'neg',
+        pes: 3,
+        fes(l, r) {
+            const bo = aplica('neg', l);
+            if (!bo) return null;
+            const llocs = [...l.L.map((t, i) => ['L', i]), ...l.R.map((t, i) => ['R', i])].filter(([c, i]) => i > 0 || c === 'R');
+            const [c, i] = tria(r, llocs);
+            const nou = bo[c].slice();
+            nou[i] = l[c][i];
+            return { linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou), dades: { t: l[c][i], costat: c } };
+        },
+        expl(d) {
+            return `Per canviar el signe de tota l'equació s'han de canviar els signes de tots els termes, dels dos membres: el $${ambSigne(d.t)}$ també havia de canviar de signe.`;
+        },
+    },
+    DENOMINADORS: {
+        // (3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x (el David, 26/11/2026): el − de davant de la fracció no canvia
+        // el signe del segon terme del numerador; o bé els termes sense denominador no es multipliquen (5x es queda 5x)
+        op: 'den',
+        pes: 3,
+        fes(l, r) {
+            const bo = aplica('den', l);
+            if (!bo) return null;
+            const ds = [...l.L, ...l.R].filter(t => t.k === 'd');
+            const Mx = ds.reduce((m, t) => mcm(m, t.den), 1);
+            const variants = [];
+            const negs = ds.filter(t => t.s < 0 && t.b !== 0);
+            if (negs.length) variants.push('signe');
+            if ([...l.L, ...l.R].some(t => t.k !== 'd') && Mx > 1) variants.push('sense');
+            if (!variants.length) return null;
+            const variant = tria(r, variants);
+            const dq = variant === 'signe' ? tria(r, negs) : null;
+            const fes = ts =>
+                ts.flatMap(t => {
+                    if (t.k === 'd') {
+                        const k = Mx / t.den;
+                        const nb = t === dq ? t.b * k : t.s * t.b * k;
+                        return t.b ? [X(t.s * t.m * k), N(nb)] : [X(t.s * t.m * k)];
+                    }
+                    if (variant === 'sense') return [t];
+                    if (esX(t)) return [X(t.c.per(q(Mx)))];
+                    return [N(t.v.per(q(Mx)))];
+                });
+            return { linia: linia(fes(l.L), buit(fes(l.R))), dades: { variant, t: dq, M: Mx } };
+        },
+        expl(d) {
+            if (d.variant === 'signe') return `El signe $−$ de davant de la fracció afecta tot el numerador: en treure el denominador, el $${menys(d.t.b)}$ també havia de canviar de signe.`;
+            return `Per treure els denominadors es multipliquen els dos membres per $${d.M}$: s'han de multiplicar tots els termes, també els que no tenen denominador.`;
         },
     },
     DIST_SUMA: {
@@ -713,6 +840,25 @@ const PERQUE = {
             ],
         };
     },
+    INVERS_X(d) {
+        const B = d.B < 0 ? '(' + menys(d.B) + ')' : d.B;
+        return {
+            bona: `Ha multiplicat $${menys(d.a)} · ${B}$, però la $x$ era al denominador: havia de dividir $${menys(d.a)} : ${B}$.`,
+            dolentes: [`El $${menys(d.B)}$ havia de passar a l'altre membre restant.`, `Havia de multiplicar el $${menys(d.a)}$ per la $x$.`, `Ha calculat malament $${menys(d.a)} · ${B}$.`],
+        };
+    },
+    CANVI_SIGNE_PARCIAL(d) {
+        return {
+            bona: `Ha canviat el signe de tots els termes menys el del $${ambSigne(d.t)}$.`,
+            dolentes: [`Només s'havien de canviar els signes del membre de l'esquerra.`, `Els termes en $x$ no havien de canviar de signe.`, `Ha passat un terme a l'altre membre sense canviar-li el signe.`],
+        };
+    },
+    DENOMINADORS(d) {
+        const comuns = [`S'ha equivocat en calcular el mínim comú múltiple dels denominadors.`, `Havia de dividir per $${d.M}$, i no multiplicar.`];
+        if (d.variant === 'signe')
+            return { bona: `El $−$ de davant de la fracció no ha canviat el signe del $${menys(d.t.b)}$.`, dolentes: [`No ha multiplicat per $${d.M}$ els termes que no tenen denominador.`, ...comuns] };
+        return { bona: `No ha multiplicat per $${d.M}$ els termes que no tenen denominador.`, dolentes: [`El $−$ de davant d'una fracció havia de canviar el signe de tot el numerador.`, ...comuns] };
+    },
     DIST_SUMA(d) {
         const c = menys(d.t.c),
             b = menys(d.t.b),
@@ -888,6 +1034,11 @@ function perQueBona(op, abans, despres) {
         case 'simp':
             escrit = [termeTxt(despres.R[0], true)];
             break;
+        case 'den':
+        case 'neg':
+        case 'inv':
+            escrit = [text(despres)];
+            break;
     }
     const parts = escrit.map((e, k) => (k === 0 ? `és correcte haver escrit $${e}$` : `també és correcte haver escrit $${e}$`));
     const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
@@ -900,8 +1051,17 @@ function perQueBona(op, abans, despres) {
 function enunciat(r, nivell) {
     const s = r() < (nivell === 1 ? 0.75 : 0.8) ? signe(r) * enter(r, 1, 9) : null; // solució entera o fraccionària
     if (nivell === 1) {
-        const forma = tria(r, ['A', 'A', 'B', 'G']);
+        const forma = tria(r, ['A', 'A', 'B', 'G', 'I']);
         const a = enter(r, 2, 9);
+        if (forma === 'I') {
+            // a/x + c = d (el David, 26/11/2026: 30/x = 5): la x al denominador, solució entera
+            const B = enter(r, 2, 9) * (r() < 0.8 ? 1 : -1),
+                x = s !== null ? s : signe(r) * enter(r, 2, 9),
+                c = signe(r) * enter(r, 1, 9);
+            const A = B * x;
+            if (Math.abs(A) > 60 || B + c === 0) return null;
+            return linia([I(A), N(c)], [N(B + c)]);
+        }
         if (forma === 'G') {
             // dos termes en x al mateix membre (el David, lot 1, B16: 2x + 3 + 4x = 18)
             // un 30 % amb una x sola (x vol dir 1x: COEFICIENT_U)
@@ -925,9 +1085,41 @@ function enunciat(r, nivell) {
         const B = s !== null ? A * s : fraccionari(r, A);
         return linia([X(a), N(b)], [X(d), N(B + b)]);
     }
-    const forma = tria(r, ['C', 'D', 'E', 'F', 'H']);
+    const forma = tria(r, ['C', 'D', 'E', 'F', 'H', 'K', 'L']);
     const c = enter(r, 2, 6),
         b = signe(r) * enter(r, 1, 9);
+    if (forma === 'K') {
+        // −ax + b − cx = d − ex: comença amb termes en x negatius, i es canvien tots els signes (CANVI_SIGNE_PARCIAL)
+        const a = enter(r, 2, 6),
+            c2 = enter(r, 1, 5),
+            e = enter(r, 1, 5),
+            b2 = signe(r) * enter(r, 1, 12);
+        const A = -a - c2 + e;
+        if (Math.abs(A) < 2) return null;
+        const B = s !== null ? A * s : fraccionari(r, A);
+        const d = B + b2;
+        if (d === 0) return null;
+        return linia([X(-a), N(b2), X(-c2)], [N(d), X(-e)]);
+    }
+    if (forma === 'L') {
+        // (m1x + b1)/d1 ∓ (m2x + b2)/d2 = ex (+ f): treure denominadors (DENOMINADORS)
+        const [d1, d2] = tria(r, [[2, 3], [3, 2], [3, 4], [4, 3], [2, 5], [4, 6], [2, 4]]);
+        const Mx = (d1 * d2) / mcd(d1, d2),
+            k1 = Mx / d1,
+            k2 = Mx / d2;
+        const m1 = enter(r, 1, 4),
+            m2 = enter(r, 1, 3),
+            b1 = signe(r) * enter(r, 1, 9),
+            b2 = signe(r) * enter(r, 1, 9),
+            s2 = r() < 0.75 ? -1 : 1,
+            e = signe(r) * enter(r, 1, 3),
+            f = r() < 0.4 ? signe(r) * enter(r, 1, 5) : 0;
+        const A = m1 * k1 + s2 * m2 * k2 - e * Mx,
+            B = f * Mx - b1 * k1 - s2 * b2 * k2;
+        // (sense que els termes en x de les dues fraccions s'anul·lin: 6x − 6x)
+        if (Math.abs(A) < 2 || B === 0 || Math.abs(e * Mx) > 40 || m1 * k1 === m2 * k2) return null;
+        return linia([D(1, m1, b1, d1), D(s2, m2, b2, d2)], f ? [X(e), N(f)] : [X(e)]);
+    }
     if (forma === 'H') {
         // ax + c·(mx + b) = dx + e, amb un coeficient a dins del parèntesi (el David, errades reals:
         // x − 2·(3x + 6) = 3x + 7)
@@ -993,6 +1185,9 @@ const dinsMarge = l => [...l.L, ...l.R].every(t => {
     if (t.k === 'x') return Math.abs(t.c.n) <= 40 && t.c.d === 1;
     if (t.k === 'n') return Math.abs(t.v.n) <= 120 && t.v.d <= 40;
     if (t.k === 'p') return Math.abs(t.c) <= 9 && Math.abs(t.b) <= 20 && t.m <= 5;
+    if (t.k === 'i') return Math.abs(t.a) <= 120;
+    if (t.k === 'd') return t.m <= 9 && Math.abs(t.b) <= 20 && t.den <= 12;
+    if (t.k === 'm') return Math.abs(t.a) <= 120 && Math.abs(t.b) <= 40;
     return Math.abs(t.num) <= 120 && Math.abs(t.den) <= 40;
 });
 
@@ -1054,6 +1249,7 @@ export function versemblant(id, linies, ops, j, res) {
     }
     return true;
 }
+const NOVES = ['INVERS_X', 'CANVI_SIGNE_PARCIAL', 'DENOMINADORS'];
 function candidates(r, linies, ops, des = 1) {
     const out = [];
     for (let j = Math.max(1, des); j < linies.length; j++) {
@@ -1061,6 +1257,8 @@ function candidates(r, linies, ops, des = 1) {
         for (const [id, regla] of Object.entries(REGLES)) {
             if (!opsDe(regla).includes(op)) continue;
             if (id === 'TERMES_NO_SEMBLANTS' && jaDistingeix(linies, j)) continue;
+            // les línies amb termes nous (a/x, fraccions amb binomi, a·b) només admeten les regles que hi pensen
+            if ([...linies[j - 1].L, ...linies[j - 1].R].some(t => 'idm'.includes(t.k)) && !NOVES.includes(id)) continue;
             const res = regla.fes(linies[j - 1], r, op);
             if (!res || !versemblant(id, linies, ops, j, res)) continue;
             const mal = res.linia;
@@ -1103,7 +1301,8 @@ function injecta(linies, ops, c) {
  */
 export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }, TIPUS) {
     const r = creaAtzar(llavor);
-    const [mn, mx] = LIMITS[nivell] || LIMITS[1];
+    // amb un enunciat fix (eines del banc i del banc d'errades), el nombre de línies és el que surti
+    const [mn, mx] = fix ? [2, 20] : LIMITS[nivell] || LIMITS[1];
     for (let intent = 0; intent < 400; intent++) {
         const e0 = fix || enunciat(r, nivell);
         if (!e0 || !solucio(e0) || !dinsMarge(e0) || zeroSobrer(e0)) continue;
@@ -1146,7 +1345,8 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
                 ({ linies, ops } = injecta(linies, ops, c));
             }
         }
-        if (!ok || linies.length < mn || linies.length > mx || !linies.every(dinsMarge)) continue;
+        // (amb un enunciat fix, triat a mà, no es miren els marges: 30/x = 5 → x = 150)
+        if (!ok || linies.length < mn || linies.length > mx || (!fix && !linies.every(dinsMarge))) continue;
         if (!compensades && errades === 2 && solucio(linies[linies.length - 1]).igual(solucio(e0))) continue;
         const ex = construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TIPUS);
         if (valida(ex).length === 0) return ex;
@@ -1154,7 +1354,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
     throw new Error(`No s'ha pogut generar cap exemple (llavor ${llavor}, nivell ${nivell})`);
 }
 /** Per fer enunciats fixos (eines del banc): T.linia([T.X(8), T.N(-15)], [T.X(-4), T.N(-3)]). */
-export const T = { X, N, P, linia };
+export const T = { X, N, P, I, D, linia };
 
 function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TIPUS) {
     const ex = {
@@ -1175,9 +1375,11 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         const bonaF = fitxes(bona),
             malF = fitxes(linies[c.j]);
         let terme = malF.findIndex((t, i) => t !== '=' && t !== bonaF[i]);
+        const marca = c.res.dades && c.res.dades.marca; // la regla ja diu quins termes s'han d'encerclar
         if (terme < 0) terme = malF.findIndex(t => t !== '=');
         // dos termes equivocats (SIGNE_TRANSPOSAR o SIGNE_COPIAT amb dos termes): a la fase del terme valen tots dos
-        const termes = bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
+        if (marca) terme = marca[0];
+        const termes = marca ? marca : bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
         // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia
         const fr = PERQUE[c.id](c.res.dades);
         const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, 3).map(t => [t, false])]);

@@ -143,6 +143,9 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 | `DIVISIO_SIGNE` | divides by the absolute value of a negative coefficient | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | divides the wrong way round | `9x = 5 → x = 9/5` |
 | `SUMA_ABANS_PRODUCTE` | number before the bracket added to its factor | `3 + 2·(x − 4) → 5·(x − 4)` or `→ 5x − 4` |
+| `INVERS_X` | x in the denominator: multiplies instead of dividing | `30/x = 5 → x = 30·5` |
+| `CANVI_SIGNE_PARCIAL` | changing every sign, one term forgotten | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` |
+| `DENOMINADORS` | clearing denominators: sign before a fraction / terms not multiplied | `(3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x` |
 | `DIST_SUMA` | outer factor added to the inner coefficient | `−2·(3x + 6) → −5x − 12` |
 | `COEFICIENT_U` | a lone x is not counted | `3x + x + 6x → 9x` |
 | `SIGNE_COPIAT` | a term only copied in this step changes sign | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` |

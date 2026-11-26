@@ -313,6 +313,13 @@ bank examples' stored sentences by matching the old templates (3 lot-1 examples 
   more for a power (a single power gave only one wrong option for «Corregeix-la»). Level-2 statement form E now has
   a + before the bracket 40 % of the time, so `SUMA_ABANS_PRODUCTE` can appear in the game. Example origins on the
   page: `banc` (reviewed), `fix` (statement chosen by hand), `generador`.
+- **Three new equation error types (David, 26/11/2026) → page v3 (28 examples):** `INVERS_X` (30/x = 5 → x = 30·5),
+  `CANVI_SIGNE_PARCIAL` (−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x / 4x + 5 + 3x = −6 + x), `DENOMINADORS`
+  ((3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x; also «terms without denominator not multiplied»). New term
+  kinds `i` (a/x), `d` (s·(mx + b)/den), `m` (a·b); new ops `den`, `neg`, `inv` (see README); new statement forms
+  I (level 1), K and L (level 2). `encaixaBanc` now takes the statement form from `ex.nivell` (forms K and L have no
+  bracket). Rules can force the circled terms with `dades.marca` (INVERS_X circles only «30·5»). With a fixed
+  statement the generator skips line limits and number margins (x = 150).
 
 ## Setup still to do by David (once)
 
