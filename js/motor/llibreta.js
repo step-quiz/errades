@@ -256,6 +256,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const cami = pts => 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
     let dib = null; // { lin, r, id, pts, actiu }
     function llacInici(ev) {
+        // amb el dit o el llapis no hi ha «hover»: el gris d'una línia tocada no s'hi ha de quedar enganxat
+        contenidor.classList.toggle('toc', ev.pointerType !== 'mouse');
         if (!llacActiu() || ev.button > 0) return;
         const lin = ev.target.closest('.linies');
         if (!lin || !contenidor.contains(lin) || ev.target.closest('[data-a]')) return;
@@ -271,6 +273,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         // fins que el traç no fa 8 px, encara pot ser un toc
         if (!dib.actiu && llargada(dib.pts) >= 8) {
             dib.actiu = true;
+            // mentre es dibuixa, cap línia no es veu marcada: es marca quan s'aixeca el dit (el David, 26/11/2026)
+            contenidor.classList.add('dibuixant');
             try {
                 dib.lin.setPointerCapture(ev.pointerId);
             } catch (e) {
@@ -287,6 +291,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (!dib || ev.pointerId !== dib.id) return;
         const d = dib;
         dib = null;
+        contenidor.classList.remove('dibuixant');
         if (!d.actiu) return; // un toc: el clic normal tria la línia
         ignoraClic = true;
         setTimeout(() => (ignoraClic = false), 0);
@@ -317,6 +322,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     function llacCancel(ev) {
         if (dib && ev.pointerId === dib.id) {
             dib = null;
+            contenidor.classList.remove('dibuixant');
             pinta();
         }
     }

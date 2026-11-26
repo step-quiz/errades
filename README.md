@@ -71,7 +71,9 @@ searching, so the finger draws instead of scrolling; shorter strokes are ordinar
 stroke → the terms whose centre is inside the polygon; terms of one line → that line, and 1–2 enclosed terms are
 remembered; terms of several lines, too small, or no clear line → «Torna a marcar-ho, si us plau: …» (`llacDubtos`).
 An open stroke (underline) or a closed one with no term inside picks the line it covers vertically. The stroke stays
-drawn (dashed, black) until «Comprova». On a hit (`comprova`): if a remembered term is a wrong term, «I has encerclat
+drawn (dashed, black) until «Comprova». While the finger is still down (class `.dibuixant` on the notebook) no line
+looks selected or hovered and «Comprova» is hidden: the line is marked only when the finger lifts. With touch or pen
+(class `.toc`) the hover grey of a line is not shown (it would stick to the touched line). On a hit (`comprova`): if a remembered term is a wrong term, «I has encerclat
 just el terme equivocat» and the term phase is skipped; if only correct terms were enclosed, the line counts as
 found but it is a failed attempt and the term phase runs («La línia és aquesta, però el terme que has encerclat
 està bé…»). With no enclosed term (or a tap / mouse click) the term phase runs without losing points.

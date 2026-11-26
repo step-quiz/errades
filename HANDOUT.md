@@ -12,6 +12,7 @@ and `docs/STATE.md` win; fix this file.
   `tests/docs.test.js`, README/STATE sections «Simplified index»). **Start every task from a fresh clone**
   (`git clone https://github.com/step-quiz/errades`), never from an old ZIP or workspace copy, and **never put a
   file in a delivery ZIP unless you changed it in this clone** — a stale copy overwrites his work.
+- **No git branches, commits or merges from the AI** (David, 26/11/2026): deliver only ZIPs; he uploads them.
 - Delivery = a ZIP whose root is the repo root, uploaded by David to `_uploads/`; `unzip-upload.yml` extracts and
   commits; Cloudflare Pages publishes. Never write `[skip ci]`, `[ci skip]` or `[cf-pages-skip]` anywhere.
 - Before delivering: `node tests/run-all.js` (all green) and, if UI changed,
@@ -67,6 +68,8 @@ ask again for the term, and it costs one attempt. Dialog answers: at **every lev
 same for **mouse clicks** (= case 1). Implemented in `js/motor/estat.js` (`termeFallat`), `cfg.terme` removed
 everywhere; details in `docs/STATE.md` «Term phase at every level». `node tests/run-all.js` and the browser test
 (130 checks) pass. If David reports problems after testing, fix them before item 2.1 below.
+Follow-up (same day): while the finger is still circling, no line looks selected; it is marked when the finger
+lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when the finger lifts»).
 
 ## 2. Open work, in priority order
 

@@ -260,7 +260,16 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const tm = sessio(LT_LLAVOR).errades[LT].terme;
     const bt = await caixa(`#llibreta .fila[data-i="${LT}"] .ln > .ex [data-j="${tm}"]`);
     const cx = bt.x + bt.width / 2, cy = bt.y + bt.height / 2, rx = bt.width / 2 + 10, ry = bt.height / 2 + 6;
-    await traca(Array.from({ length: 25 }, (_, k) => [cx + rx * Math.cos((2 * Math.PI * k) / 24), cy + ry * Math.sin((2 * Math.PI * k) / 24)]));
+    // la línia ja triada, i un cercle nou: mentre el dit no s'aixeca, cap línia no es veu marcada (el David, 26/11/2026)
+    await clica(`#llibreta [data-l="${LT}"]`);
+    const cercle = Array.from({ length: 25 }, (_, k) => [cx + rx * Math.cos((2 * Math.PI * k) / 24), cy + ry * Math.sin((2 * Math.PI * k) / 24)]);
+    await pg.mouse.move(cercle[0][0], cercle[0][1]);
+    await pg.mouse.down();
+    for (const [x, y] of cercle.slice(1)) await pg.mouse.move(x, y, { steps: 2 });
+    const durant = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .ln')].map(l => getComputedStyle(l)).filter(c => c.backgroundColor !== 'rgba(0, 0, 0, 0)' || !/rgba\(0, 0, 0, 0\)|transparent/.test(c.borderTopColor)).length + (document.querySelector('#llibreta .cv .b') ? getComputedStyle(document.querySelector('#llibreta .cv .b')).visibility === 'visible' : 0));
+    ok(durant === 0, `mentre s'encercla, cap línia no es veu marcada ni ressaltada (${durant})`);
+    await pg.mouse.up();
+    ok(await pg.locator(`#llibreta .fila[data-i="${LT}"] .ln`).evaluate(l => l.classList.contains('sel') && getComputedStyle(l).backgroundColor !== 'rgba(0, 0, 0, 0)'), "en aixecar el dit, la línia es marca");
     ok(new RegExp(`^Has marcat la línia ${LT}, i a dins un terme`).test(await pg.textContent('#llibreta .msg')), 'cercle al voltant d\'un terme: línia i terme marcats');
     ok((await pg.getAttribute('#llibreta svg.traca path', 'd')).startsWith('M'), 'el traç es queda dibuixat');
     await clica('#llibreta [data-a=comprova]');

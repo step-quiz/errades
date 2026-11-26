@@ -181,6 +181,17 @@ button.ln:hover {
     border: 2px dashed var(--text);
     background: rgba(30, 34, 48, 0.06);
 }
+/* Mentre el dit encercla (.dibuixant) cap línia no es veu marcada ni ressaltada: es marca quan s'aixeca el dit.
+   Amb el dit o el llapis (.toc) no hi ha «hover», i el gris no s'ha de quedar enganxat a la línia tocada. */
+.dibuixant .ln.sel,
+.dibuixant button.ln:hover,
+.toc button.ln:hover:not(.sel) {
+    border-color: transparent;
+    background: transparent;
+}
+.dibuixant .cv .b {
+    visibility: hidden;
+}
 .ln.err {
     border-color: rgba(200, 30, 30, 0.7);
 }

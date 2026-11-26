@@ -376,3 +376,11 @@ On touch devices pupils circle; they either circle the whole line (case 1) or th
 - Level labels: level 4 is now «dues errades» in both activities.
 - Tests: `tests/estat.test.js` (helper `troba`), `tests/nivells.test.js`, `tests/navegador/prova.mjs` (helper
   `tocaTerme`, keyboard ←/→ + Enter).
+
+## Lasso: mark the line only when the finger lifts (2026-11-26, David)
+
+David's screenshot: while circling, the previously selected line kept its grey dashed «selected» look, which
+distracts the pupil. Now `llacMou` adds `.dibuixant` to the notebook once the stroke is active (≥ 8 px) and
+`llacFi` / `llacCancel` remove it; CSS hides `.ln.sel`, `button.ln:hover` and the «Comprova» button under
+`.dibuixant`. `llacInici` toggles `.toc` (pointerType ≠ mouse), which disables the hover grey of lines on touch.
+Browser test: a held stroke shows no marked/hovered line (verified to fail without the fix), and lifting marks it.
