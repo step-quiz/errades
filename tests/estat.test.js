@@ -1,5 +1,5 @@
 // tests/estat.test.js — la màquina d'estats d'un exemple (js/motor/estat.js).
-import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, arrossega, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
 import { ok, igual, informe } from './lib.js';
 
 // L'exemple del David: 2·(x + 4) = 13 − 7x, errada a la línia 2 (índex 1)
@@ -171,5 +171,30 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     llacDubtos(S, "el traç toca més d'una línia.");
     ok(S.sel === null && /^Torna a marcar-ho, si us plau/.test(S.msg.text), 'traç dubtós: «Torna a marcar-ho»');
     ok(marcaLlac(nouEstat(), EX, 0, []).sel === null, "l'enunciat no es pot encerclar");
+}
+
+// Dues errades compensades (la imatge del David, 26/11/2026): 6·(x+1) = 3x+18 → 6x+6 = 3x−18 → 6x−3x = 18−6
+{
+    const E = (t, j) => ({ tipus: t, terme: j, expl: 'e', bona: 'b', perque: [['p', true]], opcions: [['b', true]] });
+    const EX2 = {
+        linies: [['6·(x + 1)', '=', '3x', '+ 18'], ['6x', '+ 6', '=', '3x', '− 18'], ['6x', '− 3x', '=', '18', '− 6'], ['3x', '=', '12'], ['x', '=', '4']],
+        errades: { 1: E('SIGNE_COPIAT', 4), 2: E('SIGNE_TRANSPOSAR', 3) },
+        correctes: { 3: 'ok', 4: 'ok' },
+        compensades: true,
+    };
+    const t2 = (S, i) => (selecciona(S, EX2, i), comprova(S, EX2, cfg));
+    let S = nouEstat();
+    t2(S, 2);
+    igual([S.fase, S.errors, S.trobades.length, S.msg.tipus], ['busca', 0, 0, 'info'], "errada de baix abans d'hora: no compta i no es dona per trobada");
+    ok(/hi ha una errada més amunt/.test(S.msg.text) && S.msgLinia === 2, "errada de baix abans d'hora: «revisa les de sobre»");
+    selecciona(S, EX2, 2);
+    ok(S.sel === 2, 'la línia es pot tornar a triar');
+    t2(S, 1);
+    ok(S.fase === 'perque' && S.trobades[0] === 1, 'la de dalt: es troba normalment');
+    triaPerque(S, EX2, cfg, 0);
+    triaCorreccio(S, EX2, cfg, 0);
+    t2(S, 2);
+    ok(S.fase === 'perque' && S.trobades.join() === '1,2', 'després, la de baix es troba normalment');
+    igual([arrossega(EX2, 2), arrossega(EX2, 1), arrossega({ ...EX2, compensades: false }, 2)], [1, null, null], 'arrossega: només la segona errada dels compensats');
 }
 informe('estat');

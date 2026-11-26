@@ -31,6 +31,11 @@ export const CONFIG_PER_DEFECTE = { anuncia: true, perque: true, corregeix: true
 
 export const errades = ex => Object.keys(ex.errades).map(Number).sort((a, b) => a - b);
 export const pendents = (S, ex) => errades(ex).filter(k => !S.trobades.includes(k));
+/**
+ * Errades compensades: la línia de l'errada i arrossega l'errada k (k < i), i s'ha de comparar
+ * amb la línia de sobre tal com està escrita. Torna k, o null si no cal avisar-ne (el David, 26/11/2026).
+ */
+export const arrossega = (ex, i) => (ex.compensades ? (errades(ex).filter(k => k < i).pop() ?? null) : null);
 
 export function nouEstat() {
     // ltermes / traca: els termes encerclats i el traç (R3), mentre la línia encerclada espera «Comprova»
@@ -106,6 +111,13 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const lt = S.ltermes || [];
     S.ltermes = null;
     S.traca = null;
+    // Les errades es localitzen de dalt a baix: si en queda una de pendent més amunt, primer cal trobar aquella.
+    // No compta com a intent fallat i la línia es pot tornar a triar (el David, 26/11/2026).
+    if (ex.errades[i] && pendents(S, ex).some(k => k < i)) {
+        S.msg = { tipus: 'info', text: 'Abans de mirar aquesta línia, revisa les de sobre: hi ha una errada més amunt.' };
+        S.msgLinia = i;
+        return S;
+    }
     if (ex.errades[i]) {
         S.trobades.push(i);
         S.actual = i;

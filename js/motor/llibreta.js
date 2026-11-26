@@ -27,7 +27,7 @@
  * DEPENDÈNCIES: js/motor/estat.js.
  * ============================================================================
  */
-import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable } from './estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable, arrossega } from './estat.js';
 import { avalua, llargada } from './llac.js';
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -168,14 +168,17 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
 
     function faseHTML() {
         const e = ex.errades[S.actual];
+        // errades compensades: la línia s'ha de comparar amb la de sobre tal com està escrita (el David, 26/11/2026)
+        const k = arrossega(ex, S.actual),
+            avis = k === null ? '' : `<p class="pista">Compara-la amb la línia ${S.actual - 1} tal com està escrita, encara que arrossegui l'errada de la línia ${k}.</p>`;
         if (S.fase === 'terme')
-            return `<div class="fase"><h3>Quin terme està malament?</h3><p class="pista">Toca'l a la línia ${S.actual}.</p></div>`;
+            return `<div class="fase"><h3>Quin terme està malament?</h3><p class="pista">Toca'l a la línia ${S.actual}.</p>${avis}</div>`;
         if (S.fase === 'perque')
-            return `<div class="fase"><h3>Per què és una errada?</h3><div class="opc">${e.perque
+            return `<div class="fase"><h3>Per què és una errada?</h3>${avis}<div class="opc">${e.perque
                 .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
                 .join('')}</div></div>`;
         if (escriuAra(S, ex, cfg))
-            return `<div class="fase escriu"><h3>Com havia de ser el terme encerclat?</h3>
+            return `<div class="fase escriu"><h3>Com havia de ser el terme encerclat?</h3>${avis}
 <form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme ben fet</label>
 <input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="p. ex. ${T.exemple}">
 <button type="submit" class="b pri">Comprova</button></form>
@@ -183,7 +186,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
                 .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
                 .join('')}</div></div>`;
         if (S.fase === 'corregeix')
-            return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3><div class="opc">${e.opcions
+            return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3>${avis}<div class="opc">${e.opcions
                 .map(([t], j) => `<button type="button" class="b mat" data-co="${j}">${fm(t)}</button>`)
                 .join('')}</div></div>`;
         return '';

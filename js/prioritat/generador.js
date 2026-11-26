@@ -665,6 +665,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
         };
     }
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(pas(linies[i - 1]).fets);
+    ex.compensades = !!compensades;
     if (compensades)
         ex.nota = `El resultat $${ex.solucio}$ és correcte, però el procediment té dues errades que es compensen. Un resultat bo no vol dir un procediment bo.`;
     return ex;

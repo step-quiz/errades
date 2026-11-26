@@ -955,12 +955,28 @@ const dinsMarge = l => [...l.L, ...l.R].every(t => {
 const zeroSobrer = l => [l.L, l.R].some(ts => ts.length > 1 && ts.some(t => t.k === 'n' && t.v.zero));
 
 // ---------- Injecció ----------
+/**
+ * Versemblança (el David, 26/11/2026): si en un pas anterior a j l'alumne ja ha agrupat bé un membre on hi havia
+ * termes en x i nombres barrejats (15 − 4x + 8 → 23 − 4x), ja sap que no són semblants: no és creïble que a la
+ * línia j els sumi (23 − 4x → 19x). Aleshores TERMES_NO_SEMBLANTS no s'injecta a j.
+ */
+export function jaDistingeix(linies, j) {
+    const barrejat = ts => ts.some(esX) && ts.some(t => esN(t) && !t.v.zero);
+    for (let i = 1; i < j; i++)
+        for (const c of ['L', 'R']) {
+            const a = linies[i - 1][c],
+                b = linies[i][c];
+            if (barrejat(a) && b.length < a.length && barrejat(b)) return true;
+        }
+    return false;
+}
 function candidates(r, linies, ops, des = 1) {
     const out = [];
     for (let j = Math.max(1, des); j < linies.length; j++) {
         const op = ops[j];
         for (const [id, regla] of Object.entries(REGLES)) {
             if (!opsDe(regla).includes(op)) continue;
+            if (id === 'TERMES_NO_SEMBLANTS' && jaDistingeix(linies, j)) continue;
             const res = regla.fes(linies[j - 1], r, op);
             if (!res) continue;
             const mal = res.linia;
@@ -1112,6 +1128,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         };
     }
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(ops[i], linies[i - 1], linies[i]);
+    ex.compensades = !!compensades;
     if (compensades)
         ex.nota = `La solució $${ex.solucio}$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.`;
     return ex;

@@ -1,6 +1,6 @@
 // tests/generador.test.js — el generador d'exemples (docs/SPEC.md §5.3 i §10).
 import fs from 'node:fs';
-import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar } from '../js/equacions/generador.js';
+import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
 const TIPUS = JSON.parse(fs.readFileSync(new URL('../data/errors.json', import.meta.url), 'utf8'));
@@ -117,6 +117,29 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
             /* una altra llavor */
         }
     ok(fet && fet.linies[0].join(' ') === '8x − 15 = −4x − 3' && fet.linies[2].join(' ') === '12x = −18' && valida(fet).length === 0, 'eina del banc: B07 refet amb −18');
+}
+
+// Versemblança (el David, 26/11/2026): qui ja ha agrupat bé 15 − 4x + 8 → 23 − 4x no suma després 23 − 4x → 19x
+{
+    const ls = [tL([tN(15), tX(-4), tN(8)], [tX(2), tN(5)]), tL([tN(23), tX(-4)], [tX(2), tN(5)]), tL([tN(23), tX(-4)], [tX(2), tN(5)])];
+    igual([jaDistingeix(ls, 1), jaDistingeix(ls, 2)], [false, true], 'jaDistingeix: després de 15 − 4x + 8 → 23 − 4x');
+    let n = 0, mal = 0;
+    for (const nivell of [1, 2])
+        for (const err of [1, 2])
+            for (let s = 1; s <= 300; s++) {
+                let ex;
+                try {
+                    ex = generaExemple({ llavor: s, nivell, errades: err }, TIPUS);
+                } catch (e) {
+                    continue;
+                }
+                for (const [j, e] of Object.entries(ex.errades))
+                    if (e.tipus === 'TERMES_NO_SEMBLANTS') {
+                        n++;
+                        if (jaDistingeix(ex._linies, +j)) mal++;
+                    }
+            }
+    ok(n > 0 && mal === 0, `TERMES_NO_SEMBLANTS mai després d'haver agrupat bé termes barrejats (${n} casos)`);
 }
 
 informe('generador');

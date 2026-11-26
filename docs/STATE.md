@@ -241,6 +241,35 @@ that chooses the activity and every parameter; then he tests both activities wit
 - Browser test: lasso on desktop (mouse drag) and on the phone profile (auto mode, where all the earlier taps keep
   working), the index, and a full order-of-operations example with the «=» check.
 
+## «Per què?» sentence editor (2026-11-26, waiting for David)
+
+Artifact «Frases de "Per què és una errada?" · Equacions» (https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, slug
+1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335). 21 situations (rule + variant), 70 unique sentence templates (18 used in more
+than one situation), markers `[name]` for per-example values, `$…$` maths, `${a|b}$` fractions. db: `frases/<id>`
+{text, nova}, `situacions/<id>` {bona, dolentes:[{id, cond?}], comentari}, `grups/G1…G7` (G1–G3 «unify?»
+decisions), `general/notes`, replies `rep/<id>`. The catalogue was checked against the generator's real output
+(every sentence of thousands of examples matches a template of its situation). Plan once David answers: move the
+sentences to `data/frases-equacions.json` (same structure), make `PERQUE` render templates from it, and rewrite the
+bank examples' stored sentences by matching the old templates (3 lot-1 examples keep the old `CALCUL` texts).
+
+## Pedagogy fixes from David's classroom test (2026-11-26, ZIP «ordre-versemblanca»)
+
+- **Errors are located top-down** (`js/motor/estat.js`, `comprova`). If the student checks an error line `i` while an
+  earlier error `k < i` is still pending, the line is NOT accepted: message (`tipus: 'info'`) «Abans de mirar aquesta
+  línia, revisa les de sobre: hi ha una errada més amunt.»; no attempt is counted, nothing is added to
+  `trobades`/`revisades`, and the line stays selectable. Applies to every two-error example (compensating or not).
+  Reason: in a compensating pair the second error is correct w.r.t. the original equation (6x+6 = 3x−18 → 18 − 6):
+  confirming it first, asking «Per què?» and making the student "correct" it to −18 − 6 is nonsense.
+- **Compensating pairs**: generators set `ex.compensades = true` (both activities). `arrossega(ex, i)` returns the earlier
+  error `k`; `faseHTML` (`js/motor/llibreta.js`) then shows a `.pista` in the term, «Per què?» and correction phases:
+  «Compara-la amb la línia i−1 tal com està escrita, encara que arrossegui l'errada de la línia k.»
+- **Plausibility of TERMES_NO_SEMBLANTS** (`jaDistingeix(linies, j)` in `js/equacions/generador.js`, used by
+  `candidates`): if an earlier step correctly reduced a side that mixed x-terms and numbers and the result still mixes
+  them (15 − 4x + 8 → 23 − 4x), the student evidently knows they are unlike terms, so the rule is not injected at `j`
+  (23 − 4x → 19x is no longer generated). Tested over 1200 generated examples. The curated bank was not re-checked
+  by this rule (its examples were reviewed by David one by one).
+- Open question for David: extend the "already-shown skill" plausibility idea to other rules.
+
 ## Setup still to do by David (once)
 
 See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from
