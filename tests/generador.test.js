@@ -1,6 +1,6 @@
 // tests/generador.test.js — el generador d'exemples (docs/SPEC.md §5.3 i §10).
 import fs from 'node:fs';
-import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix } from '../js/equacions/generador.js';
+import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix, versemblant } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
 const TIPUS = JSON.parse(fs.readFileSync(new URL('../data/errors.json', import.meta.url), 'utf8'));
@@ -140,6 +140,18 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
                     }
             }
     ok(n > 0 && mal === 0, `TERMES_NO_SEMBLANTS mai després d'haver agrupat bé termes barrejats (${n} casos)`);
+}
+
+// Versemblança A2 i A3 (el David, 26/11/2026)
+{
+    const ls = [tL([tX(3), tX(1), tN(2)], [tN(9)]), tL([tX(4), tN(2)], [tN(9)])];
+    const ops = [null, 'red1', 'red2'];
+    ok(!versemblant('COEFICIENT_U', [...ls, ls[1]], ops, 2, null), 'A2: qui ha fet bé 3x + x → 4x no fa després 5x − x → 5x');
+    ok(versemblant('COEFICIENT_U', ls, ops, 1, null), 'A2: sense cap pas anterior, sí');
+    const ls2 = [tL([tN(-5), tN(2), tX(3)], [tN(7)]), tL([tN(-3), tX(3)], [tN(7)])];
+    const res = c => ({ dades: { clau: c } });
+    ok(!versemblant('CALCUL', [...ls2, ls2[1]], ops, 2, res('n:-5/1,2/1')), 'A3: el mateix càlcul −5 + 2 ja fet bé: no');
+    ok(versemblant('CALCUL', [...ls2, ls2[1]], ops, 2, res('n:-3/1,7/1')), 'A3: un altre càlcul: sí');
 }
 
 informe('generador');

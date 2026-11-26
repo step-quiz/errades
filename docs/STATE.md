@@ -252,7 +252,7 @@ decisions), `general/notes`, replies `rep/<id>`. The catalogue was checked again
 sentences to `data/frases-equacions.json` (same structure), make `PERQUE` render templates from it, and rewrite the
 bank examples' stored sentences by matching the old templates (3 lot-1 examples keep the old `CALCUL` texts).
 
-## Pedagogy fixes from David's classroom test (2026-11-26, ZIP «ordre-versemblanca»)
+## Pedagogy fixes from David's classroom test (2026-11-26, ZIP «ordre-versemblanca», then «versemblanca2»)
 
 - **Errors are located top-down** (`js/motor/estat.js`, `comprova`). If the student checks an error line `i` while an
   earlier error `k < i` is still pending, the line is NOT accepted: message (`tipus: 'info'`) «Abans de mirar aquesta
@@ -268,7 +268,19 @@ bank examples' stored sentences by matching the old templates (3 lot-1 examples 
   them (15 − 4x + 8 → 23 − 4x), the student evidently knows they are unlike terms, so the rule is not injected at `j`
   (23 − 4x → 19x is no longer generated). Tested over 1200 generated examples. The curated bank was not re-checked
   by this rule (its examples were reviewed by David one by one).
-- Open question for David: extend the "already-shown skill" plausibility idea to other rules.
+- **Plausibility extended** (David's answers in the review artifact «Versemblança de les errades», slug
+  `04afb545-41cf-4464-bb8b-efca1be7b5b3`, 26/11/2026). Rule: an error is not injected at line `j` if an earlier
+  CORRECT step already showed the student can do exactly that.
+  - Equations, `versemblant(id, linies, ops, j, res)` in `js/equacions/generador.js`, called by `candidates`:
+    TERMES_NO_SEMBLANTS (`jaDistingeix`; NOT extended to the other side of the same line: A1 rejected);
+    COEFICIENT_U (A2: an earlier correct red1/red2 step reduced x-terms of a side containing a lone ±x);
+    CALCUL (A3: only when the same two-term calculation, same values and signs, unordered, was done correctly before;
+    `dades.clau` = `clauCalcul(k, [v1, v2])`). All other rules unfiltered (B1–B5 accepted as "leave as is").
+  - Order of operations, `versemblant(id, linies, j)` in `js/prioritat/generador.js`: for `FILTRADES` =
+    ESQUERRA_DRETA, SUMA_ABANS_RESTA, PRODUCTE_ABANS_DIVISIO, POTENCIA_PER_EXPONENT, POTENCIA_DESPRES (C1–C5), the rule
+    is skipped at `j` if for some earlier step `i < j` with the same value as its previous line, `REGLES[id].fes(linies[i−1])`
+    applies (the trap was there and the student avoided it). Probed with `creaAtzar(i)`, so the main RNG is untouched.
+    PARENTESI_IGNORAT (C6 rejected), RESTA_NEGATIVA and SIGNE_PRODUCTE (D1, D2: real distractions) unfiltered.
 
 ## Setup still to do by David (once)
 

@@ -1,5 +1,5 @@
 // tests/prioritat.test.js — el generador de prioritat d'operacions (js/prioritat/generador.js).
-import { generaExemple, valida, perPagina, valor, pas, resol, text, fitxes, REGLES, T, creaAtzar } from '../js/prioritat/generador.js';
+import { generaExemple, valida, perPagina, valor, pas, resol, text, fitxes, REGLES, T, creaAtzar, versemblant } from '../js/prioritat/generador.js';
 import { exempleSessio } from '../js/prioritat/pagina.js';
 import { escrivible, valorFitxa } from '../js/motor/escriure.js';
 import { ok, igual, informe } from './lib.js';
@@ -85,4 +85,15 @@ for (const nivell of [1, 2, 3, 4, 5])
             const ex = exempleSessio(i, { base: 500 * nivell, nivell, noerrors });
             ok(ex.activitat === 'prioritat' && ex.linies[1][0] === '=', `sessió nivell ${nivell}, exemple ${i}`);
         }
+// Versemblança (el David, 26/11/2026, C1–C5): qui ja ha fet bé (2 + 3 · 4) no fa després 14 + 5 · 2 → 19 · 2
+{
+    const { N, Pa, it } = T;
+    const E0 = [it(null, Pa([it(null, N(2)), it('+', N(3)), it('·', N(4))])), it('+', N(5)), it('·', N(2))];
+    const ls = [E0, ...resol(E0).map(p => p.E)];
+    igual(text(ls[2]), '14 + 5 · 2', 'versemblança: el pas abans del parany');
+    igual([versemblant('ESQUERRA_DRETA', ls, 3), versemblant('PARENTESI_IGNORAT', ls, 3)], [false, true], "versemblança: ESQUERRA_DRETA filtrada, PARENTESI_IGNORAT no (C6)");
+    const E1 = [it(null, N(6)), it('+', N(5)), it('·', N(2))];
+    ok(versemblant('ESQUERRA_DRETA', [E1, E1], 1), 'versemblança: sense cap pas anterior, la regla es pot aplicar');
+}
+
 informe('prioritat');

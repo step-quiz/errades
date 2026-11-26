@@ -530,6 +530,7 @@ export const REGLES = {
                     bo: resultat ? pTx(resultat) : '0',
                     mal: pTx(fet),
                     altres: opcions.filter(o => o !== triada).map(o => sumaTx(o[2])),
+                    clau: clauCalcul(k, [v1, v2]),
                 },
             };
         },
@@ -970,6 +971,45 @@ export function jaDistingeix(linies, j) {
         }
     return false;
 }
+/** Un càlcul de dos termes del mateix tipus, sense importar l'ordre: «n:−3,15». */
+const clauCalcul = (k, vs) => k + ':' + vs.map(v => `${v.n}/${v.d}`).sort().join(',');
+/** Els passos anteriors a j que són correctes (la línia és equivalent a la de sobre) i d'alguna de les operacions ops. */
+const passosBons = (linies, ops, j, quines) => {
+    const out = [];
+    for (let i = 1; i < j; i++) if (quines.includes(ops[i]) && equivalents(linies[i - 1], linies[i])) out.push(i);
+    return out;
+};
+/**
+ * Versemblança (el David, 26/11/2026, artifact «Versemblança de les errades»): una errada no s'injecta a la línia j
+ * si en un pas anterior correcte l'alumne ja ha demostrat que sap fer just això.
+ * - TERMES_NO_SEMBLANTS (A, ja fet): jaDistingeix.
+ * - COEFICIENT_U (A2): en un pas anterior ha sumat bé termes en x d'un membre on n'hi havia una de sola.
+ * - CALCUL (A3): el mateix càlcul (mateixos dos valors i signes) ja s'ha fet bé abans. Els altres càlculs, sí.
+ * La resta de regles no es filtren (B1–B5: no hi ha cap pas anterior que ho demostri, o la distracció és real).
+ */
+export function versemblant(id, linies, ops, j, res) {
+    if (id === 'TERMES_NO_SEMBLANTS') return !jaDistingeix(linies, j);
+    if (id === 'COEFICIENT_U') {
+        const u1 = t => esX(t) && t.c.abs().igual(q(1));
+        return !passosBons(linies, ops, j, ['red1', 'red2']).some(i =>
+            ['L', 'R'].some(c => {
+                const xs = linies[i - 1][c].filter(esX);
+                return xs.length >= 2 && xs.some(u1) && linies[i][c].filter(esX).length < xs.length;
+            }),
+        );
+    }
+    if (id === 'CALCUL' && res && res.dades && res.dades.clau) {
+        const fets = new Set();
+        for (const i of passosBons(linies, ops, j, ['red1', 'red2']))
+            for (const c of ['L', 'R'])
+                for (const k of ['x', 'n']) {
+                    const a = linies[i - 1][c].filter(t => t.k === k);
+                    if (a.length === 2 && linies[i][c].filter(t => t.k === k).length < 2) fets.add(clauCalcul(k, a.map(t => (k === 'x' ? t.c : t.v))));
+                }
+        return !fets.has(res.dades.clau);
+    }
+    return true;
+}
 function candidates(r, linies, ops, des = 1) {
     const out = [];
     for (let j = Math.max(1, des); j < linies.length; j++) {
@@ -978,7 +1018,7 @@ function candidates(r, linies, ops, des = 1) {
             if (!opsDe(regla).includes(op)) continue;
             if (id === 'TERMES_NO_SEMBLANTS' && jaDistingeix(linies, j)) continue;
             const res = regla.fes(linies[j - 1], r, op);
-            if (!res) continue;
+            if (!res || !versemblant(id, linies, ops, j, res)) continue;
             const mal = res.linia;
             if (!solucio(mal) || equivalents(linies[j - 1], mal) || !dinsMarge(mal)) continue;
             out.push({ j, id, op, res });

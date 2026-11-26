@@ -515,12 +515,28 @@ const llistaNombres = E => E.flatMap(t => (t.x.k === 'p' ? llistaNombres(t.x.e) 
 const variat = E => new Set(llistaNombres(E)).size === llistaNombres(E).length;
 
 // ---------- Injecció ----------
+/**
+ * Versemblança (el David, 26/11/2026, artifact «Versemblança de les errades», C1–C5): una errada no s'injecta a la
+ * línia j si en un pas anterior correcte (mateix valor que la línia de sobre) l'alumne ja tenia davant el mateix
+ * parany (la regla s'hi podia aplicar) i l'ha evitat. Per a PARENTESI_IGNORAT (C6), RESTA_NEGATIVA i SIGNE_PRODUCTE
+ * (D1, D2) no: són distraccions reals. El parany es prova amb un atzar a part, perquè no canviï els exemples.
+ */
+export const FILTRADES = ['ESQUERRA_DRETA', 'SUMA_ABANS_RESTA', 'PRODUCTE_ABANS_DIVISIO', 'POTENCIA_PER_EXPONENT', 'POTENCIA_DESPRES'];
+export function versemblant(id, linies, j) {
+    if (!FILTRADES.includes(id)) return true;
+    for (let i = 1; i < j; i++) {
+        if (valor(linies[i]) !== valor(linies[i - 1])) continue;
+        if (REGLES[id].fes(linies[i - 1], creaAtzar(i))) return false;
+    }
+    return true;
+}
 function candidates(r, linies, des, forma) {
     const out = [];
     for (let j = Math.max(1, des); j < linies.length; j++) {
         const abans = linies[j - 1],
             v = valor(abans);
         for (const [id, regla] of Object.entries(REGLES)) {
+            if (!versemblant(id, linies, j)) continue;
             const res = regla.fes(abans, r);
             if (!res) continue;
             const pass = resol(res.E);
