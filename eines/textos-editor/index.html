@@ -1,0 +1,452 @@
+<title>Textos de Localitza l'errada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column; a sticky bar (counter, filters, save state), a chip index of groups, then one card per group with one row per text. */
+:root{
+ --bg:#f3f5f9;--paper:#fff;--ink:#1e2230;--muted:#4a5163;--line:#d4dae6;--soft:#eef1f8;
+ --blau:#2f45b8;--blau-suau:#e3e9fb;--tinta:#1f2f86;--canv:#0b5c35;--canv-bg:#e7f5ee;
+ --amber:#8a5a00;--amber-bg:#fff4dc;--err:#b3261e;--err-bg:#fdecee;--hov:#ebebeb;--hov-vora:#000;
+ --ui:"Atkinson Hyperlegible",system-ui,sans-serif;--alumne:Kalam,"Comic Sans MS",cursive;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#14171f;--paper:#1d212c;--ink:#e6e9f2;--muted:#a9b0c2;--line:#353b4b;--soft:#272c39;
+ --blau:#8ea2ff;--blau-suau:#232b4d;--tinta:#b9c6ff;--canv:#7fd7a8;--canv-bg:#17362a;
+ --amber:#f2c66b;--amber-bg:#3a2e12;--err:#ff9a92;--err-bg:#3d1c1c;--hov:#2e3443;--hov-vora:#fff;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#14171f;--paper:#1d212c;--ink:#e6e9f2;--muted:#a9b0c2;--line:#353b4b;--soft:#272c39;
+ --blau:#8ea2ff;--blau-suau:#232b4d;--tinta:#b9c6ff;--canv:#7fd7a8;--canv-bg:#17362a;
+ --amber:#f2c66b;--amber-bg:#3a2e12;--err:#ff9a92;--err-bg:#3d1c1c;--hov:#2e3443;--hov-vora:#fff;color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--ui);overflow-x:clip}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.band{background:var(--blau-suau);border-bottom:1px solid var(--line);padding-block:22px 18px}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.1;letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+.band p{margin:0 0 6px;max-width:72ch;color:var(--muted)}
+code,.v{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;background:var(--soft);border-radius:5px;padding:0 4px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.barra{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+.barra .wrap{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding-block:10px}
+.cnt{font-weight:700;font-variant-numeric:tabular-nums}
+.sav{font-size:14px;display:flex;gap:8px;align-items:center;color:var(--muted);margin-left:auto}
+.sav::before{content:"";width:10px;height:10px;border-radius:50%;background:#e0a800;flex:none}
+.sav[data-m=nuvol]::before{background:#1f9d5a}.sav[data-m=local]::before{background:var(--err)}
+.b{font:inherit;font-size:14px;min-height:36px;padding:5px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);cursor:pointer}
+.b:hover{background:var(--hov);border-color:var(--hov-vora);box-shadow:inset 0 0 0 1.5px var(--hov-vora)}
+.b:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #8fa3e8;outline-offset:2px}
+.b[aria-pressed=true]{background:var(--blau);border-color:var(--blau);color:var(--paper)}
+.avis{background:var(--err-bg);border:1.5px solid var(--err);border-radius:10px;padding:12px 16px;margin:16px 0 0}
+.com{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:6px 20px 6px 36px;margin:18px 0 0}
+.com li{margin:6px 0}
+.index{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}
+.index a{font-size:14px;color:var(--blau);text-decoration:none;border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:3px 10px}
+.index a:hover{border-color:var(--hov-vora);box-shadow:inset 0 0 0 1px var(--hov-vora);background:var(--hov)}
+.index a.mod{border-color:var(--blau);font-weight:700}
+section.grp{margin:26px 0 0;scroll-margin-top:70px}
+section.grp>h2{font-size:21px;margin:0 0 4px;text-wrap:balance}
+section.grp>p{margin:0 0 10px;color:var(--muted);max-width:72ch}
+.t{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px;display:grid;gap:7px;scroll-margin-top:70px}
+.t[data-mod="1"]{border-left:5px solid var(--canv)}
+.t.ro{background:var(--soft)}
+.cap{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.id{font-weight:700;font-size:13px;color:var(--paper);background:var(--blau);border-radius:6px;padding:1px 7px;font-variant-numeric:tabular-nums}
+.quan{color:var(--muted);font-size:14px;flex:1 1 300px}
+.tag{border-radius:20px;padding:1px 9px;font-size:12.5px;background:var(--soft);color:var(--muted)}
+.tag.canv{background:var(--canv-bg);color:var(--canv);font-weight:700}
+.tag.ro{background:var(--amber-bg);color:var(--amber)}
+.fit{font-size:12.5px;color:var(--muted);font-family:ui-monospace,Menlo,Consolas,monospace}
+textarea{font:inherit;font-size:16px;width:100%;min-height:44px;padding:7px 10px;border:1.5px solid var(--line);border-radius:9px;resize:vertical;background:var(--paper);color:var(--ink)}
+textarea.cm{font-size:14px;min-height:36px}
+.ro-text{padding:7px 10px;border:1.5px dashed var(--line);border-radius:9px}
+.prev{font-size:15px}
+.prev::before{content:"Exemple: ";color:var(--muted);font-size:13px}
+.prev.alumne{font-family:var(--alumne);font-size:18px;color:var(--tinta)}
+.prev .val{background:var(--blau-suau);color:var(--tinta);border-radius:4px;padding:0 3px;font-family:var(--ui);font-size:.92em}
+.vars{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px}
+.warn{font-size:14px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:5px 10px}
+.warn:empty{display:none}
+.acc{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.acc .b{min-height:30px;font-size:13px;padding:2px 9px}
+.st{font-size:13px;color:var(--muted);min-height:1.2em}
+.rep{border-left:4px solid var(--blau);padding:8px 12px;background:var(--bg);white-space:pre-wrap;font-size:15px}
+.rep b{display:block;color:var(--blau)}
+.gen{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:28px 0 0;display:grid;gap:8px}
+.gen h2{margin:0;font-size:21px}
+.peu{margin:22px 0 48px;color:var(--muted);display:grid;gap:8px}
+.buit{color:var(--muted);font-style:italic}
+@media (max-width:600px){.sav{margin-left:0;flex-basis:100%}}
+</style>
+
+<header class="band"><div class="wrap">
+ <h1>Textos de Localitza l'errada</h1>
+ <p>Totes les frases fixes que el web escriu: les de la pàgina de l'activitat (equacions i prioritat d'operacions) i les de l'índex per al professorat. No hi són les explicacions de cada errada del generador ni les frases de «Per què és una errada?», que tenen el seu artifact.</p>
+</div></header>
+
+<div class="barra"><div class="wrap">
+ <span class="cnt" id="cnt">Cap canvi</span>
+ <div role="group" aria-label="Filtre" style="display:flex;gap:6px;flex-wrap:wrap">
+  <button class="b" id="f-tot" aria-pressed="true">Totes</button>
+  <button class="b" id="f-mod" aria-pressed="false">Canviades o comentades</button>
+  <button class="b" id="f-res" aria-pressed="false">Sense tocar</button>
+ </div>
+ <span class="sav" id="sav" data-m="connectant">Connectant amb el desat…</span>
+</div></div>
+
+<main class="wrap">
+ <div class="avis" id="avis" hidden role="status">No puc desar els canvis en aquest artifact: es queden només en aquest navegador. Quan acabis, prem «Copia els canvis» (a baix de tot) i enganxa'ls al xat.</div>
+ <ul class="com">
+  <li>Escriu la frase com la vols. Els trossos entre claus, com <span class="v">{n}</span> o <span class="v">{alumne}</span>, els posa el web a cada exemple: a sota de cada frase tens què vol dir cadascun i com quedaria amb uns valors d'exemple. Si n'esborres un o n'escrius un que no existeix, surt un avís en groc.</li>
+  <li>Algunes frases s'enganxen a una altra (per exemple, el motiu de «Torna a marcar-ho, si us plau: …»). Ho diu a la línia gris de sobre de la frase.</li>
+  <li>Les frases amb l'etiqueta <span class="tag ro">repositori comú</span> venen de <code>step-quiz-commons</code> i aquí no es poden canviar. Hi pots deixar un comentari i el canvi es farà allà.</li>
+  <li>Tot es desa sol mentre escrius. Quan acabis, escriu «Revisa artifact» al xat.</li>
+ </ul>
+ <nav class="index" id="index" aria-label="Grups"></nav>
+ <div id="grups"></div>
+ <section class="gen" aria-labelledby="h-gen">
+  <h2 id="h-gen">Altres comentaris</h2>
+  <textarea id="c-gen" class="cm" placeholder="Frases que trobes a faltar, o qualsevol altra cosa"></textarea>
+  <span class="st" id="st-gen" aria-live="polite"></span>
+  <div class="rep" id="rep-general" hidden></div>
+ </section>
+ <footer class="peu">
+  <div><button class="b" id="copia">Copia els canvis</button> <span id="copiat" class="st" aria-live="polite"></span></div>
+  <textarea id="txtcopia" hidden readonly aria-label="Canvis en text"></textarea>
+ </footer>
+</main>
+
+<script>
+{
+// ---- catàleg: [id, text, quan, variables {nom: [què és, exemple]}, fitxer, opcions] ----
+const G=[
+ {id:'A',nom:'Capçalera i càrrega de la pàgina',desc:"La part de dalt de la pàgina de l'activitat i els avisos mentre es carrega.",t:[
+  ['A01',"← Activitats","Enllaç de dalt de tot per tornar a l'índex.",{},'equacions.html, prioritat.html'],
+  ['A02',"Equacions de 1r grau","Títol de la pàgina de les equacions (també és el nom de l'activitat a l'índex).",{},'equacions.html, index.html'],
+  ['A03',"Prioritat d'operacions","Títol de la pàgina de prioritat (també a l'índex).",{},'prioritat.html, index.html'],
+  ['A04',"{activitat} · Localitza l'errada","Nom de la pestanya del navegador.",{activitat:["el títol de l'activitat","Equacions de 1r grau"]},'equacions.html, prioritat.html'],
+  ['A05',"Localitza l'errada en la resolució d'una equació de primer grau.","Descripció de la pàgina per als cercadors (no es veu a la pàgina).",{},'equacions.html'],
+  ['A06',"Localitza l'errada en el càlcul d'una expressió amb operacions combinades.","Descripció de la pàgina de prioritat per als cercadors.",{},'prioritat.html'],
+  ['A07',"Carregant…","Mentre la pàgina es carrega.",{},'equacions.html, prioritat.html'],
+  ['A08',"Aquesta activitat necessita JavaScript.","Si el navegador té el JavaScript desactivat.",{},'equacions.html, prioritat.html'],
+  ['A09',"No s'ha pogut carregar l'activitat. Torna-ho a provar d'aquí a una estona.","Si no es poden baixar les dades de les equacions.",{},'js/equacions/pagina.js'],
+  ['A10',"Llibreta de l'alumne","Nom de la llibreta per als lectors de pantalla.",{},'equacions.html, prioritat.html'],
+  ['A11',"Exemple {i} de {total} · {punts}","Línia de progrés, sota el nivell.",{i:["l'exemple actual","1"],total:["quants exemples té la sessió","6"],punts:["els punts fets fins ara (frase B03/B04 de la franja)","0 punts"]},'js/motor/sessio.js'],
+ ]},
+ {id:'N',nom:'Nivells',desc:"La línia «Nivell 4 · dues errades» de dalt de la pàgina de l'activitat. Les etiquetes del desplegable de l'índex són al grup I.",t:[
+  ['N01',"Nivell {n} · {descripció}","La línia del nivell.",{n:["el número del nivell","4"],"descripció":["la descripció del nivell (N02–N11)","dues errades"]},'js/equacions/pagina.js, js/prioritat/pagina.js'],
+  ['N12'," · pot ser que no n'hi hagi cap","S'afegeix al final de la línia del nivell quan hi pot haver exemples sense errada.",{},'js/equacions/pagina.js, js/prioritat/pagina.js'],
+  ['N02',"una errada, sense parèntesis","Equacions, nivell 1.",{},'js/equacions/nivells.js'],
+  ['N03',"una errada, amb parèntesis","Equacions, nivell 2.",{},'js/equacions/nivells.js'],
+  ['N04',"una errada, sense dir-ho","Equacions, nivell 3.",{},'js/equacions/nivells.js'],
+  ['N05',"dues errades","Equacions, nivell 4.",{},'js/equacions/nivells.js'],
+  ['N06',"una o dues errades, sense dir-ho","Equacions, nivell 5.",{},'js/equacions/nivells.js'],
+  ['N07',"una errada, sense parèntesis","Prioritat, nivell 1.",{},'js/prioritat/pagina.js'],
+  ['N08',"una errada, amb parèntesis i potències","Prioritat, nivell 2.",{},'js/prioritat/pagina.js'],
+  ['N09',"una errada, sense dir-ho","Prioritat, nivell 3.",{},'js/prioritat/pagina.js'],
+  ['N10',"dues errades","Prioritat, nivell 4.",{},'js/prioritat/pagina.js'],
+  ['N11',"una o dues errades, sense dir-ho","Prioritat, nivell 5.",{},'js/prioritat/pagina.js'],
+ ]},
+ {id:'C',nom:'Consigna',desc:"Les dues files de sobre de la llibreta: què ha fet l'alumne fictici i què ha de fer l'alumne. Es munten amb trossos: la frase, el verb (C08/C09) i els textos de cada activitat (C10–C14).",t:[
+  ['C01',"{Alumne} {fet}.","Primera fila quan no es diu quantes errades hi ha (nivells 3 i 5, o «Hi pot haver exemples»).",{Alumne:["el nom de l'alumne fictici, amb majúscula","La Laia"],fet:["què ha fet (C10 o C13)","ha resolt aquesta equació"]},'js/motor/llibreta.js'],
+  ['C02',"{Alumne} {fet} i ha comès una errada.","Primera fila amb una errada anunciada.",{Alumne:["el nom de l'alumne fictici, amb majúscula","La Laia"],fet:["què ha fet (C10 o C13)","ha resolt aquesta equació"]},'js/motor/llibreta.js'],
+  ['C03',"{Alumne} {fet} i ha comès dues errades.","Primera fila amb dues errades anunciades.",{Alumne:["el nom de l'alumne fictici, amb majúscula","La Laia"],fet:["què ha fet (C10 o C13)","ha resolt aquesta equació"]},'js/motor/llibreta.js'],
+  ['C04',"Si hi ha alguna línia {on}, {verb}-la; si no n'hi ha cap, digues-ho.","Segona fila quan no es diu quantes errades hi ha.",{on:["quina línia busca (C11 o C14)","que no es pot deduir de l'anterior"],verb:["encercla o toca (C08/C09)","encercla"]},'js/motor/llibreta.js'],
+  ['C05',"{Verb} la primera línia {on}.","Segona fila amb una errada anunciada.",{Verb:["Encercla o Toca, amb majúscula","Encercla"],on:["quina línia busca (C11 o C14)","que no es pot deduir de l'anterior"]},'js/motor/llibreta.js'],
+  ['C06',"{Verb} les dues línies {ons}.","Segona fila amb dues errades anunciades.",{Verb:["Encercla o Toca, amb majúscula","Encercla"],ons:["quines línies busca (C12 o C14)","que no es poden deduir de la línia anterior"]},'js/motor/llibreta.js'],
+  ['C08',"encercla","El verb quan l'alumne encercla amb el dit.",{},'js/motor/llibreta.js'],
+  ['C09',"toca","El verb quan l'alumne toca la línia (amb el ratolí, o «Tocant» a l'índex).",{},'js/motor/llibreta.js'],
+  ['C10',"ha resolt aquesta equació","Equacions: què ha fet l'alumne fictici.",{},'js/motor/llibreta.js'],
+  ['C11',"que no es pot deduir de l'anterior","Equacions: la línia que busca (una).",{},'js/motor/llibreta.js'],
+  ['C12',"que no es poden deduir de la línia anterior","Equacions: les línies que busca (dues).",{},'js/motor/llibreta.js'],
+  ['C13',"ha calculat aquesta expressió","Prioritat: què ha fet l'alumne fictici.",{},'js/motor/llibreta.js'],
+  ['C14',"on s'ha equivocat","Prioritat: la línia o les línies que busca (serveix per a una i per a dues).",{},'js/motor/llibreta.js'],
+  ['C15',"Errades: {n}","Etiqueta a la dreta de la consigna, quan es diu quantes errades hi ha.",{n:["quantes errades té l'exemple","2"]},'js/motor/llibreta.js'],
+  ['C16',"Localitzades: {n}","Etiqueta a la dreta de la consigna.",{n:["quantes n'ha trobat","1"]},'js/motor/llibreta.js'],
+ ]},
+ {id:'L',nom:'Llibreta: botons i marques',desc:"Els botons i els senyals que surten a les línies de la llibreta.",t:[
+  ['L01',"Comprova","Botó a l'esquerra de la línia triada.",{},'js/motor/llibreta.js'],
+  ['L02',"No hi ha cap errada","Botó de sota quan no es diu quantes n'hi ha i encara no n'ha trobat cap.",{},'js/motor/llibreta.js'],
+  ['L03',"No n'hi ha cap més","El mateix botó quan ja n'ha trobat alguna.",{},'js/motor/llibreta.js'],
+  ['L04',"amb ajuda","Al costat de la ✗ d'una línia amb errada, quan l'aplicació l'ha hagut d'ensenyar.",{},'js/motor/llibreta.js'],
+  ['L05',"Línia amb errada","Text que surt en passar el ratolí per la ✗.",{},'js/motor/llibreta.js'],
+  ['L06',"Línia correcta","Text que surt en passar el ratolí per la ✓.",{},'js/motor/llibreta.js'],
+  ['L07',"És l'enunciat: aquí no hi pot haver cap errada","Text que surt en passar el ratolí per la línia 0.",{},'js/motor/llibreta.js'],
+  ['L08',"Línia {i}","Nom de cada línia per als lectors de pantalla.",{i:["el número de la línia","3"]},'js/motor/llibreta.js'],
+  ['L09',"Havia de ser: {línia}","La correcció del professor, per als lectors de pantalla.",{"línia":["la línia bona","2x + 8 = 13 − 7x"]},'js/motor/llibreta.js'],
+ ]},
+ {id:'M',nom:'Encerclar amb el dit',desc:"Els missatges que surten quan l'alumne ha encerclat o ha subratllat amb el dit.",t:[
+  ['M01',"Has marcat la línia {i}{termes}. Prem «Comprova», o torna a encerclar.","Quan ha aixecat el dit i el traç s'entén.",{i:["la línia encerclada","3"],termes:["res, o M02 / M03 si ha encerclat termes","[M02]"]},'js/motor/estat.js'],
+  ['M02',", i a dins un terme","S'afegeix a M01 quan dins del cercle hi ha un terme.",{},'js/motor/estat.js'],
+  ['M03',", i a dins dos termes","S'afegeix a M01 quan dins del cercle hi ha dos termes.",{},'js/motor/estat.js'],
+  ['M04',"Torna a marcar-ho, si us plau: {motiu}","Quan el traç no s'entén. El motiu és una de les frases M05–M10.",{motiu:["per què (M05–M10)","aquesta línia ja està revisada."]},'js/motor/estat.js'],
+  ['M05',"el traç és massa petit.","Motiu: el cercle és massa petit o massa curt.",{},'js/motor/llac.js'],
+  ['M06',"el traç envolta termes de més d'una línia.","Motiu: el cercle agafa termes de dues línies.",{},'js/motor/llac.js'],
+  ['M07',"el traç toca més d'una línia.","Motiu: el traç passa per més d'una línia.",{},'js/motor/llac.js'],
+  ['M08',"no sé quina línia has marcat.","Motiu: no es veu cap línia clara.",{},'js/motor/llac.js'],
+  ['M09',"és l'enunciat: aquí no hi pot haver cap errada.","Motiu: ha encerclat la línia 0.",{},'js/motor/llibreta.js'],
+  ['M10',"aquesta línia ja està revisada.","Motiu: ha encerclat una línia que ja ha comprovat.",{},'js/motor/llibreta.js'],
+ ]},
+ {id:'K',nom:'Comprovar una línia',desc:"Els missatges en prémer «Comprova».",t:[
+  ['K01',"Abans de mirar aquesta línia, revisa les de sobre: hi ha una errada més amunt.","Ha triat la segona errada abans de trobar la primera. No compta com a intent.",{},'js/motor/estat.js'],
+  ['K02',"Sí! L'errada és en aquesta línia. Ara toca el terme equivocat: compara la línia amb la de sobre.","Ha encertat la línia (tocant-la, o encerclant només la línia). Ara ha de trobar el terme.",{},'js/motor/estat.js'],
+  ['K03',"Sí! L'errada és aquí. I has encerclat just el terme equivocat.","Ha encerclat la línia i, a dins, el terme equivocat. Passa a «Per què?».",{},'js/motor/estat.js'],
+  ['K04',"La línia és aquesta, però el terme que has encerclat està bé. Toca el terme equivocat: compara la línia amb la de sobre.","Ha encerclat la línia bona però un terme que està bé. Li treu un intent.",{},'js/motor/estat.js'],
+  ['K05',"En aquesta línia no s'ha comès cap errada.","Ha triat una línia bona. Normalment el generador hi posa una explicació pròpia («En aquesta línia no s'ha comès cap errada: …»); aquesta frase és la de reserva.",{},'js/motor/estat.js'],
+  ['K06',"En aquesta línia no s'ha comès cap errada:\n{llista}.","Equacions: com comença l'explicació d'una línia bona. La llista és del generador.",{llista:["el que s'ha fet bé en aquella línia (generador)","ha sumat bé els termes en x"]},'js/equacions/generador.js'],
+  ['K07',"L'errada és més amunt.","A partir del segon intent fallat, s'afegeix a sota.",{},'js/motor/estat.js'],
+  ['K08',"L'errada és més avall.","A partir del segon intent fallat, s'afegeix a sota.",{},'js/motor/estat.js'],
+  ['K09',"N'hi ha una més amunt i una altra més avall.","El mateix, quan queden errades per sobre i per sota.",{},'js/motor/estat.js'],
+  ['K10',"Tampoc és aquí.","S'han acabat els intents amb una línia bona. Va seguida de K11.",{},'js/motor/estat.js'],
+  ['K11',"{inici} Mira-ho: l'errada és a la línia {k}. {explicació}","Quan s'acaben els intents, l'aplicació ensenya l'errada. L'inici és K10 o X05.",{inici:["K10 o X05","Tampoc és aquí."],k:["la línia de l'errada","2"],"explicació":["l'explicació de l'errada (generador)","El 2 multiplica tots els termes del parèntesi."]},'js/motor/estat.js'],
+  ['K12',"Aquest cop totes les línies són correctes: no hi havia cap errada.","S'han acabat els intents en un exemple sense errades.",{},'js/motor/estat.js'],
+ ]},
+ {id:'T',nom:'Trobar el terme equivocat',desc:"La fase que ve després d'encertar la línia: els termes es tornen botons i l'alumne toca l'equivocat.",t:[
+  ['T01',"Quin terme està malament?","Títol de la fase.",{},'js/motor/llibreta.js'],
+  ['T02',"Toca'l a la línia {i}.","Sota el títol.",{i:["la línia de l'errada","2"]},'js/motor/llibreta.js'],
+  ['T03',"Exacte: aquest és el terme equivocat.","Ha tocat el terme equivocat.",{},'js/motor/estat.js'],
+  ['T04',"Exacte: aquest és un dels termes equivocats. Hi ha un altre terme equivocat a la mateixa línia, i ara tots dos estan encerclats.","Ha tocat un dels dos termes equivocats d'una mateixa línia.",{},'js/motor/estat.js'],
+  ['T05',"Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.","Ha tocat un terme bo. Li treu un intent.",{},'js/motor/estat.js'],
+  ['T06',"Aquest terme està bé.","Inici de T08/T09 quan s'acaben els intents tocant un terme bo.",{},'js/motor/estat.js'],
+  ['T07',"La línia és aquesta, però el terme que has encerclat està bé.","Inici de T08/T09 quan s'acaben els intents encerclant un terme bo.",{},'js/motor/estat.js'],
+  ['T08',"{inici} El terme equivocat és el que ara està encerclat, {terme}.","S'han acabat els intents: l'aplicació encercla el terme i l'exemple val 0.",{inici:["T06 o T07","Aquest terme està bé."],terme:["el terme equivocat","+ 4"]},'js/motor/estat.js'],
+  ['T09',"{inici} Els termes equivocats són els que ara estan encerclats, {termes}.","El mateix, quan hi ha dos termes equivocats.",{inici:["T06 o T07","Aquest terme està bé."],termes:["els dos termes, units amb «i»","− 7x i + 4"]},'js/motor/estat.js'],
+  ['T10',"Compara-la amb la línia {anterior} tal com està escrita, encara que arrossegui l'errada de la línia {k}.","Pista a les fases del terme, «Per què?» i «Corregeix-la» quan les dues errades es compensen.",{anterior:["la línia de sobre","2"],k:["la línia de la primera errada","1"]},'js/motor/llibreta.js'],
+  ['T11',"Terme {t}","Nom de cada botó de terme per als lectors de pantalla.",{t:["el terme","+ 4"]},'js/motor/llibreta.js'],
+ ]},
+ {id:'P',nom:'Per què és una errada?',desc:"Les frases fixes de la fase «Per què?». Les opcions de cada errada són a l'altre artifact.",t:[
+  ['P01',"Per què és una errada?","Títol de la fase.",{},'js/motor/llibreta.js'],
+  ['P02',"Exacte. {explicació}","Ha triat l'opció bona.",{"explicació":["l'explicació de l'errada (generador)","El 2 multiplica tots els termes del parèntesi."]},'js/motor/estat.js'],
+  ['P03',"No ben bé. {explicació}","Ha triat un distractor (no treu punts).",{"explicació":["l'explicació de l'errada (generador)","El 2 multiplica tots els termes del parèntesi."]},'js/motor/estat.js'],
+ ]},
+ {id:'R',nom:'Corregeix-la',desc:"La fase de corregir la línia, triant-la o escrivint el terme (paràmetre «Correcció» de l'índex).",t:[
+  ['R01',"Com hauria de quedar la línia {i}?","Títol quan tria la línia bona entre tres.",{i:["la línia de l'errada","2"]},'js/motor/llibreta.js'],
+  ['R02',"Molt bé: així havia de quedar.","Ha triat (o escrit) la correcció bona.",{},'js/motor/estat.js'],
+  ['R03',"No. Havia de quedar així: {línia}.","Ha triat una correcció dolenta.",{"línia":["la línia bona","2x + 8 = 13 − 7x"]},'js/motor/estat.js'],
+  ['R04',"Com havia de ser el terme encerclat?","Títol quan escriu el terme.",{},'js/motor/llibreta.js'],
+  ['R05',"p. ex. {exemple}","Text gris dins de la casella buida.",{exemple:["+8 a les equacions, 12 a prioritat","+8"]},'js/motor/llibreta.js'],
+  ['R06',"El terme ben fet","Nom de la casella per als lectors de pantalla.",{},'js/motor/llibreta.js'],
+  ['R07',"No és així. Torna-ho a provar.","Primer intent d'escriure, fallat.",{},'js/motor/estat.js'],
+  ['R08',"No. Havia de ser {terme}, i la línia quedava així: {línia}.","Segon intent d'escriure, fallat.",{terme:["el terme bo","+ 8"],"línia":["la línia bona","2x + 8 = 13 − 7x"]},'js/motor/estat.js'],
+  ['R09',"Teclat","Nom del teclat de la pàgina per als lectors de pantalla.",{},'js/motor/llibreta.js'],
+  ['R10'," Encara en queda una.","S'afegeix al missatge quan s'ha corregit la primera de dues errades anunciades.",{},'js/motor/estat.js'],
+ ]},
+ {id:'X',nom:'«No n\'hi ha cap més» i exemples sense errada',desc:"Els missatges del botó de sota (nivells 3 i 5, o «Hi pot haver exemples»).",t:[
+  ['X01',"Molt bé: no n'hi ha cap més.","Ha trobat totes les errades i ho diu.",{},'js/motor/estat.js'],
+  ['X02',"Molt bé: no hi havia cap errada.","Exemple sense errades, i ho diu.",{},'js/motor/estat.js'],
+  ['X03',"Encara n'hi ha alguna més. Torna-ho a mirar línia per línia.","Diu que no n'hi ha cap més, però en queda alguna (n'ha trobat alguna). Treu un intent.",{},'js/motor/estat.js'],
+  ['X04',"N'hi ha alguna. Torna-ho a mirar línia per línia.","Diu que no n'hi ha cap, però n'hi ha. Treu un intent.",{},'js/motor/estat.js'],
+  ['X05',"N'hi ha alguna.","Inici de K11 quan s'acaben els intents amb aquest botó.",{},'js/motor/estat.js'],
+  ['X06',"La solució {solució} és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.","Nota final de les equacions amb dues errades que es compensen.",{"solució":["la solució","x = 4"]},'js/equacions/generador.js'],
+ ]},
+ {id:'F',nom:'Final de cada exemple i de la sessió',desc:"La franja de sota quan s'acaba un exemple, i la pantalla final.",t:[
+  ['F01',"Molt bé!","Títol de la franja quan l'exemple val punts.",{},'js/motor/sessio.js'],
+  ['F02',"T'he ensenyat l'errada","Títol de la franja quan l'exemple val 0.",{},'js/motor/sessio.js'],
+  ['F03',"Has acabat · {punts} de {màxim} punts","Línia de progrés a la pantalla final.",{punts:["punts fets","46"],"màxim":["punts possibles","60"]},'js/motor/sessio.js'],
+  ['F04',"Has acabat!","Títol de la pantalla final.",{},'js/motor/sessio.js'],
+  ['F05',"Nota","Etiqueta de la nota.",{},'js/motor/sessio.js'],
+  ['F06',"{punts} punts de {màxim} possibles.","Sota la nota.",{punts:["punts fets","46"],"màxim":["punts possibles","60"]},'js/motor/sessio.js'],
+  ['F07',"Exemple {i}","Cada fila del resum.",{i:["el número de l'exemple","3"]},'js/motor/sessio.js'],
+  ['F08',"Torna a començar","Botó de la pantalla final.",{},'js/motor/sessio.js'],
+  ['F09',"Tria una altra activitat","Botó de la pantalla final (torna a l'índex).",{},'js/motor/sessio.js'],
+ ]},
+ {id:'B',nom:'Franja «Següent» (repositori comú)',desc:"Venen de step-quiz-commons, igual a tots els webs de Step Quiz. Aquí no es poden canviar: deixa-hi un comentari si les vols diferents.",ro:true,t:[
+  ['B01',"Següent","Botó de la franja.",{},'js/comu/seguent.js'],
+  ['B02',"Veure resultats","Botó de la franja a l'últim exemple.",{},'js/comu/seguent.js'],
+  ['B03',"+{n} punts","Punts de l'exemple (també a la línia de progrés, sense el +). Amb 1 diu «+1 punt».",{n:["punts","8"]},'js/comu/seguent.js'],
+  ['B04',"0 punts","Quan l'exemple val 0.",{},'js/comu/seguent.js'],
+ ]},
+ {id:'I',nom:"Índex (professorat)",desc:"La pàgina on el professor prepara l'enllaç per a l'alumnat.",t:[
+  ['I01',"Localitza l'errada · Step Quiz","Nom de la pestanya del navegador.",{},'index.html'],
+  ['I02',"Localitza l'errada","Títol de la pàgina.",{},'index.html'],
+  ['I03',"Step Quiz: pàgina principal","Nom de l'enllaç de la sabatilla per als lectors de pantalla.",{},'index.html'],
+  ['I04',"Prepara l'activitat","Nom del formulari per als lectors de pantalla.",{},'index.html'],
+  ['I05',"Activitat","Etiqueta.",{},'index.html'],
+  ['I06',"Escull una activitat","Opció inicial del desplegable d'activitat.",{},'index.html'],
+  ['I07',"Nivell","Etiqueta.",{},'index.html'],
+  ['I08',"Una errada, fàcil","Desplegable de nivell, nivell 1 (les dues activitats).",{},'js/index.js'],
+  ['I09',"Una errada, amb parèntesis","Nivell 2, equacions.",{},'js/index.js'],
+  ['I10',"Una errada, amb parèntesis o potències","Nivell 2, prioritat.",{},'js/index.js'],
+  ['I11',"Una errada, sense dir-ho","Nivell 3 (les dues).",{},'js/index.js'],
+  ['I12',"Dues errades","Nivell 4 (les dues).",{},'js/index.js'],
+  ['I13',"Una o dues, sense dir-ho","Nivell 5 (les dues).",{},'js/index.js'],
+  ['I14',"Exemples","Etiqueta (quants exemples té la sessió).",{},'index.html'],
+  ['I15',"Intents","Etiqueta.",{},'index.html'],
+  ['I16',"Repartiment","Etiqueta.",{},'index.html'],
+  ['I17',"Amb «Iguals per a tothom», tota la classe té els mateixos exemples.","Text en passar el ratolí per «Repartiment».",{},'index.html'],
+  ['I18',"Diferents per a cada alumne","Opció de «Repartiment».",{},'index.html'],
+  ['I19',"Iguals per a tothom","Opció de «Repartiment».",{},'index.html'],
+  ['I20',"Marcar la línia","Etiqueta.",{},'index.html'],
+  ['I21',"Automàtic: encerclant amb el dit a les pantalles tàctils i tocant amb el ratolí.","Text en passar el ratolí per «Marcar la línia».",{},'index.html'],
+  ['I22',"Automàtic","Opció de «Marcar la línia».",{},'index.html'],
+  ['I23',"Encerclant","Opció de «Marcar la línia».",{},'index.html'],
+  ['I24',"Tocant","Opció de «Marcar la línia».",{},'index.html'],
+  ['I25',"Sense errada","Etiqueta.",{},'index.html'],
+  ['I26',"Si hi pot haver exemples sense cap errada, la consigna no diu mai quantes n'hi ha.","Text en passar el ratolí per «Sense errada».",{},'index.html'],
+  ['I27',"No n'hi ha mai","Opció de «Sense errada».",{},'index.html'],
+  ['I28',"Hi pot haver exemples","Opció de «Sense errada».",{},'index.html'],
+  ['I29',"Correcció","Etiqueta.",{},'index.html'],
+  ['I30',"Escriure el terme només val quan l'errada és d'un sol terme.","Text en passar el ratolí per «Correcció».",{},'index.html'],
+  ['I31',"Triar la línia","Opció de «Correcció».",{},'index.html'],
+  ['I32',"Escriure el terme","Opció de «Correcció».",{},'index.html'],
+  ['I33',"Enllaç per a l'alumnat","Etiqueta de la casella de l'enllaç.",{},'index.html'],
+  ['I34',"Copia","Botó.",{},'index.html'],
+  ['I35',"Obre","Botó.",{},'index.html'],
+  ['I36',"Copiat.","Després de prémer «Copia».",{},'js/index.js'],
+  ['I37',"Selecciona l’enllaç i copia’l (Ctrl+C).","Si el navegador no deixa copiar sol.",{},'js/index.js'],
+ ]},
+];
+
+// ---- utilitats ----
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T={},ORD=[];
+for(const g of G)for(const [id,text,quan,vars,fit] of g.t){T[id]={id,grup:g.id,orig:text,text,quan,vars,fit,ro:!!g.ro,comentari:''};ORD.push(id);}
+const LS='textos-errades-v1';
+try{const o=JSON.parse(localStorage.getItem(LS)||'{}');for(const[k,v]of Object.entries(o.T||{}))if(T[k]){if(!T[k].ro&&typeof v.text==='string')T[k].text=v.text;T[k].comentari=String(v.comentari||'');}window.__gen=String(o.gen||'');}catch(e){}
+let gen=window.__gen||'';delete window.__gen;
+const REP={};
+const mod=id=>T[id].text!==T[id].orig;
+const toc=id=>mod(id)||!!T[id].comentari.trim();
+const saveLocal=()=>{try{const t={};for(const id of ORD)if(toc(id))t[id]={text:T[id].text,comentari:T[id].comentari};localStorage.setItem(LS,JSON.stringify({T:t,gen}));}catch(e){}};
+const vars=t=>[...String(t).matchAll(/\{([^{}]+)\}/g)].map(m=>m[1]);
+function avisos(id){
+ const t=T[id].text,o=[];
+ if(!t.trim())o.push('La frase està buida.');
+ const tenia=Object.keys(T[id].vars),hi=vars(t);
+ const falten=tenia.filter(v=>!hi.includes(v)),sobren=hi.filter(v=>!tenia.includes(v));
+ if(falten.length)o.push(`Hi falta ${falten.map(v=>'{'+v+'}').join(', ')}: el web no hi podrà posar aquest valor.`);
+ if(sobren.length)o.push(`${sobren.map(v=>'{'+v+'}').join(', ')} no existeix en aquesta frase: sortiria tal qual.`);
+ return o.join(' ');
+}
+function exemple(id){
+ const x=T[id];
+ return esc(x.text).replace(/\{([^{}]+)\}/g,(m,n)=>{const v=x.vars[n];if(!v)return '<mark>{'+esc(n)+'}</mark>';
+  let e=v[1];const r=/^\[(\w+)\]$/.exec(e);if(r&&T[r[1]])e=T[r[1]].text;return '<span class="val">'+esc(e)+'</span>';}).replace(/\n/g,'<br>');
+}
+// ---- dibuix ----
+let filtre='tot';
+function fila(id){
+ const x=T[id];
+ const tags=[];
+ if(x.ro)tags.push('<span class="tag ro">repositori comú</span>');
+ if(mod(id))tags.push('<span class="tag canv">canviada</span>');
+ const vs=Object.entries(x.vars);
+ return `<div class="t${x.ro?' ro':''}" id="t-${id}" data-t="${id}" data-mod="${toc(id)?1:0}">
+<div class="cap"><span class="id">${id}</span><span class="quan">${esc(x.quan)}</span>${tags.join('')}</div>
+${x.ro?`<div class="ro-text">${esc(x.text)}</div>`:`<textarea id="x-${id}" data-x="${id}" rows="1" aria-label="Frase ${id}">${esc(x.text)}</textarea>`}
+${vs.length?`<div class="prev" data-p="${id}">${exemple(id)}</div><div class="vars">${vs.map(([k,v])=>`<span><span class="v">{${esc(k)}}</span> ${esc(v[0])}</span>`).join('')}</div>`:''}
+<div class="warn" data-w="${id}">${esc(x.ro?'':avisos(id))}</div>
+<div class="acc">${!x.ro&&mod(id)?`<button class="b" data-rest="${id}">Restaura l'original</button>`:''}<span class="fit">${esc(x.fit)}</span></div>
+<textarea id="c-${id}" data-c="${id}" class="cm" rows="1" placeholder="Comentari (si vols)" aria-label="Comentari ${id}">${esc(x.comentari)}</textarea>
+<span class="st" data-st="${id}" aria-live="polite"></span>
+<div class="rep" data-r="${id}" hidden></div></div>`;
+}
+function pinta(){
+ const el=document.activeElement,clau=el&&el.id&&el.matches('textarea')?el.id:null,sel=clau?[el.selectionStart,el.selectionEnd]:null;
+ $('#grups').innerHTML=G.map(g=>`<section class="grp" id="g-${g.id}" aria-labelledby="h-${g.id}"><h2 id="h-${g.id}">${esc(g.nom)}</h2><p>${esc(g.desc)}</p>${g.t.map(r=>fila(r[0])).join('')}<p class="buit" data-buit="${g.id}" hidden>Cap frase d'aquest grup amb aquest filtre.</p></section>`).join('');
+ aplicaFiltre();compta();pintaReps();ajusta();
+ if(clau){const n=document.getElementById(clau);if(n){n.focus({preventScroll:true});try{n.setSelectionRange(sel[0],sel[1]);}catch(e){}}}
+}
+function index(){$('#index').innerHTML=G.map(g=>`<a href="#g-${g.id}" class="${g.t.some(r=>toc(r[0]))?'mod':''}">${esc(g.nom)}</a>`).join('');}
+function aplicaFiltre(){
+ document.querySelectorAll('.t').forEach(d=>{const id=d.dataset.t;d.hidden=filtre==='mod'?!toc(id):filtre==='res'?toc(id):false;});
+ for(const g of G){const b=document.querySelector(`[data-buit="${g.id}"]`);if(b)b.hidden=g.t.some(r=>!document.getElementById('t-'+r[0]).hidden);}
+ for(const[f,b]of[['tot','#f-tot'],['mod','#f-mod'],['res','#f-res']])$(b).setAttribute('aria-pressed',String(filtre===f));
+}
+function compta(){
+ const nm=ORD.filter(mod).length,nc=ORD.filter(id=>T[id].comentari.trim()).length;
+ $('#cnt').textContent=nm+nc?`${nm} de ${ORD.length} frases canviades · ${nc} comentaris`:`${ORD.length} frases · cap canvi`;
+ index();
+}
+function pintaReps(){
+ document.querySelectorAll('[data-r]').forEach(el=>{const r=REP[el.dataset.r];el.hidden=!r;if(r){el.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';el.append(b,document.createTextNode(r));}});
+ const rg=$('#rep-general');rg.hidden=!REP.general;if(REP.general){rg.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';rg.append(b,document.createTextNode(REP.general));}
+}
+function ajusta(el){(el?[el]:document.querySelectorAll('textarea')).forEach(t=>{if(t.hidden)return;t.style.height='auto';t.style.height=(t.scrollHeight+3)+'px';});}
+function refresca(id){
+ const d=document.getElementById('t-'+id);if(!d)return;
+ const p=d.querySelector('[data-p]');if(p)p.innerHTML=exemple(id);
+ // les frases que en fan servir una altra com a exemple ([M02])
+ for(const k of ORD)for(const v of Object.values(T[k].vars))if(v[1]==='['+id+']'){const q=document.querySelector(`[data-p="${k}"]`);if(q)q.innerHTML=exemple(k);}
+ d.querySelector('[data-w]').textContent=T[id].ro?'':avisos(id);
+ d.dataset.mod=toc(id)?1:0;
+ const tg=d.querySelector('.tag.canv'),acc=d.querySelector('.acc');
+ if(mod(id)&&!tg)d.querySelector('.cap').insertAdjacentHTML('beforeend','<span class="tag canv">canviada</span>');
+ if(!mod(id)&&tg)tg.remove();
+ const rb=acc.querySelector('[data-rest]');
+ if(!T[id].ro&&mod(id)&&!rb)acc.insertAdjacentHTML('afterbegin',`<button class="b" data-rest="${id}">Restaura l'original</button>`);
+ if(!mod(id)&&rb)rb.remove();
+ const ta=document.getElementById('x-'+id);if(ta&&document.activeElement!==ta&&ta.value!==T[id].text){ta.value=T[id].text;ajusta(ta);}
+ const tc=document.getElementById('c-'+id);if(tc&&document.activeElement!==tc&&tc.value!==T[id].comentari){tc.value=T[id].comentari;ajusta(tc);}
+ compta();
+}
+// ---- desat (db de l'artifact; si no n'hi ha, en aquest navegador) ----
+let mode='connectant',db=null;
+const busy={},dirty={},timers={};
+function setMode(m){mode=m;const s=$('#sav');s.dataset.m=m;s.textContent=m==='nuvol'?"Es desa sol: el puc llegir":m==='local'?"Només en aquest navegador":"Connectant amb el desat…";$('#avis').hidden=m!=='local';}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function docDe(clau){
+ if(clau==='gen')return[db.doc('general/notes'),{text:gen,actualitzat:new Date().toISOString()}];
+ const x=T[clau];return[db.collection('textos').doc(clau),{text:x.text,original:x.orig,comentari:x.comentari,actualitzat:new Date().toISOString()}];
+}
+function estat(clau,t){if(clau==='gen'){$('#st-gen').textContent=t;return;}const e=document.querySelector(`[data-st="${clau}"]`);if(e)e.textContent=t;}
+async function push(clau){
+ saveLocal();if(!db)return;
+ dirty[clau]=true;if(busy[clau])return;busy[clau]=true;
+ while(dirty[clau]){dirty[clau]=false;const[ref,body]=docDe(clau);
+  try{await ref.set(body);estat(clau,'Desat');}
+  catch(e){await wait(700);try{await ref.set(body);estat(clau,'Desat');continue;}catch(e2){}estat(clau,"No s'ha pogut desar a l'artifact (desat en aquest navegador)");setMode('local');}}
+ busy[clau]=false;
+}
+const mesTard=(clau,ms=800)=>{saveLocal();clearTimeout(timers[clau]);timers[clau]=setTimeout(()=>{timers[clau]=null;push(clau);},ms);};
+// ---- accions ----
+document.addEventListener('input',ev=>{
+ const t=ev.target;
+ if(t.dataset.x){const id=t.dataset.x;T[id].text=t.value.replace(/\r/g,'').slice(0,600);ajusta(t);refresca(id);mesTard(id);return;}
+ if(t.dataset.c){const id=t.dataset.c;T[id].comentari=t.value.slice(0,4000);ajusta(t);refresca(id);mesTard(id);return;}
+ if(t.id==='c-gen'){gen=t.value.slice(0,20000);ajusta(t);mesTard('gen');}
+});
+document.addEventListener('click',ev=>{
+ const b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.rest){const id=b.dataset.rest;T[id].text=T[id].orig;const ta=document.getElementById('x-'+id);if(ta){ta.value=T[id].text;ajusta(ta);}refresca(id);push(id);ta&&ta.focus();return;}
+ if(b.id==='f-tot'||b.id==='f-mod'||b.id==='f-res'){filtre=b.id.slice(2);aplicaFiltre();}
+});
+function resum(){
+ const l=[];
+ for(const id of ORD){const x=T[id];if(!toc(id))continue;l.push(`${id}: ${mod(id)?`«${x.orig}» → «${x.text}»`:'(sense canvis)'}${x.comentari.trim()?' · Comentari: '+x.comentari.trim():''}`);}
+ if(gen.trim())l.push('Altres comentaris: '+gen.trim());
+ return l.join('\n')||'Cap canvi.';
+}
+$('#copia').addEventListener('click',()=>{const t=resum(),ta=$('#txtcopia');const fall=()=>{ta.hidden=false;ta.value=t;ajusta(ta);ta.focus();ta.select();$('#copiat').textContent="Selecciona el text i copia'l amb Ctrl+C.";};try{navigator.clipboard.writeText(t).then(()=>{$('#copiat').textContent="Copiat. Enganxa-ho al xat.";},fall);}catch(e){fall();}});
+$('#c-gen').value=gen;
+addEventListener('resize',()=>ajusta());
+async function initDb(){
+ const host=window.claude;
+ if(!host||typeof host.use!=='function'){setMode('local');return;}
+ const tm=setTimeout(()=>{if(mode==='connectant')setMode('local');},10000);
+ let a=null;try{a=await host.use('db');}catch(e){a=null;}
+ if(!a){clearTimeout(tm);setMode('local');return;}
+ const ocupat=c=>busy[c]||dirty[c]||timers[c];
+ try{
+  let primer=true;
+  a.collection('textos').onSnapshot(snap=>{
+   const canviats=[];
+   snap.docs.forEach(d=>{const x=d.data()||{};const id=d.id;if(!T[id]||ocupat(id))return;
+    const nt=(!T[id].ro&&typeof x.text==='string')?x.text:T[id].text,nc=typeof x.comentari==='string'?x.comentari:T[id].comentari;
+    if(nt!==T[id].text||nc!==T[id].comentari){T[id].text=nt;T[id].comentari=nc;canviats.push(id);}});
+   if(primer){primer=false;clearTimeout(tm);
+    // el que s'havia escrit en aquest navegador i encara no era al núvol
+    const local=ORD.filter(id=>toc(id)&&!snap.docs.some(d=>d.id===id));
+    db=a;setMode('nuvol');local.forEach(push);pinta();}
+   else canviats.forEach(refresca);
+   saveLocal();
+  },()=>{clearTimeout(tm);setMode('local');});
+  a.doc('general/notes').onSnapshot(d=>{if(!d.exists||ocupat('gen'))return;const x=d.data()||{};if(typeof x.text==='string'&&document.activeElement!==$('#c-gen')){gen=x.text;$('#c-gen').value=gen;ajusta($('#c-gen'));}},()=>{});
+  a.collection('rep').onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};REP[d.id]=typeof x.text==='string'?x.text:'';});pintaReps();},()=>{});
+ }catch(e){clearTimeout(tm);setMode('local');}
+}
+pinta();
+initDb();
+}
+</script>

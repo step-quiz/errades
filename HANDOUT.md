@@ -73,6 +73,15 @@ lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when th
 
 ## 2. Open work, in priority order
 
+0. **Interface texts editor «Textos de Localitza l'errada»** — https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn,
+   capabilities `{db:{}}`, source `eines/textos-editor/index.html` (catalogue `G` inside the page: 149 fixed
+   texts of the activity pages, the shared engine and the index, ids A/N/C/L/M/K/T/P/R/X/F/B/I; `B*` come from
+   `step-quiz-commons` and are read-only). Not covered: generator explanations and «Per què?» options (item 1).
+   David fills it in; on «Revisa artifact»: read db `textos/<id>` (`{text, original, comentari}`) and
+   `general/notes`, reply in `rep/<id>` / `rep/general`, then apply the approved texts in the files named on each
+   row (`{name}` placeholders = runtime values; keep them), update tests that match message texts
+   (`tests/estat.test.js`, `tests/navegador/prova.mjs`, `tests/index.test.js`), docs, ZIP.
+
 1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug
    `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, live version
    `1795678340-090d`, capabilities `{db:{}, user:{}}`. **David is filling it in now.** When he says «Revisa
