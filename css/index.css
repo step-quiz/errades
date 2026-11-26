@@ -4,11 +4,33 @@ PROJECTE: Localitza l'errada (step-quiz/errades)
 FITXER: css/index.css
 ROL: L'índex: un sol panell estret amb files «etiqueta | selector» i el
      generador d'enllaços (al mateix estil que l'índex d'operacions).
-DEPENDÈNCIES: css/tokens.css, css/pagina.css.
+DEPENDÈNCIES: css/tokens.css, css/pagina.css (el peu: css/peu.css).
 ============================================================================
 */
+.pagina {
+    padding-bottom: calc(var(--peu-reserva) + 16px);
+}
+.logo {
+    display: block;
+    width: max-content;
+    margin: 3vh auto 0;
+    padding: 2px 12px;
+    line-height: 0;
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+}
+.logo img {
+    display: block;
+    height: 64px;
+    width: auto;
+}
+.logo:hover {
+    background: var(--hover-fons);
+    border-color: var(--hover-vora);
+    box-shadow: inset 0 0 0 1.5px var(--hover-vora);
+}
 .titol {
-    margin: 4vh 0 20px;
+    margin: 4px 0 20px;
     text-align: center;
     font-size: clamp(32px, 6vw, 44px);
     line-height: 1.1;

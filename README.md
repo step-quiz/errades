@@ -25,6 +25,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | Path | Role |
 |---|---|
 | `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers: one narrow panel of «label | select» rows (like `operacions`). Activity (`pagina()`; the other rows stay hidden until one is chosen), level (short labels, `NIVELLS`; only level 2 depends on the activity), examples (1–10), attempts (1–5), «Repartiment» (different per pupil / same for everyone → `llavorNova()` seed), gesture, `noerrors`, `escriu`. `enllac()` is pure (tested; the test also reads the link back with `llegeixParametres`). |
+| `css/peu.css`, `vendor/img/cc-by-nc-sa.svg`, `icon.png` | Index only: floating footer pill (author, school, licences; same look as `operacions`), self-hosted CC badge (a redraw: no third-party requests), and the sneaker logo that links to `https://step-quiz.net/`. |
 | `js/motor/parametres.js` | URL parameters shared by both activities (`llegeixParametres`, `encerclaDe`, `esTactil`, `llavorNova`). |
 | `prioritat.html`, `js/prioritat/pagina.js` | The order-of-operations activity (no bank). `exempleSessio()` is pure (tested). Levels reuse `js/equacions/nivells.js` (`forma` 1 = level 1, 2 = levels 2–5). |
 | `js/prioritat/generador.js` | **Pure, seeded generator** of order-of-operations examples (expression lists, the pupil's procedure, mal-rules, texts, `valida()`). |

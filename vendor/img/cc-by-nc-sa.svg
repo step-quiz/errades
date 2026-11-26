@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 31" width="88" height="31" role="img" aria-label="Llicència CC BY-NC-SA">
+  <rect width="88" height="31" fill="#aab2ab"/>
+  <rect x="0.5" y="0.5" width="87" height="30" fill="none" stroke="#000"/>
+  <rect x="0" y="22" width="88" height="9" fill="#000"/>
+  <g fill="#fff" stroke="#000" stroke-width="1">
+    <circle cx="14" cy="11" r="8.5"/>
+    <circle cx="38" cy="11" r="8.5"/>
+    <circle cx="57" cy="11" r="8.5"/>
+    <circle cx="76" cy="11" r="8.5"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#000" text-anchor="middle">
+    <text x="14" y="14" font-size="9">cc</text>
+    <text x="38" y="14" font-size="7">BY</text>
+    <text x="57" y="14" font-size="6.5">NC</text>
+    <text x="76" y="14" font-size="6.5">SA</text>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#fff" font-size="6" text-anchor="middle">
+    <text x="38" y="28.5">BY</text>
+    <text x="57" y="28.5">NC</text>
+    <text x="76" y="28.5">SA</text>
+  </g>
+</svg>

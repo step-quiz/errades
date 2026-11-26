@@ -1,0 +1,93 @@
+/*
+============================================================================
+PROJECTE: Localitza l'errada (step-quiz/errades)
+FITXER: css/peu.css
+ROL: El peu de pàgina (autor, institut i llicències), FLOTANT i sempre a la
+     vista: una píndola centrada a baix, amb fons translúcid. Mateix aspecte
+     que el peu d'operacions (css/peu.css d'aquell repositori).
+ARQUITECTURA:
+- Marcatge: <footer class="peu"> amb l'enllaç de la llicència (.peu-cc) i el
+  text; .peu-dept i .peu-llicencies s'amaguen a les pantalles estretes.
+- --peu-reserva: l'espai que ha de deixar lliure la pàgina a baix perquè el peu
+  no tapi res.
+- La insígnia CC és vendor/img/cc-by-nc-sa.svg (allotjada aquí: cap petició a
+  tercers, els alumnes són menors).
+DEPENDÈNCIES: css/tokens.css.
+============================================================================
+*/
+:root {
+    --peu-reserva: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+.peu {
+    position: fixed;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 100;
+    max-width: calc(100% - 24px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 16px 5px 7px;
+    border: 1px solid var(--vora);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    -webkit-backdrop-filter: blur(10px) saturate(1.4);
+    backdrop-filter: blur(10px) saturate(1.4);
+    box-shadow:
+        0 8px 24px -10px rgba(15, 23, 42, 0.3),
+        0 1px 3px rgba(15, 23, 42, 0.08);
+    color: var(--text-suau);
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+.peu a {
+    color: inherit;
+}
+.peu strong {
+    color: var(--text);
+}
+.peu-cc {
+    flex: none;
+    display: block;
+    width: 62px;
+    height: 22px;
+    overflow: hidden;
+    border-radius: 4px;
+    line-height: 0;
+}
+.peu-cc img {
+    display: block;
+    width: 62px;
+    height: 22px;
+    font-size: 0;
+}
+.peu-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 900px) {
+    .peu-llicencies {
+        display: none;
+    }
+}
+@media (max-width: 560px) {
+    .peu {
+        font-size: 12px;
+        gap: 8px;
+        padding-right: 12px;
+    }
+    .peu-dept {
+        display: none;
+    }
+}
+@media print {
+    .peu {
+        position: static;
+        transform: none;
+        box-shadow: none;
+        margin: 12px auto;
+    }
+}

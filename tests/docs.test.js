@@ -23,6 +23,6 @@ for (const r of Object.keys(REGLES_P)) {
 for (const f of ['js/comu/punts.js', 'js/comu/seguent.js', 'css/seguent.css']) ok(/FITXER COMÚ/.test(llegeix(f)), `${f} no porta l'avís de FITXER COMÚ`);
 // El bloc de regles comunes de CLAUDE.md
 ok(/<!-- regles-comunes:inici -->[\s\S]*<!-- regles-comunes:fi -->/.test(llegeix('CLAUDE.md')), 'CLAUDE.md no té el bloc de regles comunes');
-// Cap petició a tercers a les pàgines
-for (const f of ['index.html', 'equacions.html', 'prioritat.html', 'banc-errors.html', 'css/tokens.css']) ok(!/https?:\/\/(?!errades\.step-quiz)/.test(llegeix(f).replace(/<!--[\s\S]*?-->/g, '')), `${f} fa peticions a un altre domini`);
+// Cap petició a tercers a les pàgines (els enllaços <a href="https://…"> no són peticions)
+for (const f of ['index.html', 'equacions.html', 'prioritat.html', 'banc-errors.html', 'css/tokens.css']) ok(!/(?<!href=")https?:\/\/(?!errades\.step-quiz)/.test(llegeix(f).replace(/<!--[\s\S]*?-->/g, '')), `${f} fa peticions a un altre domini`);
 informe('docs');

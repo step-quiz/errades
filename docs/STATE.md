@@ -346,3 +346,7 @@ una activitat»; every other row and the link stay hidden until one is chosen); 
   «Repartiment» replaces the seed field: «Iguals per a tothom» calls `llavorNova()` once and keeps that seed
   while selected (a free seed can no longer be typed in the index, only edited in the URL).
 - **Untouched:** `enllac()`, `pagina()`, `PER_DEFECTE`, `LIMITS`. `tests/navegador/prova.mjs` rewritten for selects.
+- **Logo and footer (2026-11-26):** the sneaker (`icon.png`, also the favicon) sits above the title and links to
+  `https://step-quiz.net/`; the floating footer pill (`css/peu.css`) is copied from `operacions`. The CC badge is
+  self-hosted as a redrawn SVG (no third-party requests); replace it with the official PNG if wanted.
+  `tests/docs.test.js` now ignores `href="https://…"` links (only requests count).

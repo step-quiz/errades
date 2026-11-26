@@ -89,6 +89,8 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.selectOption('#act-reparteix', '');
     ok(!/llavor/.test(await pg.inputValue('#act-enllac')), 'índex: «Diferents per a cada alumne» treu la llavor');
     ok(/potències/.test(await pg.locator('#act-nivell option[value="2"]').textContent()), "índex: el nivell 2 es descriu segons l'activitat");
+    ok((await pg.getAttribute('a.logo', 'href')) === 'https://step-quiz.net/', 'índex: la sabatilla enllaça a step-quiz.net');
+    ok(await pg.isVisible('footer.peu'), 'índex: el peu és visible');
     ok(await lateral(), 'índex: desplaçament lateral');
 
     // Activitat: 2 exemples, llavor fixa
