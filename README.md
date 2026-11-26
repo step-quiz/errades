@@ -24,7 +24,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 
 | Path | Role |
 |---|---|
-| `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers: activity (`pagina()`), level (descriptions per activity, `NIVELLS`), gesture, `noerrors`, `escriu`, examples, attempts, seed. `enllac()` is pure (tested; the test also reads the link back with `llegeixParametres`). |
+| `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers: one narrow panel of «label | select» rows (like `operacions`). Activity (`pagina()`; the other rows stay hidden until one is chosen), level (short labels, `NIVELLS`; only level 2 depends on the activity), examples (1–10), attempts (1–5), «Repartiment» (different per pupil / same for everyone → `llavorNova()` seed), gesture, `noerrors`, `escriu`. `enllac()` is pure (tested; the test also reads the link back with `llegeixParametres`). |
 | `js/motor/parametres.js` | URL parameters shared by both activities (`llegeixParametres`, `encerclaDe`, `esTactil`, `llavorNova`). |
 | `prioritat.html`, `js/prioritat/pagina.js` | The order-of-operations activity (no bank). `exempleSessio()` is pure (tested). Levels reuse `js/equacions/nivells.js` (`forma` 1 = level 1, 2 = levels 2–5). |
 | `js/prioritat/generador.js` | **Pure, seeded generator** of order-of-operations examples (expression lists, the pupil's procedure, mal-rules, texts, `valida()`). |
@@ -59,7 +59,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No n'hi ha cap més»). |
 | `totaloperations` | 1–20 | 6 | Examples per session. |
 | `maxintents` | 1–5 | 3 | Attempts per example: 1st miss explains the tapped line, 2nd adds the direction, the last one shows the error (0 points). |
-| `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as «tothom els mateixos exemples»). |
+| `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as the select «Repartiment: Iguals per a tothom»; it generates the seed, there is no free seed field). |
 
 ## Lasso (R3)
 

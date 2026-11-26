@@ -3,16 +3,22 @@
  * PROJECTE: Localitza l'errada (step-quiz/errades)
  * FITXER: js/index.js
  * ROL: El generador d'enllaços de l'índex (per al professorat): l'activitat
- *      (equacions o prioritat d'operacions) i tots els paràmetres.
+ *      (equacions o prioritat d'operacions) i tots els paràmetres, en un sol
+ *      panell de desplegables (com l'índex d'operacions).
  * ARQUITECTURA:
  * - enllac(base, valors) i pagina(activitat) són purs (tests/index.test.js).
  * - Paràmetres (els llegeix js/motor/parametres.js): nivell, noerrors, escriu,
  *   encercla (auto = no s'escriu), totaloperations, maxintents, llavor (buida =
  *   no s'escriu). Els valors per defecte no s'escriuen, perquè l'enllaç quedi curt.
- * - Les descripcions dels nivells canvien amb l'activitat.
- * DEPENDÈNCIES: Cap.
+ * - Les etiquetes dels nivells són curtes; només el 2 canvia amb l'activitat.
+ * - Fins que no es tria l'activitat, els paràmetres i l'enllaç són amagats.
+ * - «Repartiment» (selector) substitueix el camp de la llavor: «Iguals per a
+ *   tothom» genera una llavor (llavorNova) i la deixa només a l'enllaç.
+ * DEPENDÈNCIES: js/motor/parametres.js (llavorNova).
  * ============================================================================
  */
+import { llavorNova } from './motor/parametres.js';
+
 export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '' };
 const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], encercla: [0, 1], totaloperations: [1, 20], maxintents: [1, 5], llavor: [0, 4294967295] };
 export const PAGINES = { equacions: 'equacions.html', prioritat: 'prioritat.html' };
@@ -20,18 +26,18 @@ export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
 
 export const NIVELLS = {
     equacions: {
-        1: 'una errada, sense parèntesis, 4–6 línies',
-        2: 'una errada, amb parèntesis, 6–8 línies',
-        3: "una errada, però no es diu quantes n'hi ha",
-        4: 'dues errades; cal marcar també el terme equivocat',
-        5: 'una o dues, sense dir-ho; de vegades es compensen',
+        1: 'Una errada, fàcil',
+        2: 'Una errada, amb parèntesis',
+        3: 'Una errada, sense dir-ho',
+        4: 'Dues errades',
+        5: 'Una o dues, sense dir-ho',
     },
     prioritat: {
-        1: 'una errada, sense parèntesis ni potències (+ − · :)',
-        2: 'una errada, amb parèntesis, potències i nombres negatius',
-        3: "una errada, però no es diu quantes n'hi ha",
-        4: 'dues errades; cal marcar també el terme equivocat',
-        5: 'una o dues, sense dir-ho; de vegades es compensen',
+        1: 'Una errada, fàcil',
+        2: 'Una errada, amb parèntesis o potències',
+        3: 'Una errada, sense dir-ho',
+        4: 'Dues errades',
+        5: 'Una o dues, sense dir-ho',
     },
 };
 
@@ -55,15 +61,40 @@ export function enllac(base, valors) {
 
 if (typeof document !== 'undefined') {
     const form = document.getElementById('form-act');
+    const params = document.getElementById('act-params');
     const camp = document.getElementById('act-enllac');
     const obre = document.getElementById('act-obre');
     const avis = document.getElementById('act-copiat');
+    const selNivell = document.getElementById('act-nivell');
+    let activitat = '';
+    let llavor = '';
+    let nivellsDe = '';
+    const omple = act => {
+        if (act === nivellsDe) return;
+        const triat = selNivell.value || '1';
+        selNivell.replaceChildren(
+            ...[1, 2, 3, 4, 5].map(n => {
+                const o = document.createElement('option');
+                o.value = String(n);
+                o.textContent = n + ' · ' + NIVELLS[act][n];
+                return o;
+            })
+        );
+        selNivell.value = triat;
+        nivellsDe = act;
+    };
     const posa = () => {
         const valors = Object.fromEntries(new FormData(form).entries());
-        const act = valors.activitat in PAGINES ? valors.activitat : 'equacions';
-        document.querySelectorAll('[data-niv]').forEach(el => (el.textContent = NIVELLS[act][el.dataset.niv]));
-        document.querySelectorAll('.mostra[data-act]').forEach(el => (el.hidden = el.dataset.act !== act));
-        const url = enllac(new URL(pagina(act), location.href).href, valors);
+        if (!(valors.activitat in PAGINES)) return;
+        activitat = valors.activitat;
+        params.hidden = false;
+        omple(activitat);
+        valors.nivell = selNivell.value;
+        if (valors.reparteix === '1') {
+            if (llavor === '') llavor = String(llavorNova());
+        } else llavor = '';
+        valors.llavor = llavor;
+        const url = enllac(new URL(pagina(activitat), location.href).href, valors);
         camp.value = url;
         obre.href = url;
         avis.textContent = '';
@@ -84,5 +115,4 @@ if (typeof document !== 'undefined') {
             aMa();
         }
     });
-    posa();
 }

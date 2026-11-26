@@ -332,3 +332,17 @@ Cloudflare Pages project (no build command, output directory `/`) and the domain
 - Examples are generated, not curated: some numbers are big (e.g. `5·(x − 5) = −x − 55`). The curated bank
   (R6) and narrower ranges can fix that in stage 2.
 - The browser test (`tests/navegador/prova.mjs`) is not in CI (it needs Playwright and a browser).
+
+## Simplified index (2026-11-26, review artifact «Simplificar l'índex d'errades»)
+
+David asked to model `index.html` on `operacions/index.html`. Decisions: B1 = no activity preselected («Escull
+una activitat»; every other row and the link stay hidden until one is chosen); B3 = gesture, `noerrors` and
+`escriu` are always visible (no «Més opcions» fold), as one-line selects; all other points followed the proposal.
+
+- **Layout:** one ~420 px panel, rows «label | select», monospace link box, buttons «Copia» and «Obre» (`.b.pri`).
+  No notebook samples, no explanatory paragraphs, no footer. Hover rule and tokens unchanged.
+- **Controls:** level = select with short labels (only level 2 differs: «amb parèntesis» / «amb parèntesis o
+  potències»); examples 1–10 and attempts 1–5 are selects (the URL still accepts up to 20 examples);
+  «Repartiment» replaces the seed field: «Iguals per a tothom» calls `llavorNova()` once and keeps that seed
+  while selected (a free seed can no longer be typed in the index, only edited in the URL).
+- **Untouched:** `enllac()`, `pagina()`, `PER_DEFECTE`, `LIMITS`. `tests/navegador/prova.mjs` rewritten for selects.

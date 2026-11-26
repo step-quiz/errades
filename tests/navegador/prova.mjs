@@ -72,16 +72,23 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const clica = async sel => (tactil ? pg.tap(sel) : pg.click(sel));
     const lateral = async () => pg.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
-    // Índex
+    // Índex: fins que no es tria l'activitat, els paràmetres són amagats
     await pg.goto(BASE + 'index.html');
-    await pg.check('input[name=nivell][value="2"]');
+    ok(!(await pg.isVisible('#act-params')), "índex: sense activitat triada, els paràmetres són amagats");
+    await pg.selectOption('#act-activitat', 'equacions');
+    ok(await pg.isVisible('#act-params'), "índex: en triar l'activitat apareixen els paràmetres");
+    await pg.selectOption('#act-nivell', '2');
     ok((await pg.inputValue('#act-enllac')).endsWith('equacions.html?nivell=2'), 'índex: enllaç amb nivell 2');
-    await pg.check('input[name=activitat][value="prioritat"]');
-    await pg.check('input[name=encercla][value="1"]');
-    await pg.fill('#act-llavor', '42');
-    ok((await pg.inputValue('#act-enllac')).endsWith('prioritat.html?nivell=2&encercla=1&llavor=42'), 'índex: prioritat, encerclar sempre i llavor');
-    ok(/potències/.test(await pg.textContent('[data-niv="2"]')), 'índex: els nivells es descriuen segons l\'activitat');
-    ok(await pg.isVisible('.mostra[data-act="prioritat"]') && !(await pg.isVisible('.mostra[data-act="equacions"]')), "índex: la mostra és la de l'activitat triada");
+    await pg.selectOption('#act-activitat', 'prioritat');
+    await pg.selectOption('#act-encercla', '1');
+    await pg.selectOption('#act-reparteix', '1');
+    const enll = await pg.inputValue('#act-enllac');
+    ok(/prioritat\.html\?nivell=2&encercla=1&llavor=\d+$/.test(enll), 'índex: prioritat, encerclar sempre i llavor generada (iguals per a tothom)');
+    await pg.selectOption('#act-total', '10');
+    ok((await pg.inputValue('#act-enllac')).includes('llavor=' + enll.split('llavor=')[1]), "índex: la llavor es manté en canviar un altre paràmetre");
+    await pg.selectOption('#act-reparteix', '');
+    ok(!/llavor/.test(await pg.inputValue('#act-enllac')), 'índex: «Diferents per a cada alumne» treu la llavor');
+    ok(/potències/.test(await pg.locator('#act-nivell option[value="2"]').textContent()), "índex: el nivell 2 es descriu segons l'activitat");
     ok(await lateral(), 'índex: desplaçament lateral');
 
     // Activitat: 2 exemples, llavor fixa
