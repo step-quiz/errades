@@ -37,7 +37,7 @@ export function dins(pt, poly) {
 export const llargada = pts => pts.reduce((s, p, k) => (k ? s + dist(p, pts[k - 1]) : 0), 0);
 
 export function avalua(pts, linies) {
-    if (!pts || pts.length < 4) return { torna: 'el traç és massa petit.' };
+    if (!pts || pts.length < 4) return { torna: 'el teu traç és massa petit.' };
     const xs = pts.map(p => p[0]),
         ys = pts.map(p => p[1]);
     const x0 = Math.min(...xs),
@@ -46,13 +46,13 @@ export function avalua(pts, linies) {
         y1 = Math.max(...ys),
         w = x1 - x0,
         h = y1 - y0;
-    if (llargada(pts) < 30 || (w < 16 && h < 16)) return { torna: 'el traç és massa petit.' };
+    if (llargada(pts) < 30 || (w < 16 && h < 16)) return { torna: 'el teu traç és massa petit.' };
     const tancat = dist(pts[0], pts[pts.length - 1]) < Math.max(30, 0.35 * Math.max(w, h));
     if (tancat) {
         const hits = [];
         for (const l of linies) for (const t of l.termes) if (dins([t.cx, t.cy], pts)) hits.push([l.i, t.j]);
         const ls = [...new Set(hits.map(x => x[0]))];
-        if (ls.length > 1) return { torna: "el traç envolta termes de més d'una línia." };
+        if (ls.length > 1) return { torna: "el teu traç envolta termes de més d'una línia." };
         if (ls.length === 1) {
             const l = linies.find(x => x.i === ls[0]);
             let termes = hits.map(x => x[1]);
@@ -74,5 +74,5 @@ export function avalua(pts, linies) {
         if (centrades.length === 1 && cand.filter(o => o.f > 0.6).length <= 1 && h < 60) return { linia: centrades[0].i, termes: [] };
         return { torna: "el traç toca més d'una línia." };
     }
-    return { torna: 'no sé quina línia has marcat.' };
+    return { torna: 'no em queda clar quina línia has marcat.' };
 }

@@ -69,19 +69,19 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 On `.linies`, a pointer stroke longer than 8 px becomes a lasso (`touch-action: none` on the notebook while
 searching, so the finger draws instead of scrolling; shorter strokes are ordinary taps). `llac.avalua`: closed
 stroke → the terms whose centre is inside the polygon; terms of one line → that line, and 1–2 enclosed terms are
-remembered; terms of several lines, too small, or no clear line → «Torna a marcar-ho, si us plau: …» (`llacDubtos`).
+remembered; terms of several lines, too small, or no clear line → «Has de tornar a marcar-ho, perquè …» (`llacDubtos`).
 An open stroke (underline) or a closed one with no term inside picks the line it covers vertically. The stroke stays
 drawn (dashed, black) until «Comprova». While the finger is still down (class `.dibuixant` on the notebook) no line
 looks selected or hovered and «Comprova» is hidden: the line is marked only when the finger lifts. With touch or pen
 (class `.toc`) the hover grey of a line is not shown (it would stick to the touched line). On a hit (`comprova`): if a remembered term is a wrong term, «I has encerclat
-just el terme equivocat» and the term phase is skipped; if only correct terms were enclosed, the line counts as
-found but it is a failed attempt and the term phase runs («La línia és aquesta, però el terme que has encerclat
-està bé…»). With no enclosed term (or a tap / mouse click) the term phase runs without losing points.
+«Molt bé, has localitzat la línia i el terme…» and the term phase is skipped; if only correct terms were enclosed, the line counts as
+found but it is a failed attempt and the term phase runs («Has localitzat la línia correctament, però no el
+terme…»). With no enclosed term (or a tap / mouse click) the term phase runs without losing points.
 
 **Term phase (every level, David 26/11/2026).** After the line is found, its terms become buttons in place; the
 student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
 counter with wrong lines (`S.errors`, `maxintents`); when the attempts run out, the wrong term is circled, the
-example is worth 0 («amb ajuda») and the example goes on to «Per què?».
+example is worth 0 and the example goes on to «Per què?».
 
 ## Order of operations (`js/prioritat/generador.js`)
 
@@ -122,7 +122,7 @@ Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if 
    sentences built from the line's own numbers (`PERQUE`: one true, three plausible false ones, e.g. «Ha decidit
    fer $−45 − 9$, però hauria d'haver fet {−45|9}» / «Ha decidit fer una resta, però havia de fer una suma» /
    «Havia de fer $−45 − 9$, però el resultat és $+54$» / «El resultat és $945$»), 3 «Corregeix-la» options (the
-   correct line and two wrong ones), and, for each correct line, «En aquesta línia no s'ha comès cap errada: és
+   correct line and two wrong ones), and, for each correct line, «Aquesta línia és correcta, perquè és
    correcte haver escrit …» listing what was newly written in it.
 5. `valida()` checks every condition (each unmarked line is equivalent to the one above, each marked one is
    not, last line is `x = value`, numbers in range, options well formed, no `undefined`/`NaN`); the generator

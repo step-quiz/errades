@@ -1042,7 +1042,7 @@ function perQueBona(op, abans, despres) {
     }
     const parts = escrit.map((e, k) => (k === 0 ? `és correcte haver escrit $${e}$` : `també és correcte haver escrit $${e}$`));
     const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `En aquesta línia no s'ha comès cap errada:\n${llista}.`;
+    return `Aquesta línia és correcta, perquè\n${llista}.`;
 }
 
 // ---------- Enunciats ----------
@@ -1416,7 +1416,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(ops[i], linies[i - 1], linies[i]);
     ex.compensades = !!compensades;
     if (compensades)
-        ex.nota = `La solució $${ex.solucio}$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.`;
+        ex.nota = `La solució $${ex.solucio}$ és correcta, però durant la resolució s'han comès dues errades que es compensen. Per tant, la resolució és incorrecta, encara que doni la solució correcta per casualitat.`;
     return ex;
 }
 function retoca(r, l) {

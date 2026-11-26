@@ -384,3 +384,16 @@ distracts the pupil. Now `llacMou` adds `.dibuixant` to the notebook once the st
 `llacFi` / `llacCancel` remove it; CSS hides `.ln.sel`, `button.ln:hover` and the «Comprova» button under
 `.dibuixant`. `llacInici` toggles `.toc` (pointerType ≠ mouse), which disables the hover grey of lines on touch.
 Browser test: a held stroke shows no marked/hovered line (verified to fail without the fix), and lifting marks it.
+
+## Interface texts (2026-11-27, David, artifact «Textos de Localitza l'errada»)
+
+David rewrote 51 fixed texts in https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn (db `textos/<id>`:
+`{text, original, comentari}`; source and catalogue with file names: `eines/textos-editor/index.html`). All applied
+in `js/motor/{estat,llibreta,llac,sessio}.js`, `js/index.js`, both generators and `data/banc.json` (stored
+correct-line texts and the compensating note). Notable: progress «Activitat i de N»; consigna «… però ha comès una
+errada»; the «amb ajuda» mark is gone (K10/T06/T07 prefixes dropped: reveal messages start with «L'errada era a la
+línia k.» / «El terme equivocat és…»); «Molt bé.» for a right correction; «És cert. / No és cert.» in «Per què?».
+Dialog answers: M01 depends on the lasso («Has marcat la línia i.» / «Has marcat un terme en la línia i.» / «… dos
+termes …»); equations C12 = «que, cadascuna, no es pot deduir de la línia anterior» (order of operations unchanged).
+Claude's fixes: K04 «…però no el terme.» (missing «no»), X03 «Torna-ho a repassar.» (double pronoun); the order of
+operations compensating note was reworded the same way as the equations one. Tests updated to the new texts.

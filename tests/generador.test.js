@@ -62,7 +62,7 @@ for (let s = 1; s <= 150; s++) {
 
 // Coherència dels textos: cada línia bona té el seu «per què»; les errades, tots els textos
 const ex = generaExemple({ llavor: 42, nivell: 2 }, TIPUS);
-for (let i = 1; i < ex.linies.length; i++) ok(ex.errades[i] || /^En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit \$/.test(ex.correctes[i]), `text de la línia ${i}: ${ex.correctes[i]}`);
+for (let i = 1; i < ex.linies.length; i++) ok(ex.errades[i] || /^Aquesta línia és correcta, perquè\nés correcte haver escrit \$/.test(ex.correctes[i]), `text de la línia ${i}: ${ex.correctes[i]}`);
 // «Per què?»: 4 frases concretes, cap de genèrica repetida de data/errors.json, i cap explicació amb la resposta
 for (let s = 1; s <= 300; s++)
     for (const nivell of [1, 2]) {

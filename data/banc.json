@@ -90,10 +90,10 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+1$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5x$ i també és correcte haver escrit $27$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${27|−5}$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{27|5}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+1$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−5x$ i també és correcte haver escrit $27$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${27|−5}$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{27|5}$."
    },
    "nota": null,
    "solucio": "x = −6",
@@ -184,10 +184,10 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+3$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−21$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−21|6}$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{7|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+3$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−21$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−21|6}$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{7|2}$."
    },
    "nota": null,
    "solucio": "x = −1",
@@ -292,11 +292,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $24$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+9x$ i també és correcte haver escrit $−24$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $7x$ i també és correcte haver escrit $−14$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−14|7}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $24$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+9x$ i també és correcte haver escrit $−24$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $7x$ i també és correcte haver escrit $−14$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−14|7}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−2$."
    },
    "nota": null,
    "solucio": "x = 2",
@@ -401,11 +401,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $24$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+6x$ i també és correcte haver escrit $−24$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x$ i també és correcte haver escrit $3$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${3|3}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $1$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $24$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+6x$ i també és correcte haver escrit $−24$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $3x$ i també és correcte haver escrit $3$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${3|3}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $1$."
    },
    "nota": null,
    "solucio": "x = 7",
@@ -494,9 +494,9 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $12x$ i també és correcte haver escrit $−30$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−30|12}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{5|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $12x$ i també és correcte haver escrit $−30$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−30|12}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{5|2}$."
    },
    "nota": null,
    "solucio": "x = −5",
@@ -582,9 +582,9 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $10$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|2}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $5$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $10$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${10|2}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $5$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -669,9 +669,9 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${6|4}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${3|2}$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−11$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${6|4}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${3|2}$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -768,10 +768,10 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 6$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x$ i també és correcte haver escrit $10$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x − 6$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x$ i també és correcte haver escrit $10$."
    },
    "nota": null,
    "solucio": "x = 5",
@@ -851,8 +851,8 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+8$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−24$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+8$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−24$."
    },
    "nota": null,
    "solucio": "x = −6",
@@ -954,11 +954,11 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x − 8$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+5$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $−21$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−4x − 8$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−5$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+5$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−7x$ i també és correcte haver escrit $−21$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3$."
    },
    "nota": null,
    "solucio": "x = 3",
@@ -1051,10 +1051,10 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 16$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+16$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $21$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x − 16$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−9x$ i també és correcte haver escrit $+16$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−7x$ i també és correcte haver escrit $21$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $3$."
    },
    "nota": null,
    "solucio": "x = −3",
@@ -1139,9 +1139,9 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${1|2}$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−11$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $4$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${1|2}$."
    },
    "nota": null,
    "solucio": "x = 2",
@@ -1231,10 +1231,10 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x + 14$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−14$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{1|6}$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x + 14$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−14$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−12$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{1|6}$."
    },
    "nota": null,
    "solucio": "x = −6",
@@ -1343,12 +1343,12 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 8$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−36|−4}$.",
-    "7": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $9$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x − 8$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3x$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+7x$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−4x$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−36|−4}$.",
+    "7": "Aquesta línia és correcta, perquè\nés correcte haver escrit $9$."
    },
    "nota": null,
    "solucio": "x = −7",
@@ -1428,8 +1428,8 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−26|−8}$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${13|4}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−26|−8}$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${13|4}$."
    },
    "nota": null,
    "solucio": "x = −5",
@@ -1572,9 +1572,9 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $21$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$ i també és correcte haver escrit $−21$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−32$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $21$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−9x$ i també és correcte haver escrit $−21$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−32$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -1722,10 +1722,10 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $20$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−20$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|−8}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $20$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−20$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${16|−8}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−2$."
    },
    "nota": null,
    "solucio": "x = −4",
@@ -1872,12 +1872,12 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x + 18$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−18$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|5}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $3x + 18$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−18$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${10|5}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2$."
    },
-   "nota": "La solució $x = 2$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.",
+   "nota": "La solució $x = 2$ és correcta, però durant la resolució s'han comès dues errades que es compensen. Per tant, la resolució és incorrecta, encara que doni la solució correcta per casualitat.",
    "solucio": "x = 2",
    "banc": "lot1-B19"
   },
@@ -2018,11 +2018,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $35$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x$ i també és correcte haver escrit $−35$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−16$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $35$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−8x$ i també és correcte haver escrit $−35$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−16$."
    },
-   "nota": "La solució $x = −4$ és correcta, però el procediment té dues errades que es compensen. Una solució bona no vol dir un procediment bo.",
+   "nota": "La solució $x = −4$ és correcta, però durant la resolució s'han comès dues errades que es compensen. Per tant, la resolució és incorrecta, encara que doni la solució correcta per casualitat.",
    "solucio": "x = −4",
    "banc": "lot1-B20"
   },
@@ -2078,12 +2078,12 @@
    ],
    "errades": {},
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x − 30$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−22$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+8x$ i també és correcte haver escrit $+22$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x$ i també és correcte haver escrit $−6$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|2}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−6x − 30$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−22$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+8x$ i també és correcte haver escrit $+22$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x$ i també és correcte haver escrit $−6$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−6|2}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3$."
    },
    "nota": null,
    "solucio": "x = −3",
@@ -2170,9 +2170,9 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−12|12}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−1$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−12|12}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−1$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -2259,9 +2259,9 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−18|12}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{3|2}$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+4x$ i també és correcte haver escrit $+15$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−18|12}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{3|2}$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -2346,9 +2346,9 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+2$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|2}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+2$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−6|2}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3$."
    },
    "nota": null,
    "solucio": "x = −1",
@@ -2450,11 +2450,11 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−5x − 40$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−21$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x$ i també és correcte haver escrit $+21$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${39|−3}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−13$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−5x − 40$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−21$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−8x$ i també és correcte haver escrit $+21$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${39|−3}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−13$."
    },
    "nota": null,
    "solucio": "x = −3",
@@ -2543,9 +2543,9 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $6x$ i també és correcte haver escrit $16$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|6}$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${8|3}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $6x$ i també és correcte haver escrit $16$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${16|6}$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${8|3}$."
    },
    "nota": null,
    "solucio": "x = −5",
@@ -2649,11 +2649,11 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2x − 8$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4x$ i també és correcte haver escrit $−44$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−44|4}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−11$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2x − 8$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $4x$ i també és correcte haver escrit $−44$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−44|4}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−11$."
    },
    "nota": null,
    "solucio": "x = −7",
@@ -2758,11 +2758,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $3x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $4x$ i també és correcte haver escrit $10$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${10|4}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $3x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+x$ i també és correcte haver escrit $+6$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $4x$ i també és correcte haver escrit $10$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${10|4}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${5|2}$."
    },
    "nota": null,
    "solucio": "x = 5",
@@ -2855,10 +2855,10 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−32$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−32|4}$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−4x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−32$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−32|4}$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−8$."
    },
    "nota": null,
    "solucio": "x = 8",
@@ -2939,8 +2939,8 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${18|9}$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${18|9}$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2$."
    },
    "nota": null,
    "solucio": "x = {5|2}",
@@ -3021,8 +3021,8 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|−10}$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{1|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${5|−10}$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{1|2}$."
    },
    "nota": null,
    "solucio": "x = 6",
@@ -3114,10 +3114,10 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2x$.",
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+12$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${1|6}$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−2x$.",
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+12$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−12$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${1|6}$."
    },
    "nota": null,
    "solucio": "x = 6",
@@ -3198,8 +3198,8 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${16|2}$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $8$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${16|2}$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $8$."
    },
    "nota": null,
    "solucio": "x = 3",
@@ -3288,9 +3288,9 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+2x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $11x$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${4|11}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+2x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $11x$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${4|11}$."
    },
    "nota": null,
    "solucio": "x = {1|3}",
@@ -3383,10 +3383,10 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−13$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $21$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${21|6}$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${7|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−13$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $21$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${21|6}$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${7|2}$."
    },
    "nota": null,
    "solucio": "x = 3",
@@ -3490,11 +3490,11 @@
     }
    },
    "correctes": {
-    "1": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−8x + 16$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+5x$ i també és correcte haver escrit $−16$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−6$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−6|−3}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $2$."
+    "1": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−8x + 16$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+5x$ i també és correcte haver escrit $−16$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3x$ i també és correcte haver escrit $−6$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−6|−3}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $2$."
    },
    "nota": null,
    "solucio": "x = 3",
@@ -3599,11 +3599,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−4x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+12$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−7x$ i també és correcte haver escrit $19$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${19|−7}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{19|7}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−4x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−3x$ i també és correcte haver escrit $+12$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−7x$ i també és correcte haver escrit $19$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${19|−7}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{19|7}$."
    },
    "nota": null,
    "solucio": "x = −{19|8}",
@@ -3708,11 +3708,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $8x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−2x$ i també és correcte haver escrit $+4$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $6x$ i també és correcte haver escrit $33$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${33|6}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${11|2}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $8x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−2x$ i també és correcte haver escrit $+4$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $6x$ i també és correcte haver escrit $33$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${33|6}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${11|2}$."
    },
    "nota": null,
    "solucio": "x = 3",
@@ -3817,11 +3817,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$ i també és correcte haver escrit $+15$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−15$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${−15|−12}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${5|4}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−6x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−6x$ i també és correcte haver escrit $+15$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−12x$ i també és correcte haver escrit $−15$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${−15|−12}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${5|4}$."
    },
    "nota": null,
    "solucio": "x = 1",
@@ -3926,11 +3926,11 @@
     }
    },
    "correctes": {
-    "2": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−9x$.",
-    "3": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $+3x$ i també és correcte haver escrit $+28$.",
-    "4": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−6x$ i també és correcte haver escrit $38$.",
-    "5": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit ${38|−6}$.",
-    "6": "En aquesta línia no s'ha comès cap errada:\nés correcte haver escrit $−{19|3}$."
+    "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−9x$.",
+    "3": "Aquesta línia és correcta, perquè\nés correcte haver escrit $+3x$ i també és correcte haver escrit $+28$.",
+    "4": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−6x$ i també és correcte haver escrit $38$.",
+    "5": "Aquesta línia és correcta, perquè\nés correcte haver escrit ${38|−6}$.",
+    "6": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−{19|3}$."
    },
    "nota": null,
    "solucio": "x = 3",

@@ -28,7 +28,7 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
 
     function posaProgres() {
         const fets = resultats.reduce((s, r) => s + r, 0);
-        progres.textContent = `Exemple ${index + 1} de ${total} · ${textPunts(fets).replace('+', '')}`;
+        progres.textContent = `Activitat ${index + 1} de ${total} · ${textPunts(fets).replace('+', '')}`;
     }
 
     function obre(i) {
@@ -68,9 +68,9 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         llibreta.hidden = true;
         const fets = resultats.reduce((s, r) => s + r, 0);
         const v = nota(fets, total);
-        progres.textContent = `Has acabat · ${fets} de ${PUNTS_MAX * total} punts`;
+        progres.textContent = `Activitat finalitzada · ${fets} de ${PUNTS_MAX * total} punts`;
         final.hidden = false;
-        final.innerHTML = `<h2>Has acabat!</h2>
+        final.innerHTML = `<h2>Has acabat.</h2>
 <p class="nota"><span>Nota</span><strong>${notaTxt(v)}</strong></p>
 <p>${fets} punts de ${PUNTS_MAX * total} possibles.</p>
 <ol class="resum">${resultats.map((p, i) => `<li><span>Exemple ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>

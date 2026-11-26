@@ -417,7 +417,7 @@ const PERQUE = {
 function perQueBona(fets) {
     const parts = fets.map((f, k) => (k === 0 ? `és correcte haver escrit $${menys(f.r)}$` : `també és correcte haver escrit $${menys(f.r)}$`));
     const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `En aquesta línia no s'ha comès cap errada:\n${llista}.`;
+    return `Aquesta línia és correcta, perquè\n${llista}.`;
 }
 
 // ---------- Enunciats ----------
@@ -691,7 +691,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(pas(linies[i - 1]).fets);
     ex.compensades = !!compensades;
     if (compensades)
-        ex.nota = `El resultat $${ex.solucio}$ és correcte, però el procediment té dues errades que es compensen. Un resultat bo no vol dir un procediment bo.`;
+        ex.nota = `El resultat $${ex.solucio}$ és correcte, però durant el càlcul s'han comès dues errades que es compensen. Per tant, el càlcul és incorrecte, encara que doni el resultat correcte per casualitat.`;
     return ex;
 }
 

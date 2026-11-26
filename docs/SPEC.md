@@ -50,7 +50,7 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 25 % between two big black parentheses (STATE.md). During «Per què?»/«Corregeix-la» only the wrong line and the one above stay unfaded, and they, the message and the options are kept on screen. |
 | E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
 | G8 | Lines are numbered **0, 1, 2…**; line 0 is the statement: no circle, not-allowed cursor, cannot be selected. A circled number = still a candidate; checked lines lose the circle (2026-11-25). |
-| F1 | Wrong tap on a correct line → «En aquesta línia no s'ha comès cap errada:» + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |
+| F1 | Wrong tap on a correct line → «Aquesta línia és correcta, perquè» (wording since 2026-11-27, see STATE) + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |
 | F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «N'hi ha una més amunt i una altra més avall»); 3rd miss = show the (next) error, marked «amb ajuda», example worth 0. `maxintents` default **3** here (operacions default is 4). |
 | F4, F5 | **No** hints (per-line solution; substitution). |
 | N2 | Error-free examples only when the teacher enables them → R5 (`noerrors=1`). |
@@ -209,7 +209,7 @@ Parameters (`js/motor/parametres.js`, both activities; the index sets every one)
 - States per example: `busca` → (hit) `terme` → `perque` → `corregeix` → `busca` (if errors remain) → `fi`.
   The `terme` phase runs at every level (David 26/11/2026); each correct term chosen there, or enclosed with the
   line, is a failed attempt; at `maxintents` the term is shown and the example is worth 0.
-- Hit with a lasso that enclosed exactly the wrong term: append «I has encerclat just el terme equivocat.»
+- Hit with a lasso that enclosed exactly the wrong term: «Molt bé, has localitzat la línia i el terme on hi ha l'errada.» (all texts: STATE «Interface texts»)
 - After the last error (announced count): band «Molt bé! +N punts» / «0 punts» + «Següent» (Enter).
   With unannounced count the student must press «No n'hi ha cap més» / «No hi ha cap errada».
 - Messages: second person singular, Catalan, short, with TeX for maths (David's caption rules in

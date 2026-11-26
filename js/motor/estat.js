@@ -71,7 +71,7 @@ export function marcaLlac(S, ex, i, termes = [], traca = null) {
     S.ltermes = termes.slice(0, 2);
     S.traca = traca;
     const n = S.ltermes.length;
-    S.msg = { tipus: 'info', text: `Has marcat la línia ${i}${n ? `, i a dins ${n === 1 ? 'un terme' : 'dos termes'}` : ''}. Prem «Comprova», o torna a encerclar.` };
+    S.msg = { tipus: 'info', text: `Has marcat ${n ? `${n === 1 ? 'un terme' : 'dos termes'} en la línia` : 'la línia'} ${i}. Prem «Comprova», o torna a encerclar.` };
     S.msgLinia = i;
     return S;
 }
@@ -82,7 +82,7 @@ export function llacDubtos(S, motiu) {
     S.sel = null;
     S.ltermes = null;
     S.traca = null;
-    S.msg = { tipus: 'noEncert', text: `Torna a marcar-ho, si us plau: ${motiu}` };
+    S.msg = { tipus: 'noEncert', text: `Has de tornar a marcar-ho, perquè ${motiu}` };
     S.msgLinia = null;
     return S;
 }
@@ -91,14 +91,14 @@ function direccio(S, ex, i) {
     const p = pendents(S, ex),
         amunt = p.some(k => k < i),
         avall = p.some(k => k > i);
-    if (amunt && avall) return "N'hi ha una més amunt i una altra més avall.";
+    if (amunt && avall) return "Hi ha dues errades: una més amunt i l'altra més avall.";
     if (amunt) return "L'errada és més amunt.";
     if (avall) return "L'errada és més avall.";
     return '';
 }
 
 function ensenya(S, ex, cfg, k, text) {
-    S.msg = { tipus: 'noEncert', text: `${text} Mira-ho: l'errada és a la línia ${k}. ${ex.errades[k].expl}` };
+    S.msg = { tipus: 'noEncert', text: `L'errada era a la línia ${k}. ${ex.errades[k].expl}` };
     S.msgLinia = k;
     S.ajuda.push(k);
     S.trobades.push(k);
@@ -117,7 +117,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     // Les errades es localitzen de dalt a baix: si en queda una de pendent més amunt, primer cal trobar aquella.
     // No compta com a intent fallat i la línia es pot tornar a triar (el David, 26/11/2026).
     if (ex.errades[i] && pendents(S, ex).some(k => k < i)) {
-        S.msg = { tipus: 'info', text: 'Abans de mirar aquesta línia, revisa les de sobre: hi ha una errada més amunt.' };
+        S.msg = { tipus: 'info', text: "Abans d'aquesta línia, has de revisar les anteriors, perquè hi ha una errada més amunt." };
         S.msgLinia = i;
         return S;
     }
@@ -133,11 +133,11 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
             const bons = ex.errades[i].termes || [ex.errades[i].terme];
             if (lt.some(j => bons.includes(j))) {
                 S.termes[i] = true;
-                return faseSeguent(S, ex, cfg, "Sí! L'errada és aquí. I has encerclat just el terme equivocat.");
+                return faseSeguent(S, ex, cfg, 'Molt bé, has localitzat la línia i el terme on hi ha l\'errada.');
             }
-            return termeFallat(S, ex, cfg, 'La línia és aquesta, però el terme que has encerclat està bé. Toca el terme equivocat: compara la línia amb la de sobre.', 'La línia és aquesta, però el terme que has encerclat està bé.');
+            return termeFallat(S, ex, cfg, "Has localitzat la línia correctament, però no el terme. Has de localitzar el terme on hi ha l'errada.");
         }
-        S.msg = { tipus: 'encert', text: "Sí! L'errada és en aquesta línia. Ara toca el terme equivocat: compara la línia amb la de sobre." };
+        S.msg = { tipus: 'encert', text: 'Molt bé, en aquesta línia hi ha una errada: ara selecciona quin és el terme equivocat.' };
         return S;
     }
     // una línia bona
@@ -145,13 +145,13 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const p = pendents(S, ex);
     if (S.errors >= cfg.maxIntents) {
         if (p.length) return ensenya(S, ex, cfg, p[0], 'Tampoc és aquí.');
-        S.msg = { tipus: 'noEncert', text: 'Aquest cop totes les línies són correctes: no hi havia cap errada.' };
+        S.msg = { tipus: 'noEncert', text: 'En aquesta activitat totes les línies eren correctes i no hi havia cap errada.' };
         S.msgLinia = null;
         S.ajuda.push(-1);
         return acaba(S);
     }
     S.revisades.push(i);
-    let t = ex.correctes[i] || "En aquesta línia no s'ha comès cap errada.";
+    let t = ex.correctes[i] || 'En aquesta línia no hi ha cap errada.';
     if (S.errors >= 2 && p.length) t += '\n' + direccio(S, ex, i);
     S.msg = { tipus: 'noEncert', text: t };
     S.msgLinia = i;
@@ -184,16 +184,16 @@ export function triaTerme(S, ex, cfg, j) {
         bons = ex.errades[i].termes || [bo];
     if (bons.includes(j)) {
         S.termes[i] = true;
-        return faseSeguent(S, ex, cfg, bons.length > 1 ? 'Exacte: aquest és un dels termes equivocats. Hi ha un altre terme equivocat a la mateixa línia, i ara tots dos estan encerclats.' : 'Exacte: aquest és el terme equivocat.');
+        return faseSeguent(S, ex, cfg, bons.length > 1 ? 'Has trobat un dels termes equivocats. Ja hem encerclat els dos termes equivocats.' : 'Has trobat el terme equivocat.');
     }
-    return termeFallat(S, ex, cfg, 'Aquest terme està bé. Compara la línia amb la de sobre i busca el que ha canviat malament.', 'Aquest terme està bé.');
+    return termeFallat(S, ex, cfg, "No és aquest el terme que busquem: troba el terme on hi ha l'errada.");
 }
 
 /**
  * Un terme bo triat a la fase del terme (tocat, o encerclat amb la línia): és un intent fallat.
  * Si s'han acabat els intents, s'ensenya el terme equivocat, l'exemple val 0 i es continua.
  */
-function termeFallat(S, ex, cfg, text, textFi) {
+function termeFallat(S, ex, cfg, text) {
     const i = S.actual,
         bons = ex.errades[i].termes || [ex.errades[i].terme];
     S.errors++;
@@ -201,8 +201,8 @@ function termeFallat(S, ex, cfg, text, textFi) {
     if (S.errors >= cfg.maxIntents) {
         S.termes[i] = true;
         if (!S.ajuda.includes(i)) S.ajuda.push(i);
-        if (bons.length > 1) return faseSeguent(S, ex, cfg, `${textFi} Els termes equivocats són els que ara estan encerclats, ${bons.map(k => `$${ex.linies[i][k]}$`).join(' i ')}.`);
-        return faseSeguent(S, ex, cfg, `${textFi} El terme equivocat és el que ara està encerclat, $${ex.linies[i][bons[0]]}$.`);
+        if (bons.length > 1) return faseSeguent(S, ex, cfg, `Els termes equivocats són els que ara estan encerclats, ${bons.map(k => `$${ex.linies[i][k]}$`).join(' i ')}.`);
+        return faseSeguent(S, ex, cfg, `El terme equivocat és el que ara està encerclat, $${ex.linies[i][bons[0]]}$.`);
     }
     S.msg = { tipus: 'noEncert', text };
     return S;
@@ -212,7 +212,7 @@ export function triaPerque(S, ex, cfg, j) {
     if (S.fase !== 'perque') return S;
     const e = ex.errades[S.actual],
         bona = !!(e.perque[j] && e.perque[j][1]);
-    S.msg = { tipus: bona ? 'encert' : 'noEncert', text: (bona ? 'Exacte. ' : 'No ben bé. ') + e.expl };
+    S.msg = { tipus: bona ? 'encert' : 'noEncert', text: (bona ? 'És cert. ' : 'No és cert. ') + e.expl };
     if (cfg.corregeix) {
         S.fase = 'corregeix';
         S.intentsEscriu = 0;
@@ -231,13 +231,13 @@ export function escriuCorreccio(S, ex, cfg, text) {
         bo = e.fitxesBona[e.terme];
     if (correcte(text, bo)) {
         S.corregides[S.actual] = true;
-        S.msg = { tipus: 'encert', text: 'Molt bé: així havia de quedar.' };
+        S.msg = { tipus: 'encert', text: 'Molt bé.' };
         return despres(S, ex, cfg);
     }
     S.intentsEscriu++;
     if (S.intentsEscriu >= 2) {
         S.corregides[S.actual] = true;
-        S.msg = { tipus: 'noEncert', text: `No. Havia de ser $${bo}$, i la línia quedava així: $${e.bona}$.` };
+        S.msg = { tipus: 'noEncert', text: `No. Havia de ser $${bo}$, i la línia quedaria així: $${e.bona}$.` };
         return despres(S, ex, cfg);
     }
     S.msg = { tipus: 'noEncert', text: 'No és així. Torna-ho a provar.' };
@@ -250,8 +250,8 @@ export function triaCorreccio(S, ex, cfg, j) {
         bona = !!(e.opcions[j] && e.opcions[j][1]);
     S.corregides[S.actual] = true;
     S.msg = bona
-        ? { tipus: 'encert', text: 'Molt bé: així havia de quedar.' }
-        : { tipus: 'noEncert', text: `No. Havia de quedar així: $${e.bona}$.` };
+        ? { tipus: 'encert', text: 'Molt bé.' }
+        : { tipus: 'noEncert', text: `No. La línia havia de quedar, per exemple, així: $${e.bona}$.` };
     return despres(S, ex, cfg);
 }
 
@@ -279,7 +279,7 @@ export function capMes(S, ex, cfg = CONFIG_PER_DEFECTE) {
     if (S.errors >= cfg.maxIntents) return ensenya(S, ex, cfg, p[0], "N'hi ha alguna.");
     S.msg = {
         tipus: 'noEncert',
-        text: S.trobades.length ? "Encara n'hi ha alguna més. Torna-ho a mirar línia per línia." : "N'hi ha alguna. Torna-ho a mirar línia per línia.",
+        text: S.trobades.length ? "Encara n'hi ha alguna més. Torna-ho a repassar." : "N'hi ha alguna. Torna-ho a mirar línia per línia.",
     };
     return S;
 }

@@ -59,6 +59,11 @@ Teachers' review page
   les preferències» (turns green «Codi copiat» for 5 s). Code format: `BANC-ERRORS v3`, legend line,
   `n VOTE[ | comment]`, `FI`. David's own v1 feedback is fully applied (items 9, 12, 13, 17).
 
+## 1a. Session 2026-11-26/27 delivered (ZIP «errades-textos-2»)
+
+Term phase at every level, lasso marks the line only when the finger lifts, interface texts rewritten by David.
+All in one ZIP; tests green (`node tests/run-all.js`, browser test 134 checks). No git branches: David uploads ZIPs.
+
 ## 1b. Term phase at every level (2026-11-26, after the handout was first written) — DONE, awaiting David's test
 
 Task from David: on touch devices pupils circle either (1) the whole error line, or (2) the line and the wrong
@@ -74,14 +79,10 @@ lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when th
 ## 2. Open work, in priority order
 
 0. **Interface texts editor «Textos de Localitza l'errada»** — https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn,
-   capabilities `{db:{}}`, source `eines/textos-editor/index.html` (catalogue `G` inside the page: 149 fixed
-   texts of the activity pages, the shared engine and the index, ids A/N/C/L/M/K/T/P/R/X/F/B/I; `B*` come from
-   `step-quiz-commons` and are read-only). Not covered: generator explanations and «Per què?» options (item 1).
-   David fills it in; on «Revisa artifact»: read db `textos/<id>` (`{text, original, comentari}`) and
-   `general/notes`, reply in `rep/<id>` / `rep/general`, then apply the approved texts in the files named on each
-   row (`{name}` placeholders = runtime values; keep them), update tests that match message texts
-   (`tests/estat.test.js`, `tests/navegador/prova.mjs`, `tests/index.test.js`), docs, ZIP.
-
+   source `eines/textos-editor/index.html`. **DONE 2026-11-27**: David's 51 edits applied (see `docs/STATE.md`
+   «Interface texts»); awaiting his test of the published site. The catalogue inside the page still shows the OLD
+   texts as «original»: if David wants another round, update the catalogue `G` to the current texts first and
+   republish the same file path (keep `capabilities` by omitting it), then delete or ignore the old db docs.
 1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug
    `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, live version
    `1795678340-090d`, capabilities `{db:{}, user:{}}`. **David is filling it in now.** When he says «Revisa

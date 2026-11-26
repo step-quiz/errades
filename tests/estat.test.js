@@ -159,12 +159,12 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     marcaLlac(S, EX, 1, [bo], [[0, 0], [1, 1]]);
     ok(S.sel === 1 && S.msg.tipus === 'info' && /un terme/.test(S.msg.text) && S.traca, 'traç: la línia queda triada i es diu que a dins hi ha un terme');
     comprova(S, EX, cfgT);
-    ok(S.fase === 'perque' && S.termes[1] && /just el terme equivocat/.test(S.msg.text) && !S.traca, 'traç amb el terme equivocat: no cal la fase del terme');
+    ok(S.fase === 'perque' && S.termes[1] && /has localitzat la línia i el terme/.test(S.msg.text) && !S.traca, 'traç amb el terme equivocat: no cal la fase del terme');
     S = nouEstat();
     const altre = EX.linies[1].findIndex((t, j) => t !== '=' && j !== bo);
     marcaLlac(S, EX, 1, [altre]);
     comprova(S, EX, cfgT);
-    ok(S.fase === 'terme' && S.msg.tipus === 'noEncert' && /el terme que has encerclat està bé/.test(S.msg.text) && S.errors === 1, 'traç amb un terme bo: línia trobada, intent fallat i es torna a demanar el terme');
+    ok(S.fase === 'terme' && S.msg.tipus === 'noEncert' && /però no el terme/.test(S.msg.text) && S.errors === 1, 'traç amb un terme bo: línia trobada, intent fallat i es torna a demanar el terme');
     triaTerme(S, EX, cfgT, bo);
     ok(S.fase === 'perque' && punts(S) === 8, 'traç amb un terme bo i després el terme equivocat: 8 punts');
     S = nouEstat();
@@ -175,8 +175,8 @@ ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria
     marcaLlac(S, EX, 2, [1]);
     selecciona(S, EX, 3);
     ok(S.sel === 3 && S.ltermes === null && S.traca === null, 'tocar una altra línia oblida el traç');
-    llacDubtos(S, "el traç toca més d'una línia.");
-    ok(S.sel === null && /^Torna a marcar-ho, si us plau/.test(S.msg.text), 'traç dubtós: «Torna a marcar-ho»');
+    llacDubtos(S, "el teu traç toca més d'una línia.");
+    ok(S.sel === null && /^Has de tornar a marcar-ho, perquè/.test(S.msg.text), 'traç dubtós: «Torna a marcar-ho»');
     ok(marcaLlac(nouEstat(), EX, 0, []).sel === null, "l'enunciat no es pot encerclar");
 }
 

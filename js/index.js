@@ -26,18 +26,18 @@ export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
 
 export const NIVELLS = {
     equacions: {
-        1: 'Una errada, fàcil',
-        2: 'Una errada, amb parèntesis',
-        3: 'Una errada, sense dir-ho',
+        1: 'Una errada',
+        2: 'Una errada. Equació amb parèntesis',
+        3: 'Una errada, sense advertir-ho',
         4: 'Dues errades',
-        5: 'Una o dues, sense dir-ho',
+        5: 'Una o dues errades, i sense advertir-ho',
     },
     prioritat: {
-        1: 'Una errada, fàcil',
-        2: 'Una errada, amb parèntesis o potències',
-        3: 'Una errada, sense dir-ho',
+        1: 'Una errada',
+        2: 'Una errada. Operació amb parèntesis o potències',
+        3: 'Una errada, sense advertir-ho',
         4: 'Dues errades',
-        5: 'Una o dues, sense dir-ho',
+        5: 'Una o dues errades, i sense advertir-ho',
     },
 };
 
@@ -103,7 +103,7 @@ if (typeof document !== 'undefined') {
     form.addEventListener('change', posa);
     form.addEventListener('submit', e => e.preventDefault());
     document.getElementById('act-copia').addEventListener('click', () => {
-        const fet = () => (avis.textContent = 'Copiat.');
+        const fet = () => (avis.textContent = 'Enllaç copiat.');
         const aMa = () => {
             camp.focus();
             camp.select();

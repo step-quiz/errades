@@ -49,7 +49,7 @@ const partsTxt = s => {
     return k < 0 ? ['', false, s] : [s.slice(0, k), true, s.slice(k + 3)];
 };
 const TEXTOS = {
-    equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que no es poden deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
+    equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que, cadascuna, no es pot deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
     prioritat: { fet: 'ha calculat aquesta expressió', on: "on s'ha equivocat", ons: "on s'ha equivocat", teclat: ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '0'], exemple: '12' },
 };
 /** Un text amb fórmules entre $…$. */
@@ -90,9 +90,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     function consigna() {
         const qui = `${maj(ex.alumne)} ${T.fet}`;
         const v = cfg.encercla ? 'encercla' : 'toca';
-        if (n === 0 || !cfg.anuncia) return [qui + '.', `Si hi ha alguna línia ${T.on}, ${v}-la; si no n'hi ha cap, digues-ho.`];
-        if (n === 1) return [qui + ' i ha comès una errada.', `${maj(v)} la primera línia ${T.on}.`];
-        return [qui + ' i ha comès dues errades.', `${maj(v)} les dues línies ${T.ons}.`];
+        if (n === 0 || !cfg.anuncia) return [qui + '.', `Si hi ha alguna línia ${T.on}, ${v}-la; si no n'hi ha cap, indica-ho.`];
+        if (n === 1) return [qui + ' però ha comès una errada.', `${maj(v)} la primera línia ${T.on}.`];
+        return [qui + ' però ha comès dues errades.', `${maj(v)} les dues línies ${T.ons}.`];
     }
 
     function expr(i) {
@@ -123,7 +123,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     /** La línia bona, amb la lletra del professor i el «=» a la mateixa vertical que els altres (R4). */
     function correccio(bona) {
         const [ba, igual, bb] = partsTxt(bona);
-        return `<span class="corr ex" aria-label="Havia de ser: ${esc(bona)}"><span class="ma">${fm(ba)}</span><span class="t">${igual ? '=' : ''}</span><span class="mb">${fm(bb)}</span></span>`;
+        return `<span class="corr ex" aria-label="Seria correcte d'aquesta manera: ${esc(bona)}"><span class="ma">${fm(ba)}</span><span class="t">${igual ? '=' : ''}</span><span class="mb">${fm(bb)}</span></span>`;
     }
 
     /** Des de quina línia les següents arrosseguen una errada ja corregida (null si encara no toca). */
@@ -151,13 +151,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (trobada && S.corregides[i]) cls += ' tat';
         if (S.fase === 'terme' && i === S.actual - 1) cls += ' ref';
         let marques = '';
-        if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗${S.ajuda.includes(i) ? ' <small>amb ajuda</small>' : ''}</span>`;
+        if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗</span>`;
         else if (revisada || bonaFinal) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
         const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
         const ln = seleccionable(S, ex, i)
             ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`
-            : `<div class="${cls}"${i === 0 ? ' title="És l\'enunciat: aquí no hi pot haver cap errada"' : ''}>${dins}</div>`;
+            : `<div class="${cls}"${i === 0 ? ' title="A l\'enunciat no pot haver-hi cap errada"' : ''}>${dins}</div>`;
         // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026)
         const cv = S.sel === i && S.fase === 'busca' && !S.fi ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
         const atenua = S.fase !== 'busca' && S.fase !== 'fi' && !enJoc(i);
@@ -178,15 +178,15 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
                 .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
                 .join('')}</div></div>`;
         if (escriuAra(S, ex, cfg))
-            return `<div class="fase escriu"><h3>Com havia de ser el terme encerclat?</h3>${avis}
-<form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme ben fet</label>
-<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="p. ex. ${T.exemple}">
+            return `<div class="fase escriu"><h3>Com hauria de ser el terme encerclat per ser correcte?</h3>${avis}
+<form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme correcte</label>
+<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="per exemple, ${T.exemple}">
 <button type="submit" class="b pri">Comprova</button></form>
 <div class="teclat${T.teclat.length === 12 ? ' t12' : ''}" aria-label="Teclat">${T.teclat
                 .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
                 .join('')}</div></div>`;
         if (S.fase === 'corregeix')
-            return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual}?</h3>${avis}<div class="opc">${e.opcions
+            return `<div class="fase"><h3>Com hauria de quedar la línia ${S.actual} per ser correcta?</h3>${avis}<div class="opc">${e.opcions
                 .map(([t], j) => `<button type="button" class="b mat" data-co="${j}">${fm(t)}</button>`)
                 .join('')}</div></div>`;
         return '';
@@ -228,7 +228,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         h += '</div>';
         if (S.msg && !msgPosat) h += `<div class="sota sense-linia">${msgHTML()}</div>`;
         if (!S.fi && S.fase === 'busca' && (n === 0 || !cfg.anuncia))
-            h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? "No n'hi ha cap més" : 'No hi ha cap errada'}</button></div>`;
+            h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? 'No hi ha cap més errada' : 'No hi ha cap errada'}</button></div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
         contenidor.innerHTML = h;
         alinea();
@@ -314,7 +314,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         });
         const res = avalua(d.pts, linies);
         if (res.torna) llacDubtos(S, res.torna);
-        else if (res.linia === 0) llacDubtos(S, "és l'enunciat: aquí no hi pot haver cap errada.");
+        else if (res.linia === 0) llacDubtos(S, "en l'enunciat no pot haver-hi cap errada.");
         else if (!seleccionable(S, ex, res.linia)) llacDubtos(S, 'aquesta línia ja està revisada.');
         else marcaLlac(S, ex, res.linia, res.termes, d.pts);
         pinta();

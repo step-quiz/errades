@@ -16,7 +16,7 @@ for (const ex of banc) {
     const errs = Object.keys(ex.errades).map(Number);
     ok(!errs.includes(0), `${id}: l'enunciat no pot ser una errada`);
     for (let i = 1; i < ex.linies.length; i++)
-        if (!errs.includes(i)) ok(/^En aquesta línia no s'ha comès cap errada:/.test(ex.correctes[i] || ''), `${id}: falta el text de la línia ${i}`);
+        if (!errs.includes(i)) ok(/^Aquesta línia és correcta, perquè\n/.test(ex.correctes[i] || ''), `${id}: falta el text de la línia ${i}`);
     for (const [j, e] of Object.entries(ex.errades)) {
         ok(tipus.includes(e.tipus), `${id}: tipus desconegut ${e.tipus}`);
         ok(e.perque.length === 4 && e.perque.filter(o => o[1]).length === 1, `${id}: «Per què?» amb 4 frases i una de certa`);

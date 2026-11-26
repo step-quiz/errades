@@ -104,16 +104,16 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await clica(`#llibreta [data-l="${bona}"]`);
     ok((await pg.locator(`#llibreta .fila[data-i="${bona}"] .cv [data-a=comprova]`).count()) === 1, '«Comprova» surt a l\'esquerra de la línia triada');
     await clica('#llibreta [data-a=comprova]');
-    ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta');
+    ok(/^Aquesta línia és correcta, perquè/.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta');
     ok(await pg.locator('#llibreta .ln.enunciat').evaluate(e => getComputedStyle(e).cursor) === 'not-allowed', 'la línia 0 té el cursor de prohibit');
     ok((await pg.textContent('#llibreta .ln.enunciat .n')).trim() === '0', 'la primera línia és la 0');
     ok((await pg.locator('#llibreta .mk.c').count()) === 1, 'línia bona: ✓ de llapis');
     await clica(`#llibreta [data-l="${errada}"]`);
     await clica('#llibreta [data-a=comprova]');
-    ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'línia dolenta: encert');
+    ok(/en aquesta línia hi ha una errada/.test(await pg.textContent('#llibreta .msg')), 'línia dolenta: encert');
     ok((await pg.locator('#llibreta .tb').count()) > 1, 'nivell 1: després de la línia es demana el terme');
     await tocaTerme(sessio(11, 0), errada);
-    ok(/Exacte: aquest és el terme equivocat/.test(await pg.textContent('#llibreta .msg')), 'nivell 1: terme encertat');
+    ok(/Has trobat el terme equivocat/.test(await pg.textContent('#llibreta .msg')), 'nivell 1: terme encertat');
     await pg.waitForTimeout(700); // el desplaçament suau
     const vista = await pg.evaluate(e => {
         const r = s => document.querySelector(s).getBoundingClientRect();
@@ -145,13 +145,13 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.focus('#llibreta');
     await pg.keyboard.press(String(errada2));
     await pg.keyboard.press('Enter');
-    ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'teclat: encert');
+    ok(/en aquesta línia hi ha una errada/.test(await pg.textContent('#llibreta .msg')), 'teclat: encert');
     {
         // fase del terme amb el teclat: → fins al terme equivocat, Enter
         const ex2 = sessio(11, 1), ids = ex2.linies[errada2].map((t, j) => (t === '=' ? -1 : j)).filter(j => j >= 0);
         for (let k = 0; k <= ids.indexOf(ex2.errades[errada2].terme); k++) await pg.keyboard.press('ArrowRight');
         await pg.keyboard.press('Enter');
-        ok(/Exacte: aquest és/.test(await pg.textContent('#llibreta .msg')), 'teclat: terme encertat amb ← / →');
+        ok(/Has trobat /.test(await pg.textContent('#llibreta .msg')), 'teclat: terme encertat amb ← / →');
     }
     await pg.keyboard.press('Enter'); // «Per què?»: primer botó amb focus
     await pg.keyboard.press('Enter'); // «Corregeix-la»: primer botó amb focus
@@ -192,9 +192,9 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         const bons = ex4.errades[e].termes || [bo];
         const dolent = ex4.linies[e].findIndex((t, j) => t !== '=' && !bons.includes(j));
         await clica(`#llibreta [data-tm="${dolent}"]`);
-        ok(/Aquest terme està bé/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: un terme bo no és l'equivocat`);
+        ok(/No és aquest el terme que busquem/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: un terme bo no és l'equivocat`);
         await clica(`#llibreta [data-tm="${bo}"]`);
-        ok(/Exacte: aquest és (el|un dels) termes? equivocats?/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
+        ok(/Has trobat (el|un dels) termes? equivocats?/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
         await clica('#llibreta [data-pq="0"]');
         await clica('#llibreta [data-co="0"]');
         if (k === 0) {
@@ -240,7 +240,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await clica('#llibreta [data-k="⌫"]');
     for (const k of tecles) await clica(`#llibreta [data-k="${k === '-' ? '−' : k}"]`);
     await clica('#llibreta [data-escriu] button[type=submit]');
-    ok(/Molt bé: així havia de quedar/.test(await pg.textContent('#llibreta .msg')), `escriu=1: el terme «${bo}» escrit amb el teclat és correcte`);
+    ok(/Molt bé\./.test(await pg.textContent('#llibreta .msg')), `escriu=1: el terme «${bo}» escrit amb el teclat és correcte`);
 
     // Encerclar amb el dit (R3): un cercle al voltant del terme equivocat, i un traç per dues línies
     await pg.goto(BASE + `equacions.html?encercla=1&totaloperations=1&llavor=${LT_LLAVOR}`);
@@ -256,7 +256,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const ultima = sessio(LT_LLAVOR).linies.length - 1;
     const b1 = await caixa('#llibreta .fila[data-i="1"] .ln'), bu = await caixa(`#llibreta .fila[data-i="${ultima}"] .ln`);
     await traca([[b1.x + 40, b1.y + 5], [b1.x + 60, (b1.y + bu.y + bu.height) / 2], [b1.x + 80, bu.y + bu.height - 4]]);
-    ok(/^Torna a marcar-ho, si us plau/.test(await pg.textContent('#llibreta .msg')), 'traç per moltes línies: «Torna a marcar-ho»');
+    ok(/^Has de tornar a marcar-ho, perquè/.test(await pg.textContent('#llibreta .msg')), 'traç per moltes línies: «Torna a marcar-ho»');
     const tm = sessio(LT_LLAVOR).errades[LT].terme;
     const bt = await caixa(`#llibreta .fila[data-i="${LT}"] .ln > .ex [data-j="${tm}"]`);
     const cx = bt.x + bt.width / 2, cy = bt.y + bt.height / 2, rx = bt.width / 2 + 10, ry = bt.height / 2 + 6;
@@ -270,10 +270,10 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(durant === 0, `mentre s'encercla, cap línia no es veu marcada ni ressaltada (${durant})`);
     await pg.mouse.up();
     ok(await pg.locator(`#llibreta .fila[data-i="${LT}"] .ln`).evaluate(l => l.classList.contains('sel') && getComputedStyle(l).backgroundColor !== 'rgba(0, 0, 0, 0)'), "en aixecar el dit, la línia es marca");
-    ok(new RegExp(`^Has marcat la línia ${LT}, i a dins un terme`).test(await pg.textContent('#llibreta .msg')), 'cercle al voltant d\'un terme: línia i terme marcats');
+    ok(new RegExp(`^Has marcat un terme en la línia ${LT}\.`).test(await pg.textContent('#llibreta .msg')), 'cercle al voltant d\'un terme: línia i terme marcats');
     ok((await pg.getAttribute('#llibreta svg.traca path', 'd')).startsWith('M'), 'el traç es queda dibuixat');
     await clica('#llibreta [data-a=comprova]');
-    ok(/just el terme equivocat/.test(await pg.textContent('#llibreta .msg')), 'cercle al terme equivocat: «I has encerclat just el terme equivocat»');
+    ok(/has localitzat la línia i el terme/.test(await pg.textContent('#llibreta .msg')), 'cercle al terme equivocat: «I has encerclat just el terme equivocat»');
 
     // Prioritat d'operacions: un exemple sencer tocant, i el «=» de totes les línies a la mateixa vertical
     {
@@ -288,10 +288,10 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         ok((await pg.textContent('#llibreta .ln.enunciat .ex')).replace(/\s+/g, '').indexOf('=') < 0, "prioritat: l'enunciat no porta «=»");
         await clica('#llibreta [data-l="1"]');
         await clica('#llibreta [data-a=comprova]');
-        ok(/^En aquesta línia no s'ha comès cap errada/.test(await pg.textContent('#llibreta .msg')), 'prioritat: una línia bona s\'explica');
+        ok(/^Aquesta línia és correcta, perquè/.test(await pg.textContent('#llibreta .msg')), 'prioritat: una línia bona s\'explica');
         await clica(`#llibreta [data-l="${eP}"]`);
         await clica('#llibreta [data-a=comprova]');
-        ok(/Sí! L'errada és en aquesta línia/.test(await pg.textContent('#llibreta .msg')), 'prioritat: encert');
+        ok(/en aquesta línia hi ha una errada/.test(await pg.textContent('#llibreta .msg')), 'prioritat: encert');
         await tocaTerme(exP, eP);
         await clica('#llibreta [data-pq="0"]');
         await clica('#llibreta [data-co="0"]');

@@ -10,10 +10,10 @@ ok(dins([5, 5], [[0, 0], [10, 0], [10, 10], [0, 10]]) && !dins([15, 5], [[0, 0],
 igual(avalua(cercle(100, 60, 22, 14), linies), { linia: 1, termes: [1] }, 'un terme encerclat: la línia i el terme');
 igual(avalua(cercle(125, 60, 45, 14), linies), { linia: 1, termes: [1, 3] }, 'dos termes encerclats');
 igual(avalua(cercle(125, 60, 110, 16), linies), { linia: 1, termes: [] }, 'tota la línia encerclada: la línia, sense termes');
-ok(avalua(cercle(100, 40, 22, 30), linies).torna === "el traç envolta termes de més d'una línia.", 'termes de dues línies → torna-ho a marcar');
-ok(avalua([[10, 10], [12, 11], [13, 12], [14, 12]], linies).torna === 'el traç és massa petit.', 'traç massa petit');
+ok(avalua(cercle(100, 40, 22, 30), linies).torna === "el teu traç envolta termes de més d'una línia.", 'termes de dues línies → torna-ho a marcar');
+ok(avalua([[10, 10], [12, 11], [13, 12], [14, 12]], linies).torna === 'el teu traç és massa petit.', 'traç massa petit');
 igual(avalua([[30, 70], [80, 72], [130, 71], [180, 73], [220, 72]], linies), { linia: 1, termes: [] }, 'subratllat obert sobre una línia');
 ok(/més d'una línia/.test(avalua([[30, 5], [80, 35], [130, 60], [180, 90], [220, 115]], linies).torna || ''), 'traç obert en diagonal per tres línies → torna-ho a marcar');
-ok(avalua([[30, 300], [80, 302], [130, 301], [180, 303]], linies).torna === 'no sé quina línia has marcat.', 'traç fora de les línies');
+ok(avalua([[30, 300], [80, 302], [130, 301], [180, 303]], linies).torna === 'no em queda clar quina línia has marcat.', 'traç fora de les línies');
 igual(avalua(cercle(400, 60, 30, 14), linies), { linia: 1, termes: [] }, 'cercle tancat a la dreta de la línia, sense termes: la línia que cobreix');
 informe('llac');
