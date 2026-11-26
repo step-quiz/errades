@@ -350,3 +350,10 @@ una activitat»; every other row and the link stay hidden until one is chosen); 
   `https://step-quiz.net/`; the floating footer pill (`css/peu.css`) is copied from `operacions`. The CC badge is
   self-hosted as a redrawn SVG (no third-party requests); replace it with the official PNG if wanted.
   `tests/docs.test.js` now ignores `href="https://…"` links (only requests count).
+
+## Handout (2026-11-26, end of the long session)
+
+`HANDOUT.md` (root) briefs a cold-start AI: rules that bit us (always start from a fresh clone; David edits
+files himself), what this session delivered, and the open work (sentence editor integration first). The editor's
+sources moved into `eines/frases-editor/`.
+

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frases de «Per què és una errada?» · Equacions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+/* VOICE an editor's desk for a maths teacher: exact, calm, nothing hidden
+   IDEA a phrase book: each sentence lives once; the error situations borrow it, and a shared one says where else it lives
+   COLOUR the pale blue band of the bank batches; the pupil's lines in blue Kalam, the teacher's correction in red marker; amber only for warnings
+   TYPE Atkinson Hyperlegible for the interface and the sentences, Kalam and Permanent Marker for the notebook strip
+   LAYOUT one column: how it works, shared sentences, similar sentences, then one card per situation with its example, its markers and its sentences */
+:root{color-scheme:light;--bg:#f3f5f9;--paper:#fff;--ink:#1e2230;--muted:#4a5163;--line:#d4dae6;--grid:#e2ebf7;--blau:#2f45b8;--blau-suau:#e3e9fb;--tinta:#1f2f86;--errada:#c81e1e;--green:#0f7d47;--amber:#8a5a00;--amber-bg:#fff4dc;--hov:#ebebeb}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(4vw,16px)}
+.band{background:var(--blau-suau);border-bottom:1px solid var(--line);padding:24px 0 20px}
+.band .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 28px;align-items:end}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
+.band p{margin:0;max-width:74ch;color:var(--muted)}
+.prog b{font-size:20px;display:block;line-height:1.2}
+.sav{font-size:14px;display:flex;gap:8px;align-items:center;color:var(--muted);margin-top:6px}
+.sav::before{content:"";width:10px;height:10px;border-radius:50%;background:#e0a800;flex:none}
+.sav[data-m=nuvol]::before{background:var(--green)}.sav[data-m=local]::before{background:var(--errada)}
+.avis{display:none;background:#fdecee;border:1.5px solid var(--errada);border-radius:10px;padding:12px 16px;margin:16px 0 0}
+.avis.on{display:block}
+h2{font-size:22px;margin:30px 0 8px}
+h2 small{color:var(--muted);font-weight:400;font-size:15px}
+.com{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:6px 20px;margin-top:18px}
+.com li{margin:6px 0}
+code,.mk{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:#eef1f8;border-radius:5px;padding:0 4px}
+.b{font:inherit;font-size:14px;min-height:38px;padding:6px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);cursor:pointer}
+.b:hover{background:var(--hov);border-color:#000;box-shadow:inset 0 0 0 1.5px #000}
+.b:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #8fa3e8;outline-offset:2px}
+.b[aria-pressed=true]{background:var(--blau);border-color:var(--blau);color:#fff}
+.tool{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 0}
+.index{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.index a{font-size:14px;color:var(--blau);text-decoration:none;border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:3px 10px}
+.index a:hover{border-color:#000;box-shadow:inset 0 0 0 1px #000;background:var(--hov)}
+.index a.mod{border-color:var(--blau);font-weight:700}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:0 0 16px;display:grid;gap:12px}
+.card[data-mod="1"]{border-left:5px solid var(--blau)}
+.card header{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sid{font-weight:700;color:#fff;background:var(--blau);border-radius:7px;padding:1px 8px;font-size:14px}
+.card h3{margin:0;font-size:18px}
+.quan{margin:0;color:var(--muted)}
+.ll{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 14px;align-items:baseline;font:21px/1.35 Kalam,cursive;color:var(--tinta);background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;border:1px solid var(--line);border-radius:10px;padding:8px 14px;overflow-x:auto}
+.ll .et{font:13px/1.2 "Atkinson Hyperlegible",sans-serif;color:var(--muted)}
+.ll .mal{text-decoration:underline wavy var(--errada) 1.5px;text-underline-offset:5px}
+.ll .bo{font-family:"Permanent Marker",cursive;color:var(--errada);font-size:19px}
+.fr2{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.05;margin:0 2px}
+.fr2>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}
+.mks{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted)}
+.mks span b{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--ink);font-weight:400;background:#eef1f8;border-radius:5px;padding:0 4px}
+.rol{font-weight:700;font-size:14px;color:var(--muted);margin:2px 0 -4px}
+.fr{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:6px;background:#fbfcfe}
+.fr.bona{border-color:#b7c3ef;background:#f6f8ff}
+.fr-cap{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px}
+.tag{border-radius:20px;padding:1px 9px;font-size:13px;background:#eef1f8;color:var(--muted)}
+.tag.comp{background:var(--blau-suau);color:var(--tinta);font-weight:700}
+.tag.cond{background:#f1efe8;color:#444441}
+.tag.canv{background:#e7f5ee;color:#0b5c35}
+.tag.claude{background:#efe9fb;color:#4a2a8a}
+.eines{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.eines .b{min-height:30px;font-size:13px;padding:2px 8px}
+.eines .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.prev b,.m b{font-weight:700}
+.fr-acc{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px}
+.fr-acc .b{min-height:32px;font-size:13px;padding:3px 10px}
+textarea{font:inherit;font-size:16px;width:100%;min-height:52px;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;resize:vertical;background:#fff}
+.prev{font-size:15px;color:var(--ink)}
+.prev::before{content:"L'alumne veu: ";color:var(--muted);font-size:13px}
+.m{font-family:"Times New Roman",Times,serif;font-size:1.08em;white-space:nowrap}
+.m i{font-style:italic}
+mark{background:var(--amber-bg);color:var(--amber);border-radius:4px;padding:0 2px}
+.warn{font-size:14px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:6px 10px}
+.warn:empty{display:none}
+.afeg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select{font:inherit;font-size:14px;max-width:100%;min-height:38px;border:1.5px solid var(--line);border-radius:9px;padding:4px 8px;background:#fff}
+.usos{font-size:13px;color:var(--muted)}
+ul.comp{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px 20px 8px 38px;margin:0}
+ul.comp li{margin:8px 0}
+.usos a{color:var(--blau)}
+.cl{font-size:14px;font-weight:700;color:var(--muted)}
+.st{font-size:13px;color:var(--muted);min-height:1.2em}
+.rep{border-left:4px solid var(--blau);padding:8px 12px;background:var(--bg);white-space:pre-wrap}
+.rep b{display:block;color:var(--blau)}
+.grp{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 12px;display:grid;gap:8px}
+.grp .q{font-weight:700}
+.grp label{display:flex;gap:8px;align-items:flex-start}
+.grp label input{margin-top:5px}
+.dec{display:flex;flex-wrap:wrap;gap:8px}
+.peu{margin:24px 0 48px;color:var(--muted)}
+.amagat{display:none!important}
+@media(max-width:700px){.band .wrap{grid-template-columns:1fr}.fr-acc{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="band"><div class="wrap">
+ <div><h1>Frases de «Per què és una errada?»</h1>
+ <p>Equacions de 1r grau. Aquí tens totes les frases que el generador ofereix a l'alumne quan ha d'explicar l'errada: la bona i els distractors de cada situació. Les que es fan servir en més d'un lloc hi són una sola vegada: si les canvies, canvien a tot arreu.</p></div>
+ <div class="prog"><b id="cnt">Cap canvi</b><div class="sav" id="sav" data-m="connectant">Connectant amb el desat…</div></div>
+</div></header>
+<main class="wrap">
+ <div class="avis" id="avis" role="status">No puc desar els canvis en aquest artifact: es queden només en aquest navegador. Quan acabis, prem «Copia els canvis» (a baix de tot) i enganxa'ls al xat.</div>
+
+ <ul class="com">
+  <li>Cada situació té una <b>frase bona</b> i uns quants <b>distractors</b>. Si en té més de tres, l'alumne en veu tres a l'atzar, sempre amb la bona.</li>
+  <li>Les paraules entre claudàtors, com <span class="mk">[c]</span> o <span class="mk">[terme]</span>, són els valors de cada exemple. A cada situació hi ha què vol dir cada una i un valor d'exemple. Si n'hi poses una que la situació no té, surt un avís en groc.</li>
+  <li>Les fórmules van entre <span class="mk">$…$</span>; una fracció s'escriu <span class="mk">${a|b}$</span>. Un valor entre claudàtors ja surt com a fórmula encara que no li posis els <span class="mk">$</span>, i un guionet davant d'un nombre o d'una x surt com a signe menys. Sota cada frase veus com la llegirà l'alumne amb els nombres de l'exemple.</li>
+  <li>Sobre cada frase tens una barra d'eines: <b>N</b> o <b>Ctrl+B</b> (<b>⌘B</b> al Mac) posa en negreta el que hagis seleccionat (<span class="mk">\bold{…}</span>), «Oposat» escriu el valor amb el signe canviat, de $−1$ a $+1$ (<span class="mk">\oposite{…}</span>), «+ signe» escriu el valor amb el signe a la vista, de $3$ a $+3$ (<span class="mk">\signe{…}</span>), i els botons amb claudàtors insereixen els valors de la situació.</li>
+  <li>Una frase amb l'etiqueta <span class="tag comp">a 3 situacions</span> és compartida. Si la vols diferent només en una situació, prem «Fes-ne una còpia per aquí».</li>
+  <li>Pots treure un distractor, posar-ne un de nou, aprofitar-ne un d'una altra situació o fer que un distractor passi a ser la frase bona.</li>
+ </ul>
+
+ <h2>Frases compartides <small id="ncomp"></small></h2>
+ <p class="intro">Les que surten en més d'una situació. Es canvien dins de qualsevol de les situacions on surten, i el canvi s'aplica a totes; aquí només hi ha la llista.</p>
+ <div id="compartides"></div>
+
+ <h2>Frases semblants <small>7 grups</small></h2>
+ <p class="intro">No són iguals, però s'hi assemblen. Els tres primers grups diuen el mateix amb paraules diferents: digues si les unifico. Els altres són la mateixa frase en singular i en plural; ho dic perquè, si en canvies una, potser vols canviar també l'altra.</p>
+ <div id="grups"></div>
+
+ <h2>Situacions <small id="nsit"></small></h2>
+ <div class="tool" role="group" aria-label="Filtre">
+  <button class="b" id="f-tot" aria-pressed="true">Totes</button>
+  <button class="b" id="f-mod" aria-pressed="false">Només les que he canviat</button>
+ </div>
+ <nav class="index" id="index" aria-label="Situacions"></nav>
+ <div id="sits" style="margin-top:16px"></div>
+
+ <section class="grp" aria-labelledby="h-gen">
+  <h2 id="h-gen" style="margin:0">Altres comentaris</h2>
+  <textarea id="c-gen" placeholder="Qualsevol cosa que no encaixi en cap situació"></textarea>
+  <span class="st" id="st-gen" aria-live="polite"></span>
+  <div class="rep" id="rep-gen" hidden></div>
+ </section>
+
+ <footer class="peu">
+  <p>Els exemples del banc tenen les frases desades tal com eren quan els vas aprovar. Quan apliqui els teus canvis, els actualitzaré també. Quan acabis, escriu «Revisa artifact» al xat.</p>
+  <button class="b" id="copia">Copia els canvis</button> <span id="copiat" class="st" aria-live="polite"></span>
+  <textarea id="txtcopia" hidden readonly aria-label="Canvis en text"></textarea>
+ </footer>
+</main>
+<script id="dades" type="application/json">/*DADES*/</script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const D=JSON.parse($('#dades').textContent);
+const SIT=D.situacions, SID=Object.fromEntries(SIT.map(s=>[s.id,s]));
+// ---- estat: frases (una sola font) i usos de cada situació ----
+const F={}; for(const f of D.frases)F[f.id]={text:f.text,orig:f.text,nova:false};
+const U0={}; for(const s of SIT)U0[s.id]=JSON.stringify({bona:s.bona,dolentes:s.dolentes,comentari:""});
+const U={}; for(const s of SIT)U[s.id]=JSON.parse(U0[s.id]);
+const G={}; for(const g of D.grups)G[g.id]={decisio:"",tria:"",text:"",comentari:""};
+const REP={}; let gen="";
+const LS="frases-equacions-v1";
+try{const o=JSON.parse(localStorage.getItem(LS)||"{}");
+ for(const[k,v]of Object.entries(o.F||{})){if(F[k]){F[k].text=String(v.text);F[k].autor=v.autor;}else if(v.nova)F[k]={text:String(v.text),orig:"",nova:true};}
+ for(const[k,v]of Object.entries(o.U||{}))if(U[k]&&v&&v.bona)U[k]=v;
+ for(const[k,v]of Object.entries(o.G||{}))if(G[k])G[k]=v;
+ gen=String(o.gen||"");}catch(e){}
+const saveLocal=()=>{try{const f={};for(const[k,v]of Object.entries(F))if(v.nova||v.text!==v.orig)f[k]={text:v.text,nova:v.nova,autor:v.autor};const u={};for(const[k,v]of Object.entries(U))if(JSON.stringify(v)!==U0[k])u[k]=v;localStorage.setItem(LS,JSON.stringify({F:f,U:u,G,gen}));}catch(e){}};
+const usos=id=>SIT.filter(s=>U[s.id].bona===id||U[s.id].dolentes.some(d=>d.id===id)).map(s=>[s.id,U[s.id].bona===id?'bona':'dolenta']);
+const modF=id=>F[id]&&(F[id].nova||F[id].text!==F[id].orig);
+const modS=sid=>JSON.stringify(U[sid])!==U0[sid]||[U[sid].bona,...U[sid].dolentes.map(d=>d.id)].some(modF);
+const marcadors=t=>[...t.matchAll(/\[([^\]]+)\]/g)].map(m=>m[1]);
+// ---- com ho veu l'alumne ----
+function mat(src){
+ return esc(src).replace(/\{([^|{}]+)\|([^|{}]+)\}/g,'<span class="fr2"><span>$1</span><span>$2</span></span>').replace(/(^|[^a-zà-ú])x/gi,(m,a)=>a+'<i>x</i>');
+}
+// \oposite{…}: el terme (o els termes) amb el signe canviat; \signe{…}: amb el signe a la vista (+3)
+function termes(v){
+ v=String(v).replace(/\$/g,'').replace(/-/g,'−').trim();
+ let sg='+';if(v[0]==='+'||v[0]==='−'){sg=v[0];v=v.slice(1).trim();}
+ const parts=v.split(/ ([+−]) /),out=[[sg,parts[0]]];
+ for(let i=1;i<parts.length;i+=2)out.push([parts[i],parts[i+1]]);
+ return out;
+}
+const escriuTermes=(ts,explicit)=>ts.length===1?(explicit||ts[0][0]==='−'?ts[0][0]:'')+ts[0][1]:ts.map(([g,c],i)=>i===0?(g==='−'?'−':'')+c:` ${g} ${c}`).join('');
+const oposat=v=>escriuTermes(termes(v).map(([g,c])=>[g==='+'?'−':'+',c]),true);
+const ambSigne=v=>escriuTermes(termes(v),true);
+// substitueix els [valors]; fora d'una fórmula, un valor sense $ s'escriu com a fórmula
+function posaValors(text,valors){
+ let out='',dins=false;
+ for(let i=0;i<text.length;i++){
+  const ch=text[i];
+  if(ch==='$'){dins=!dins;out+=ch;continue;}
+  if(ch==='['){const j=text.indexOf(']',i);if(j>i){const n=text.slice(i+1,j);
+   if(valors&&n in valors){const v=valors[n];out+=(!dins&&!v.includes('$'))?'$'+v+'$':v;}else out+='\u0001'+n+'\u0002';
+   i=j;continue;}}
+  out+=ch;}
+ return out;
+}
+// \bold{…}, \oposite{…}, \signe{…} (també dins d'una fórmula)
+function macros(t){
+ let out='',dins=false;
+ for(let i=0;i<t.length;i++){
+  const ch=t[i];
+  if(ch==='$'){dins=!dins;out+=ch;continue;}
+  const m=/^\\(bold|oposite|signe)\{/.exec(t.slice(i,i+9));
+  if(m){let k=i+m[0].length,prof=1;for(;k<t.length&&prof;k++){if(t[k]==='{')prof++;else if(t[k]==='}')prof--;}
+   const dinsArg=t.slice(i+m[0].length,k-1);
+   if(m[1]==='bold')out+='\u0003'+macros(dinsArg)+'\u0004';
+   else{const r=m[1]==='oposite'?oposat(macros(dinsArg)):ambSigne(macros(dinsArg));out+=dins?r:'$'+r+'$';}
+   i=k-1;continue;}
+  out+=ch;}
+ return out;
+}
+function render(text,valors){
+ const t=macros(posaValors(String(text).replace(/-(?=[\dx$\[\\(])/g,'−'),valors));
+ const parts=t.split('$');
+ let h=parts.map((p,i)=>i%2?'<span class="m">'+mat(p)+'</span>':esc(p)).join('');
+ if(parts.length%2===0)h+='<mark>(falta tancar un $)</mark>';
+ return h.replace(/\u0003/g,'<b>').replace(/\u0004/g,'</b>').replace(/\u0001([^\u0002]*)\u0002/g,'<mark>[$1]</mark>');
+}
+const linia=s=>{const p=String(s).split(' ');return p.map(t=>t==='='?'=':mat(t)).join(' ');};
+function avisos(id,sids){
+ const t=F[id].text, out=[];
+ if(!t.trim())out.push('La frase està buida.');
+ if((t.split('$').length-1)%2)out.push('Hi ha un $ sense tancar.');
+ for(const sid of sids){const s=SID[sid];const no=marcadors(t).filter(n=>!(n in s.marcadors));if(no.length)out.push(`A «${s.titol}» no hi ha ${no.map(n=>'['+n+']').join(', ')}.`);}
+ return [...new Set(out)].join(' ');
+}
+// ---- dibuix ----
+const nomSit=sid=>SID[sid].titol;
+// la barra d'eines de cada frase: macros i els [valors] de la situació
+function barra(s){
+ const b=(ins,txt,tit)=>`<button type="button" class="b eina" data-ins="${esc(ins)}" title="${esc(tit)}">${txt}</button>`;
+ return `<div class="eines" role="toolbar" aria-label="Eines">${b('bold','<b>N</b>','Negreta (Ctrl+B): el que hagis seleccionat queda en negreta (\\bold{…})')}${b('oposite','Oposat','El valor amb el signe canviat: −1 → +1 (\\oposite{…})')}${b('signe','+ signe','El valor amb el signe a la vista: 3 → +3 (\\signe{…})')}${b('math','$…$','Fórmula')}${b('frac','a/b','Fracció: ${a|b}$')}${b('minus','−','El signe menys de veritat')}<span class="sep"></span>${Object.keys(s.marcadors).map(k=>b('['+k+']','['+esc(k)+']','Insereix el valor: '+s.marcadors[k])).join('')}</div>`;
+}
+function editor(id,ctx){ // ctx: {sid, rol, k, cond} o {sid:null}
+ const u=usos(id), sids=[...new Set(u.map(x=>x[0]))];
+ const s=ctx.sid?SID[ctx.sid]:SID[sids[0]];
+ const comp=sids.length>1;
+ const cap=[];
+ if(ctx.sid&&ctx.cond)cap.push(`<span class="tag cond">${esc(ctx.cond)}</span>`);
+ if(comp)cap.push(`<span class="tag comp" title="${esc(sids.map(nomSit).join(' · '))}">a ${sids.length} situacions</span>`);
+ if(modF(id))cap.push(F[id].autor==='claude'?'<span class="tag claude">reescrita per Claude</span>':'<span class="tag canv">canviada per tu</span>');
+ const acc=[];
+ if(ctx.sid){
+  if(comp)acc.push(`<button class="b" data-a="copia" title="La frase queda com està a les altres situacions">Fes-ne una còpia per aquí</button>`);
+  if(ctx.rol==='dolenta'){acc.push(`<button class="b" data-a="bona">Fes-la la bona</button>`,`<button class="b" data-a="treu">Treu-la d'aquí</button>`);}
+ }
+ if(modF(id)&&!F[id].nova)acc.push(`<button class="b" data-a="restaura">Restaura l'original</button>`);
+ const usosTxt=!ctx.sid?`<div class="usos">${u.map(([si,r])=>`<a href="#s-${si}">${esc(nomSit(si))}</a> (${r==='bona'?'bona':'distractor'})`).join(' · ')}</div>`:'';
+ return `<div class="fr${ctx.rol==='bona'?' bona':''}" data-f="${id}" data-s="${ctx.sid||''}" data-rol="${ctx.rol||''}" data-k="${ctx.k??''}">
+<div class="fr-cap">${cap.join('')}<span class="fr-acc">${acc.join('')}</span></div>
+${ctx.sid?barra(s):''}<textarea data-f="${id}" rows="2" aria-label="Frase ${id}">${esc(F[id].text)}</textarea>
+<div class="prev" data-p="${id}" data-ps="${s?s.id:''}">${render(F[id].text,s&&s.mostra.valors)}</div>${usosTxt}
+<div class="warn" data-w="${id}" data-ws="${ctx.sid||''}">${esc(avisos(id,ctx.sid?[ctx.sid]:sids))}</div></div>`;
+}
+function cardSit(s){
+ const u=U[s.id], m=s.mostra;
+ const opts=D.frases.map(f=>f.id).concat(Object.keys(F).filter(k=>F[k].nova)).filter((v,i,a)=>a.indexOf(v)===i).filter(id=>id!==u.bona&&!u.dolentes.some(d=>d.id===id)&&F[id].text.trim());
+ const n=u.dolentes.length;
+ return `<article class="card" id="s-${s.id}" data-s="${s.id}" data-mod="${modS(s.id)?1:0}">
+<header>${s.titol.startsWith(s.nom)?'':`<span class="sid">${esc(s.nom)}</span>`}<h3>${esc(s.titol)}</h3></header>
+<p class="quan">${esc(s.quan)}</p>
+<div class="ll" aria-label="Exemple"><span class="et">abans</span><span>${linia(m.abans)}</span><span class="et">l'alumne</span><span class="mal">${linia(m.mal)}</span><span class="et">havia de ser</span><span class="bo">${linia(m.bona)}</span></div>
+${Object.keys(s.marcadors).length?`<div class="mks">${Object.entries(s.marcadors).map(([k,v])=>`<span><b>[${esc(k)}]</b> ${render(v,null)}${m.valors[k]!==undefined?` · aquí: ${render(m.valors[k].includes('$')?m.valors[k]:'$'+m.valors[k]+'$')}`:''}</span>`).join('')}</div>`:'<div class="mks">Aquesta situació no té valors entre claudàtors.</div>'}
+<div class="rol">Frase bona</div>${editor(u.bona,{sid:s.id,rol:'bona'})}
+<div class="rol">Distractors (${n}${n>3?', l\'alumne en veu 3 a l\'atzar':''})</div>
+${u.dolentes.map((d,k)=>editor(d.id,{sid:s.id,rol:'dolenta',k,cond:d.cond})).join('')}
+${n<3?'<div class="warn">Calen almenys tres distractors.</div>':''}
+<div class="afeg"><select data-a="afegeix" aria-label="Afegeix un distractor"><option value="">Afegeix un distractor…</option><option value="__nova">Una frase nova, en blanc</option><optgroup label="Una frase que ja existeix">${opts.map(id=>`<option value="${id}">${esc(F[id].text.length>90?F[id].text.slice(0,88)+'…':F[id].text)}</option>`).join('')}</optgroup></select>${JSON.stringify(u)!==U0[s.id]?'<button class="b" data-a="restauraS">Torna a les frases d\'abans</button>':''}</div>
+<label class="cl" for="c-${s.id}">Comentari</label><textarea id="c-${s.id}" data-c="${s.id}" rows="2" placeholder="Si vols explicar-me alguna cosa d'aquesta situació">${esc(u.comentari||'')}</textarea>
+<span class="st" data-st="${s.id}" aria-live="polite"></span>
+<div class="rep" data-r="${s.id}" hidden></div></article>`;
+}
+function cardGrup(g){
+ const v=G[g.id], quasi=g.tipus==='quasi';
+ return `<div class="grp" id="g-${g.id}" data-g="${g.id}">
+<div class="q">${g.id} · ${esc(g.que)}</div>
+${g.frases.map(id=>`<div>${render(F[id].text,null)} <span class="usos">(${usos(id).map(([si])=>esc(nomSit(si))).filter((x,i,a)=>a.indexOf(x)===i).join(' · ')||'ara no surt enlloc'})</span></div>`).join('')}
+${quasi?`<div class="dec" role="group" aria-label="Decisió ${g.id}"><button class="b" data-gd="unifica" aria-pressed="${v.decisio==='unifica'}">Unifica-les</button><button class="b" data-gd="deixa" aria-pressed="${v.decisio==='deixa'}">Deixa-les així</button></div>
+<div class="${v.decisio==='unifica'?'':'amagat'}" data-gu="${g.id}"><div class="cl">Quina frase queda?</div>${g.frases.map(id=>`<label><input type="radio" name="t-${g.id}" value="${id}" ${v.tria===id?'checked':''}> <span>${render(F[id].text,null)}</span></label>`).join('')}<label><input type="radio" name="t-${g.id}" value="nova" ${v.tria==='nova'?'checked':''}> <span>Una altra: <input type="text" data-gt="${g.id}" value="${esc(v.text||'')}" style="font:inherit;width:min(560px,100%);padding:4px 8px;border:1.5px solid var(--line);border-radius:8px"></span></label></div>`:''}
+<textarea data-gc="${g.id}" rows="1" placeholder="Comentari (si vols)">${esc(v.comentari||'')}</textarea>
+<span class="st" data-st="${g.id}" aria-live="polite"></span><div class="rep" data-r="${g.id}" hidden></div></div>`;
+}
+let filtre="tot";
+// la clau d'un camp, per tornar-hi el focus i el cursor després de redibuixar
+function clauCamp(el){
+ if(!el||!el.matches||!el.matches('textarea,input'))return null;
+ if(el.id)return '#'+CSS.escape(el.id);
+ const fr=el.closest('.fr');
+ if(fr)return `.fr[data-f="${fr.dataset.f}"][data-s="${fr.dataset.s}"][data-rol="${fr.dataset.rol}"][data-k="${fr.dataset.k}"] textarea`;
+ if(el.dataset.gc)return `textarea[data-gc="${el.dataset.gc}"]`;
+ if(el.dataset.gt)return `input[data-gt="${el.dataset.gt}"]`;
+ return null;
+}
+function pinta(){
+ const el=document.activeElement, clau=clauCamp(el), sel=clau?[el.selectionStart,el.selectionEnd,el.scrollTop]:null;
+ const comp=Object.keys(F).filter(id=>new Set(usos(id).map(x=>x[0])).size>1);
+ $('#ncomp').textContent=`${comp.length} frases`;
+ $('#compartides').innerHTML='<ul class="comp">'+comp.map(id=>`<li><span data-pl="${id}">${render(F[id].text,null)}</span><div class="usos">${usos(id).map(([si,r])=>`<a href="#s-${si}">${esc(nomSit(si))}</a> (${r==='bona'?'bona':'distractor'})`).join(' · ')}</div></li>`).join('')+'</ul>';
+ $('#grups').innerHTML=D.grups.map(cardGrup).join('');
+ $('#sits').innerHTML=SIT.map(cardSit).join('');
+ $('#nsit').textContent=`${SIT.length}`;
+ $('#index').innerHTML=SIT.map(s=>`<a href="#s-${s.id}" class="${modS(s.id)?'mod':''}">${esc(s.titol)}</a>`).join('');
+ aplicaFiltre();compta();pintaReps();
+ if(clau){const nou=document.querySelector(clau);if(nou){nou.focus({preventScroll:true});try{nou.setSelectionRange(sel[0],sel[1]);nou.scrollTop=sel[2];}catch(e){}}}
+}
+function aplicaFiltre(){document.querySelectorAll('#sits .card').forEach(c=>c.hidden=filtre==="mod"&&c.dataset.mod!=="1");$('#f-tot').setAttribute('aria-pressed',String(filtre==="tot"));$('#f-mod').setAttribute('aria-pressed',String(filtre==="mod"));}
+function compta(){const nf=Object.keys(F).filter(modF).length,ns=SIT.filter(s=>JSON.stringify(U[s.id])!==U0[s.id]).length,ng=Object.values(G).filter(g=>g.decisio).length;
+ $('#cnt').textContent=nf+ns+ng?`${nf} frases canviades · ${ns} situacions amb canvis · ${ng} de 3 grups decidits`:'Cap canvi';}
+function pintaReps(){
+ document.querySelectorAll('[data-r]').forEach(el=>{const r=REP[el.dataset.r];if(r){el.hidden=false;el.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';el.append(b,document.createTextNode(r));}else el.hidden=true;});
+ const rg=$('#rep-gen');if(REP.general){rg.hidden=false;rg.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';rg.append(b,document.createTextNode(REP.general));}else rg.hidden=true;
+}
+// actualitza les còpies d'una frase sense redibuixar (per no perdre el focus)
+function refrescaFrase(id,des){
+ document.querySelectorAll(`textarea[data-f="${id}"]`).forEach(t=>{if(t!==des&&t.value!==F[id].text)t.value=F[id].text;});
+ document.querySelectorAll(`[data-p="${id}"]`).forEach(p=>{const s=SID[p.dataset.ps];p.innerHTML=render(F[id].text,s&&s.mostra.valors);});
+ document.querySelectorAll(`[data-pl="${id}"]`).forEach(p=>p.innerHTML=render(F[id].text,null));
+ document.querySelectorAll(`[data-w="${id}"]`).forEach(w=>{const sids=w.dataset.ws?[w.dataset.ws]:[...new Set(usos(id).map(x=>x[0]))];w.textContent=avisos(id,sids);});
+ compta();
+}
+// ---- desat ----
+let mode="connectant",api=null;
+const busy={},dirty={},timers={};
+function setMode(m){mode=m;const s=$('#sav');s.dataset.m=m;s.textContent=m==="nuvol"?"Es desa sol a l'artifact: el puc llegir":m==="local"?"No es desa a l'artifact: només en aquest navegador":"Connectant amb el desat…";$('#avis').classList.toggle('on',m==="local");}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function docDe(clau){const[k,id]=clau.split('/');
+ if(k==='f')return[api.collection('frases').doc(id),{text:F[id].text,nova:!!F[id].nova,autor:F[id].autor||'david',actualitzat:new Date().toISOString()}];
+ if(k==='s')return[api.collection('situacions').doc(id),{...U[id],actualitzat:new Date().toISOString()}];
+ if(k==='g')return[api.collection('grups').doc(id),{...G[id],actualitzat:new Date().toISOString()}];
+ return[api.doc('general/notes'),{text:gen,actualitzat:new Date().toISOString()}];}
+function estat(clau,t){const id=clau.split('/')[1];document.querySelectorAll(`[data-st="${id}"]`).forEach(e=>e.textContent=t);if(clau==='gen')$('#st-gen').textContent=t;}
+async function push(clau){
+ saveLocal();
+ if(!api){return;}
+ dirty[clau]=true;if(busy[clau])return;busy[clau]=true;
+ while(dirty[clau]){dirty[clau]=false;const[ref,body]=docDe(clau);
+  try{await ref.set(body);estat(clau,'Desat');}
+  catch(e){await wait(700);try{await ref.set(body);estat(clau,'Desat');continue;}catch(e2){}estat(clau,"No s'ha pogut desar a l'artifact (desat en aquest navegador)");setMode('local');}}
+ busy[clau]=false;
+}
+const mesTard=(clau,ms=800)=>{saveLocal();clearTimeout(timers[clau]);timers[clau]=setTimeout(()=>{timers[clau]=null;push(clau);},ms);};
+// ---- accions ----
+const nouId=()=>'N'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);
+document.addEventListener('input',ev=>{
+ const t=ev.target;
+ if(t.matches('textarea[data-f]')){const id=t.dataset.f;F[id].text=t.value.slice(0,600);F[id].autor='david';refrescaFrase(id,t);t.closest('.fr').querySelector('.fr-cap .tag.canv')||null;mesTard('f/'+id);return;}
+ if(t.matches('textarea[data-c]')){U[t.dataset.c].comentari=t.value.slice(0,4000);mesTard('s/'+t.dataset.c);compta();return;}
+ if(t.matches('textarea[data-gc]')){G[t.dataset.gc].comentari=t.value.slice(0,4000);mesTard('g/'+t.dataset.gc);return;}
+ if(t.matches('input[data-gt]')){G[t.dataset.gt].text=t.value.slice(0,600);G[t.dataset.gt].tria='nova';const r=t.closest('label').querySelector('input[type=radio]');if(r)r.checked=true;mesTard('g/'+t.dataset.gt);return;}
+ if(t.id==='c-gen'){gen=t.value.slice(0,20000);mesTard('gen');}
+});
+document.addEventListener('change',ev=>{
+ const t=ev.target;
+ if(t.matches('select[data-a=afegeix]')){const sid=t.closest('.card').dataset.s;let id=t.value;if(!id)return;
+  if(id==='__nova'){id=nouId();F[id]={text:'',orig:'',nova:true};push('f/'+id);}
+  U[sid].dolentes.push({id});push('s/'+sid);pinta();
+  const ta=document.querySelector(`#s-${sid} textarea[data-f="${id}"]`);if(ta)ta.focus();return;}
+ if(t.matches('input[type=radio][name^="t-"]')){const gid=t.name.slice(2);G[gid].tria=t.value;push('g/'+gid);compta();}
+});
+function insereix(b){
+ const ta=b.closest('.fr').querySelector('textarea');const ins=b.dataset.ins;
+ const a=ta.selectionStart,z=ta.selectionEnd,sel=ta.value.slice(a,z);
+ let nou,c0,c1;
+ const embolcalla=(pre,post)=>{nou=pre+sel+post;c0=a+pre.length;c1=c0+sel.length;};
+ if(ins==='bold')embolcalla('\\bold{','}');
+ else if(ins==='oposite')embolcalla('\\oposite{','}');
+ else if(ins==='signe')embolcalla('\\signe{','}');
+ else if(ins==='math')embolcalla('$','$');
+ else if(ins==='frac'){nou='${'+(sel||'a')+'|b}$';c0=a+nou.length-3;c1=c0+1;}
+ else if(ins==='minus'){nou='−';c0=c1=a+1;}
+ else{nou=ins;c0=c1=a+nou.length;}
+ ta.focus();ta.setRangeText(nou,a,z,'end');ta.setSelectionRange(c0,c1);
+ ta.dispatchEvent(new Event('input',{bubbles:true}));
+}
+document.addEventListener('mousedown',ev=>{if(ev.target.closest('.eina'))ev.preventDefault();});
+document.addEventListener('keydown',ev=>{
+ if(!(ev.ctrlKey||ev.metaKey)||ev.altKey||ev.shiftKey||ev.key.toLowerCase()!=='b')return;
+ const ta=ev.target.closest&&ev.target.closest('textarea[data-f]');if(!ta)return;
+ const b=ta.closest('.fr').querySelector('.eina[data-ins="bold"]');if(!b)return;
+ ev.preventDefault();insereix(b);
+});
+document.addEventListener('click',ev=>{
+ const b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.ins){insereix(b);return;}
+ if(b.dataset.gd){const gid=b.closest('[data-g]').dataset.g;G[gid].decisio=G[gid].decisio===b.dataset.gd?'':b.dataset.gd;push('g/'+gid);pinta();document.querySelector(`#g-${gid} [data-gd="${b.dataset.gd}"]`)?.focus();return;}
+ const a=b.dataset.a;if(!a)return;
+ const fr=b.closest('.fr'), card=b.closest('.card');
+ if(a==='restauraS'){const sid=card.dataset.s;U[sid]=JSON.parse(U0[sid]);push('s/'+sid);pinta();return;}
+ if(!fr)return;
+ const id=fr.dataset.f, sid=fr.dataset.s, rol=fr.dataset.rol, k=Number(fr.dataset.k);
+ if(a==='restaura'){F[id].text=F[id].orig;F[id].autor='david';push('f/'+id);pinta();return;}
+ if(a==='copia'){const nid=nouId();F[nid]={text:F[id].text,orig:'',nova:true};if(rol==='bona')U[sid].bona=nid;else U[sid].dolentes[k]={...U[sid].dolentes[k],id:nid};push('f/'+nid);push('s/'+sid);pinta();document.querySelector(`#s-${sid} textarea[data-f="${nid}"]`)?.focus();return;}
+ if(a==='treu'){U[sid].dolentes.splice(k,1);push('s/'+sid);pinta();return;}
+ if(a==='bona'){const vella=U[sid].bona;U[sid].bona=id;U[sid].dolentes[k]={id:vella};push('s/'+sid);pinta();return;}
+});
+$('#f-tot').addEventListener('click',()=>{filtre="tot";aplicaFiltre();});
+$('#f-mod').addEventListener('click',()=>{filtre="mod";aplicaFiltre();});
+function resum(){
+ const l=[];
+ for(const[id,f]of Object.entries(F))if(modF(id))l.push(`${id}${f.nova?' (nova)':''}: ${f.text}`);
+ for(const s of SIT)if(JSON.stringify(U[s.id])!==U0[s.id]||U[s.id].comentari)l.push(`${s.id} ${s.titol}: bona ${U[s.id].bona}; distractors ${U[s.id].dolentes.map(d=>d.id).join(', ')}${U[s.id].comentari?' · '+U[s.id].comentari:''}`);
+ for(const[g,v]of Object.entries(G))if(v.decisio||v.comentari)l.push(`${g}: ${v.decisio||'(sense decisió)'} ${v.tria==='nova'?'«'+v.text+'»':v.tria}${v.comentari?' · '+v.comentari:''}`);
+ if(gen.trim())l.push('Altres comentaris: '+gen.trim());
+ return l.join('\n')||'Cap canvi.';
+}
+$('#copia').addEventListener('click',()=>{const t=resum(),ta=$('#txtcopia');const fall=()=>{ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#copiat').textContent="Selecciona el text i copia'l amb Ctrl+C.";};try{navigator.clipboard.writeText(t).then(()=>{$('#copiat').textContent="Copiat. Enganxa-ho al xat.";},fall);}catch(e){fall();}});
+$('#c-gen').value=gen;
+async function initDb(){
+ const host=window.claude;
+ if(!host||typeof host.use!=="function"){setMode("local");return;}
+ const tm=setTimeout(()=>{if(mode==="connectant")setMode("local");},10000);
+ let a=null;try{a=await host.use("db");}catch(e){a=null;}
+ if(!a){clearTimeout(tm);setMode("local");return;}
+ const ocupat=c=>busy[c]||dirty[c]||timers[c];
+ try{
+  let carregat={f:false,s:false};
+  const fet=()=>{if(carregat.f&&carregat.s){clearTimeout(tm);api=a;setMode("nuvol");saveLocal();pinta();}};
+  a.collection("frases").onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};if(typeof x.text!=="string"||ocupat('f/'+d.id))return;const ta=document.activeElement;if(ta&&ta.dataset&&ta.dataset.f===d.id)return;if(F[d.id]){F[d.id].text=x.text;F[d.id].autor=x.autor||'david';}else if(x.nova)F[d.id]={text:x.text,orig:'',nova:true,autor:x.autor||'david'};});
+   if(!carregat.f){carregat.f=true;fet();}else snap.docs.forEach(d=>{if(F[d.id]&&!document.querySelector(`textarea[data-f="${d.id}"]`))pinta();else if(F[d.id])refrescaFrase(d.id,document.activeElement);});},()=>{clearTimeout(tm);setMode("local");});
+  a.collection("situacions").onSnapshot(snap=>{let canvi=false;snap.docs.forEach(d=>{const x=d.data()||{};if(!U[d.id]||ocupat('s/'+d.id)||typeof x.bona!=="string"||!Array.isArray(x.dolentes))return;
+    const nou={bona:x.bona,dolentes:x.dolentes.filter(o=>o&&typeof o.id==="string").map(o=>o.cond?{id:o.id,cond:String(o.cond)}:{id:o.id}),comentari:typeof x.comentari==="string"?x.comentari:""};
+    if(nou.bona!==U[d.id].bona||JSON.stringify(nou.dolentes)!==JSON.stringify(U[d.id].dolentes))canvi=true;
+    else{const ta=document.getElementById('c-'+d.id);if(ta&&document.activeElement!==ta&&ta.value!==nou.comentari)ta.value=nou.comentari;}
+    U[d.id]=nou;});
+   if(!carregat.s){carregat.s=true;fet();}else if(canvi)pinta();},()=>{});
+  a.collection("grups").onSnapshot(snap=>{let canviG=false;snap.docs.forEach(d=>{const x=d.data()||{};if(!G[d.id]||ocupat('g/'+d.id))return;const vell=G[d.id];const nou={decisio:String(x.decisio||""),tria:String(x.tria||""),text:String(x.text||""),comentari:String(x.comentari||"")};G[d.id]=nou;if(api&&(vell.decisio!==nou.decisio||vell.tria!==nou.tria))canviG=true;});if(canviG)pinta();},()=>{});
+  a.doc("general/notes").onSnapshot(d=>{if(!d.exists||ocupat('gen'))return;const x=d.data()||{};if(typeof x.text==="string"&&document.activeElement!==$('#c-gen')){gen=x.text;$('#c-gen').value=gen;}},()=>{});
+  a.collection("rep").onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};REP[d.id]=typeof x.text==="string"?x.text:"";});pintaReps();},()=>{});
+ }catch(e){clearTimeout(tm);setMode("local");}
+}
+pinta();
+initDb();
+}
+</script>
+</body>
+</html>
