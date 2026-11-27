@@ -90,8 +90,16 @@ browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
    - Rewrite the stored sentences in `data/banc.json`.
    - Then offer to add to the editor the 4 newer rules (SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
      DENOMINADORS) and the order-of-operations sentences.
-2. **The department's `BANC-ERRORS v3` codes**, when David pastes them: tally MM/M/N per example and propose changes
-   (≥ 5 points → review artifact).
+2. **The department's survey (`BANC-ERRORS v3`): 4 of 6 answers received on 27/11, 2 still missing.** The tally,
+   comments and raw codes are in [`docs/enquesta-banc-errors.md`](docs/enquesta-banc-errors.md). Main signals:
+   - Item 5 is rejected (3 N); item 24 too (2 N + a comment that it is ambiguous).
+   - Items 4, 11, 12, 17, 18 and 22 have 1 N each; item 22's comment says adding all positives and then all
+     negatives is valid.
+   - One teacher asks for a distributive case with a term before the bracket: `2x+6(x-3)=-24 → 2x+6x-3=-24`.
+   - Unanimous MM: 2, 7, 13, 19, 20, 21.
+
+   When David pastes the 2 missing codes, add them to that file, redo the tally and propose changes per item. That
+   is ≥ 5 points, so use a review artifact. Decode the item numbers with `node eines/banc-errors.mjs`.
 3. **Open questions** (ask with the multiple-choice dialog):
    - Approve or drop the `DENOMINADORS` variant `sense`?
    - Raise the frequency of the newer rules, now ~1 % each?
