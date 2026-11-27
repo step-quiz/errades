@@ -1,4 +1,105 @@
-# HANDOUT — cold-start brief for the next AI session (2026-11-26)
+# HANDOUT — cold-start brief for the next AI session (updated 2026-11-27, end of session)
+
+## START HERE (2026-11-27) — this section wins over everything below it
+
+**State of the repo.** The last delivery is the ZIP `errades-frases-2.zip`. It contains everything done on 26–27/11: the term
+phase at every level, a lasso line that is marked only when the finger lifts, interface texts rewritten by David, both
+editors' sources, and this file. If `git log` does not show an «Auto-extract uploaded zip» commit after 27/11 with these
+files, ask David whether he uploaded it. **Never** create branches, commits or merges: David works only with ZIPs
+(he uploads them to `_uploads/`; the `unzip-upload.yml` workflow commits them). Tests: `node tests/run-all.js` (green);
+browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
+
+**The two review artifacts (claude.ai, owned by David, private):**
+
+| Artifact | URL | Source in repo | State |
+|---|---|---|---|
+| «Frases de "Per què és una errada?" · Equacions» | https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4 | `eines/frases-editor/` (`plantilla.html` + `dades.json` → `index.html`) | **David finished reviewing ALL of it on 27/11/2026.** Live version `1795770122-4e9b`, capabilities `{db:{}, user:{}}` |
+| «Textos de Localitza l'errada» (fixed interface texts) | https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn | `eines/textos-editor/index.html` | **Done.** All 51 edits applied in the code on 27/11 (`docs/STATE.md` «Interface texts») |
+
+### How David resumes the sentence editor with you (no work is lost)
+
+- Everything he types is saved automatically in the artifact's database, not in the page. Republishing the page
+  never erases his work, provided you **keep the database collections and the ids**. He opens the URL and carries on.
+- Database layout (read with `ArtifactData`, url above):
+  - `frases/<id>`: `{text, nova, autor:'david'|'claude', de?, actualitzat}`. Ids `F01`–`F70` come from the
+    catalogue. `N…` ids are copies the editor made when David typed in a shared sentence; `R…` ids are copies Claude
+    made on 27/11 to repair shared sentences. `de` names the sentence a copy came from.
+  - `situacions/<id>`: `{bona, dolentes:[{id, cond?}], comentari}`. **This is the truth about which sentence belongs
+    to which situation.** Situations missing from the collection use the catalogue default in `dades.json`.
+  - `grups/G1..G7` (decisions on similar sentences: done), `general/notes` (David's general comments),
+    `rep/<id>` and `rep/general` (Claude's replies, shown inside the page).
+- When David says «Revisa artifact»:
+  1. Read all collections.
+  2. Learn from his edits.
+  3. Answer each comment in `rep/<situation id>`. Pin every write: pass `if_version` with the version the read
+     listing shows (the files `out_dir` saves do not include it); at most 50 writes per batch.
+  4. Rewrite only sentences with `autor:'claude'`.
+  5. Never overwrite his text, except to swap in a marker when he asks for one.
+- **Style rules learned from David** (apply to every sentence you write; full text in `rep/general` v2):
+  - Name the wrongly written term: «El −x no és correcte…», «És una errada escriure 23, hauria de ser −23».
+  - Say what should have been done with «Hauria d'haver…» / «Caldria haver…».
+  - Link cause and consequence with «: per tant,».
+  - Keep it short, without tails like «d'aquesta línia».
+  - Put `\bold{}` on the key word of every sentence, distractors included.
+  - Keep 3–4 distractors per situation.
+  - No article before numbers after the verb («multiplicar 4 per −1»).
+  - Leave alone F53–F58 (inverse operation): David dictated them.
+- **Template language** (rendered by `render()` in `plantilla.html`; the website must implement the same):
+  - `[marker]` = a value of the example; outside `$…$` it becomes maths automatically.
+  - `$…$` = maths; `${a|b}$` = a fraction; an ASCII `-` before a digit, `x`, `$`, `[` or `\` shows as `−`.
+  - Macros: `\bold{}`; `\oposite{}` (the opposite, with explicit sign: −1 → +1, x → −x); `\signe{}` (explicit
+    sign: 3 → +3); `\nosign{}` (value without sign: −23 → 23).
+  - Two-term situations ST2 and SC2 also have `[primer terme]` and `[segon terme]`.
+  - «Membre» markers: `[membre] [membres] [el membre] [al membre] [l'altre membre] [el seu membre] [al seu membre]
+    [els dos membres]`. They take the word chosen in the index: membre (default) | costat | banda | part; membre and
+    costat are masculine, banda and part feminine. Example: «l'altra banda», «les dues bandes».
+- **Shared sentences:** when David types in a sentence used by several situations, the editor makes a copy for that
+  situation only (`de` = original id); the button «Aplica-la a totes» on the copy makes it common again. David chose
+  this on 27/11 after edits in one situation broke others.
+- **Pitfall that already bit us:** `eines/frases-editor/cataleg.json` is STALE. `dades.json` is the source of truth;
+  `dades.mjs` throws on purpose. To change the page: edit `plantilla.html` and/or `dades.json`, then rebuild
+  `index.html` by replacing `/*DADES*/` with the contents of `dades.json` (escape `</` as `<\/`). Test with a mocked
+  `window.claude` (never name anything `claude` in the page code). Republish the **same file path** with
+  `url: https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4` and **omit `capabilities`**. The tool asks you to Read the
+  live version first.
+- Check at the end of 27/11: every sentence of every situation uses only markers its situation has. To re-check,
+  compare the markers of each `situacions/<id>` sentence with `dades.json` → `situacions[].marcadors`.
+
+### What is pending, in order
+
+0. **DONE 27/11 (live version `1795770122-4e9b`): one fixed toolbar + abstract term references.** Same buttons in
+   every situation: Format (N, $…$, a/b, −) · Sign (Oposat, + signe, Sense signe) · `[mal]` `[bo]` · a «Membre…»
+   select · a «Valors d'aquesta situació…» select (the old per-situation markers, still valid). Clicking a term in a
+   card's mini-notebook inserts its position reference `[abans|alumne|bona].[esq|dre].n` (1-based; the `alumne` line
+   is `mostra.mal`); `termesLinia()` splits a line at top-level ` + ` / ` − ` (a bracket or a fraction is one term).
+   `[mal]` = the wrongly written term, `[bo]` = what it should have been. In the editor they are derived from the
+   sample, as the first term that differs when both lines have the same number of terms. The generator must supply
+   them as `linies[i][e.terme]` and `e.fitxesBona[e.terme]`. **Integration:** the website renderer must resolve
+   position references from the actual lines of each example. Warn David that positions vary between generated
+   equations of one situation; `[mal]`/`[bo]` and the situation values are the robust ones.
+1. **NEXT JOB — David has finished the sentence editor (27/11/2026, full review done).** First read every db
+   collection (`frases`, `situacions`, `general/notes`, plus any artifact comments). Answer any new comment in
+   `rep/<id>`; Claude has not read his last edits yet, so do not assume there are none. Then integrate it into the
+   website. This is the biggest job:
+   - Export the db: per situation, the `bona` and `dolentes` sentence texts. Copies are new ids, not F01–F70.
+   - Write `data/frases-equacions.json` and make `PERQUE` in `js/equacions/generador.js` render from it with the
+     template language above.
+   - The generator must supply every marker value, including `primer terme`, `segon terme`, `altre càlcul` and
+     `termes en x`, and the conditions `cond` (e.g. «només si el pas és treure parèntesis»).
+   - Add the index parameter for the «membre» word (default `membre`), with README, tests and the index UI.
+   - Rewrite the stored sentences in `data/banc.json`.
+   - Then offer to add to the editor the 4 newer rules (SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
+     DENOMINADORS) and the order-of-operations sentences.
+2. **The department's `BANC-ERRORS v3` codes**, when David pastes them: tally MM/M/N per example and propose changes
+   (≥ 5 points → review artifact).
+3. **Open questions** (ask with the multiple-choice dialog):
+   - Approve or drop the `DENOMINADORS` variant `sense`?
+   - Raise the frequency of the newer rules, now ~1 % each?
+   - Allow statements with a single power for POTENCIA_PER_EXPONENT?
+4. **David tests the published site** with pupils (term phase, lasso, new texts); expect feedback rounds.
+
+Sections below are the earlier history, kept for detail. Where they disagree with this section, this section wins.
+
 
 You are taking over `step-quiz/errades` («Localitza l'errada») from a long session that ran out of context.
 Read this file, then `CLAUDE.md` (hard rules), `docs/STATE.md` (what is done, newest decisions at the end),
