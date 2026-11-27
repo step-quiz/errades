@@ -114,8 +114,12 @@ ul.comp li{margin:8px 0}
   <li>Les fórmules van entre <span class="mk">$…$</span>; una fracció s'escriu <span class="mk">${a|b}$</span>. Un valor entre claudàtors ja surt com a fórmula encara que no li posis els <span class="mk">$</span>, i un guionet davant d'un nombre o d'una x surt com a signe menys. Sota cada frase veus com la llegirà l'alumne amb els nombres de l'exemple.</li>
   <li>Sobre cada frase tens una barra d'eines: <b>N</b> o <b>Ctrl+B</b> (<b>⌘B</b> al Mac) posa en negreta el que hagis seleccionat (<span class="mk">\bold{…}</span>), «Oposat» escriu el valor amb el signe canviat, de $−1$ a $+1$ (<span class="mk">\oposite{…}</span>), «+ signe» escriu el valor amb el signe a la vista, de $3$ a $+3$ (<span class="mk">\signe{…}</span>), i els botons amb claudàtors insereixen els valors de la situació.</li>
   <li>Una frase amb l'etiqueta <span class="tag comp">a 3 situacions</span> és compartida. Si la vols diferent només en una situació, prem «Fes-ne una còpia per aquí».</li>
+  <li><b>Membre, costat, banda o part.</b> No escriguis «membre» directament: fes servir els botons <span class="mk">[membre]</span>, <span class="mk">[l'altre membre]</span>, <span class="mk">[al membre]</span>, <span class="mk">[els dos membres]</span>… i la web hi posarà la paraula triada a l'índex, amb el gènere i el plural bé (<i>l'altre membre</i> / <i>l'altra banda</i>). El desplegable de sota et deixa veure com queda.</li>
+  <li><b>Sense signe:</b> <span class="mk">\nosign{…}</span> escriu el valor sense el signe, de $−23$ a $23$. A «Signe en passar termes» i «Signe copiat malament (dos termes)» tens <span class="mk">[primer terme]</span> i <span class="mk">[segon terme]</span> per parlar d'un sol dels dos.</li>
   <li>Pots treure un distractor, posar-ne un de nou, aprofitar-ne un d'una altra situació o fer que un distractor passi a ser la frase bona.</li>
  </ul>
+
+ <div class="tool"><label for="paraula" class="cl">Com es diu «membre» (per veure-ho; a la web es triarà a l'índex):</label><select id="paraula"><option value="membre">membre</option><option value="costat">costat</option><option value="banda">banda</option><option value="part">part</option></select></div>
 
  <h2>Frases compartides <small id="ncomp"></small></h2>
  <p class="intro">Les que surten en més d'una situació. Es canvien dins de qualsevol de les situacions on surten, i el canvi s'aplica a totes; aquí només hi ha la llista.</p>
@@ -185,6 +189,22 @@ function termes(v){
 const escriuTermes=(ts,explicit)=>ts.length===1?(explicit||ts[0][0]==='−'?ts[0][0]:'')+ts[0][1]:ts.map(([g,c],i)=>i===0?(g==='−'?'−':'')+c:` ${g} ${c}`).join('');
 const oposat=v=>escriuTermes(termes(v).map(([g,c])=>[g==='+'?'−':'+',c]),true);
 const ambSigne=v=>escriuTermes(termes(v),true);
+const senseSigne=v=>String(v).replace(/\$/g,'').replace(/-/g,'−').trim().replace(/^[+−]\s*/,'');
+// La paraula per a «membre» (David, 27/11/2026): es tria a l'índex; aquí, només per veure com queda
+const PARAULES={membre:{m:1,s:'membre',p:'membres'},costat:{m:1,s:'costat',p:'costats'},banda:{m:0,s:'banda',p:'bandes'},part:{m:0,s:'part',p:'parts'}};
+let paraula='membre';try{const v=localStorage.getItem('frases-paraula');if(PARAULES[v])paraula=v;}catch(e){}
+const MEMBRE={
+ 'membre':['la paraula sola','canviar de [membre]'],
+ 'membres':['en plural','els [membres]'],
+ 'el membre':['amb article','el membre / la banda'],
+ 'al membre':['«a» + article','al membre / a la banda'],
+ "l'altre membre":["l'altre / l'altra","l'altre membre / l'altra banda"],
+ 'el seu membre':['el seu / la seva','el seu membre / la seva banda'],
+ 'al seu membre':['al seu / a la seva','al seu membre / a la seva banda'],
+ 'els dos membres':['els dos / les dues','els dos membres / les dues bandes'],
+};
+function formaMembre(n){const w=PARAULES[paraula],m=w.m;
+ return {'membre':w.s,'membres':w.p,'el membre':(m?'el ':'la ')+w.s,'al membre':(m?'al ':'a la ')+w.s,"l'altre membre":(m?"l'altre ":"l'altra ")+w.s,'el seu membre':(m?'el seu ':'la seva ')+w.s,'al seu membre':(m?'al seu ':'a la seva ')+w.s,'els dos membres':(m?'els dos ':'les dues ')+w.p}[n];}
 // substitueix els [valors]; fora d'una fórmula, un valor sense $ s'escriu com a fórmula
 function posaValors(text,valors){
  let out='',dins=false;
@@ -192,6 +212,7 @@ function posaValors(text,valors){
   const ch=text[i];
   if(ch==='$'){dins=!dins;out+=ch;continue;}
   if(ch==='['){const j=text.indexOf(']',i);if(j>i){const n=text.slice(i+1,j);
+   if(n in MEMBRE){out+=formaMembre(n);i=j;continue;}
    if(valors&&n in valors){const v=valors[n];out+=(!dins&&!v.includes('$'))?'$'+v+'$':v;}else out+='\u0001'+n+'\u0002';
    i=j;continue;}}
   out+=ch;}
@@ -203,11 +224,11 @@ function macros(t){
  for(let i=0;i<t.length;i++){
   const ch=t[i];
   if(ch==='$'){dins=!dins;out+=ch;continue;}
-  const m=/^\\(bold|oposite|signe)\{/.exec(t.slice(i,i+9));
+  const m=/^\\(bold|oposite|signe|nosign)\{/.exec(t.slice(i,i+9));
   if(m){let k=i+m[0].length,prof=1;for(;k<t.length&&prof;k++){if(t[k]==='{')prof++;else if(t[k]==='}')prof--;}
    const dinsArg=t.slice(i+m[0].length,k-1);
    if(m[1]==='bold')out+='\u0003'+macros(dinsArg)+'\u0004';
-   else{const r=m[1]==='oposite'?oposat(macros(dinsArg)):ambSigne(macros(dinsArg));out+=dins?r:'$'+r+'$';}
+   else{const a=macros(dinsArg);const r=m[1]==='oposite'?oposat(a):m[1]==='nosign'?senseSigne(a):ambSigne(a);out+=dins?r:'$'+r+'$';}
    i=k-1;continue;}
   out+=ch;}
  return out;
@@ -224,7 +245,7 @@ function avisos(id,sids){
  const t=F[id].text, out=[];
  if(!t.trim())out.push('La frase està buida.');
  if((t.split('$').length-1)%2)out.push('Hi ha un $ sense tancar.');
- for(const sid of sids){const s=SID[sid];const no=marcadors(t).filter(n=>!(n in s.marcadors));if(no.length)out.push(`A «${s.titol}» no hi ha ${no.map(n=>'['+n+']').join(', ')}.`);}
+ for(const sid of sids){const s=SID[sid];const no=marcadors(t).filter(n=>!(n in s.marcadors)&&!(n in MEMBRE));if(no.length)out.push(`A «${s.titol}» no hi ha ${no.map(n=>'['+n+']').join(', ')}.`);}
  return [...new Set(out)].join(' ');
 }
 // ---- dibuix ----
@@ -232,7 +253,7 @@ const nomSit=sid=>SID[sid].titol;
 // la barra d'eines de cada frase: macros i els [valors] de la situació
 function barra(s){
  const b=(ins,txt,tit)=>`<button type="button" class="b eina" data-ins="${esc(ins)}" title="${esc(tit)}">${txt}</button>`;
- return `<div class="eines" role="toolbar" aria-label="Eines">${b('bold','<b>N</b>','Negreta (Ctrl+B): el que hagis seleccionat queda en negreta (\\bold{…})')}${b('oposite','Oposat','El valor amb el signe canviat: −1 → +1 (\\oposite{…})')}${b('signe','+ signe','El valor amb el signe a la vista: 3 → +3 (\\signe{…})')}${b('math','$…$','Fórmula')}${b('frac','a/b','Fracció: ${a|b}$')}${b('minus','−','El signe menys de veritat')}<span class="sep"></span>${Object.keys(s.marcadors).map(k=>b('['+k+']','['+esc(k)+']','Insereix el valor: '+s.marcadors[k])).join('')}</div>`;
+ return `<div class="eines" role="toolbar" aria-label="Eines">${b('bold','<b>N</b>','Negreta (Ctrl+B): el que hagis seleccionat queda en negreta (\\bold{…})')}${b('oposite','Oposat','El valor amb el signe canviat: −1 → +1 (\\oposite{…})')}${b('signe','+ signe','El valor amb el signe a la vista: 3 → +3 (\\signe{…})')}${b('math','$…$','Fórmula')}${b('frac','a/b','Fracció: ${a|b}$')}${b('minus','−','El signe menys de veritat')}<span class="sep"></span>${Object.keys(s.marcadors).map(k=>b('['+k+']','['+esc(k)+']','Insereix el valor: '+s.marcadors[k])).join('')}<span class="sep"></span>${b('\\nosign','Sense signe','El valor sense el signe: −23 → 23 (\\nosign{…})')}${Object.keys(MEMBRE).map(k=>b('['+k+']','['+esc(k)+']','«Membre» segons la paraula triada: '+MEMBRE[k][1])).join('')}</div>`;
 }
 function editor(id,ctx){ // ctx: {sid, rol, k, cond} o {sid:null}
  const u=usos(id), sids=[...new Set(u.map(x=>x[0]))];
@@ -368,6 +389,7 @@ function insereix(b){
  if(ins==='bold')embolcalla('\\bold{','}');
  else if(ins==='oposite')embolcalla('\\oposite{','}');
  else if(ins==='signe')embolcalla('\\signe{','}');
+ else if(ins==='\\nosign')embolcalla('\\nosign{','}');
  else if(ins==='math')embolcalla('$','$');
  else if(ins==='frac'){nou='${'+(sel||'a')+'|b}$';c0=a+nou.length-3;c1=c0+1;}
  else if(ins==='minus'){nou='−';c0=c1=a+1;}
@@ -408,6 +430,7 @@ function resum(){
 }
 $('#copia').addEventListener('click',()=>{const t=resum(),ta=$('#txtcopia');const fall=()=>{ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#copiat').textContent="Selecciona el text i copia'l amb Ctrl+C.";};try{navigator.clipboard.writeText(t).then(()=>{$('#copiat').textContent="Copiat. Enganxa-ho al xat.";},fall);}catch(e){fall();}});
 $('#c-gen').value=gen;
+$('#paraula').value=paraula;$('#paraula').addEventListener('change',e=>{paraula=e.target.value;try{localStorage.setItem('frases-paraula',paraula);}catch(x){}pinta();});
 async function initDb(){
  const host=window.claude;
  if(!host||typeof host.use!=="function"){setMode("local");return;}

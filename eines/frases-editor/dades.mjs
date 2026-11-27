@@ -13,6 +13,14 @@ const grups = [
 for (const g of grups) for (const f of g.frases) if (!C.frases.find(x => x.id === f)) throw new Error('falta ' + f);
 const situacions = C.situacions.map(s => ({ ...s, nom: T[s.tipus].nom, mostra: C.mostres[s.id] && { abans: C.mostres[s.id].abans, mal: C.mostres[s.id].mal, bona: C.mostres[s.id].bona, valors: C.mostres[s.id].valors, origen: C.mostres[s.id].origen } }));
 for (const s of situacions) if (!s.mostra) throw new Error('sense mostra ' + s.id);
+// David (27/11/2026): poder parlar d'un sol dels dos termes ([primer terme], [segon terme])
+const DOS = { ST2: ['−1', '+x'], SC2: ['−10', '−7'] };
+for (const s of situacions) if (DOS[s.id]) {
+    s.marcadors['primer terme'] = 'el primer dels dos termes, amb el seu signe: «$−1$»';
+    s.marcadors['segon terme'] = 'el segon dels dos termes, amb el seu signe: «$+x$»';
+    s.mostra.valors['primer terme'] = DOS[s.id][0];
+    s.mostra.valors['segon terme'] = DOS[s.id][1];
+}
 const frases = C.frases.map(f => ({ id: f.id, text: f.text, usos: f.usos }));
 fs.writeFileSync('dades.json', JSON.stringify({ situacions, frases, grups }));
 console.log(situacions.length, frases.length, frases.filter(f => new Set(f.usos.map(u => u[0])).size > 1).length);

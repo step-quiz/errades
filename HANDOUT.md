@@ -83,6 +83,15 @@ lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when th
    «Interface texts»); awaiting his test of the published site. The catalogue inside the page still shows the OLD
    texts as «original»: if David wants another round, update the catalogue `G` to the current texts first and
    republish the same file path (keep `capabilities` by omitting it), then delete or ignore the old db docs.
+1. **Sentence editor — round 2 done 2026-11-27.** Claude re-read David's edits (F16–F30), rewrote its 29 remaining
+   sentences in his style (rules in db `rep/general`, v2: name the wrongly written term, «Hauria d'haver… / Caldria…»,
+   cause «: per tant,», short, bold key word in every sentence), left F53–F58 (dictated) untouched, and republished
+   the editor (version `1795763701-dac8`) with: `\nosign{…}` (value without sign), `[primer terme]`/`[segon terme]`
+   (ST2, SC2), and **«membre» markers** `[membre] [membres] [el membre] [al membre] [l'altre membre] [el seu membre]
+   [al seu membre] [els dos membres]` resolved from a word chosen in the index (membre|costat|banda|part, default
+   membre; masc membre/costat, fem banda/part). David's F16/F18/F19/F22/F24 now use them. **Integration must add:**
+   an index parameter for that word (+ README/index tests), the three features in the template renderer, and the
+   generator values for `primer terme`/`segon terme`. Then continue with the rest of this item as below.
 1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug
    `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, live version
    `1795678340-090d`, capabilities `{db:{}, user:{}}`. **David is filling it in now.** When he says «Revisa
