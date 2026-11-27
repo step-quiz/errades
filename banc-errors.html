@@ -83,7 +83,38 @@ textarea{width:100%;min-height:44px;font:inherit;font-size:.95rem;padding:8px 10
  .f{font-size:1.2rem}
  .linies{grid-template-columns:1.8em max-content 1.2em max-content 1.6em;column-gap:3px}
 }
-@media print{.barra,.vots,textarea,.copia{display:none}main{padding-top:0}.fitxa{break-inside:avoid}}
+#resultats{display:none}
+body.res #resultats{display:block}
+body.res .intro,body.res #seccions,body.res #compta,body.res #copia,body.res .barra nav{display:none}
+.r-volta{display:inline-block;margin:0 0 10px;color:var(--acc)}
+.r-entrada{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:16px 0}
+.r-entrada label{display:block;font-weight:600;margin:0 0 6px}
+.r-entrada label+label,.r-zona+label{margin-top:14px}
+.r-entrada input[type=file]{font:inherit;max-width:100%}
+.r-zona{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--mut);cursor:pointer;margin:10px 0 0;background:var(--bg)}
+.r-zona:hover{box-shadow:0 0 0 2px #000;background:#eee}
+.r-zona.sobre{border-color:var(--acc);background:var(--accs)}
+.r-zona:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.r-entrada button{margin-top:10px}
+#r-text{min-height:120px;font-family:ui-monospace,monospace;font-size:.85rem}
+.r-bloc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:16px 0}
+.r-bloc h2{margin:0 0 8px;font-size:1.15rem;padding:0}
+.r-av{color:var(--red);border-left:4px solid var(--red);padding:4px 12px;margin:10px 0;background:#fff5f5}
+.r-av ul{margin:4px 0 0;padding-left:20px}
+.r-taula{overflow-x:auto}
+.r-taula table{border-collapse:collapse;width:100%;font-size:.95rem}
+.r-taula th,.r-taula td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.r-taula th:nth-child(2),.r-taula td:nth-child(2){text-align:left;white-space:normal;min-width:11em}
+.r-taula small{display:block;color:var(--mut)}
+.r-taula td.p{min-width:6em}
+.r-b{display:block;height:6px;border-radius:3px;background:var(--acc);margin:3px 0 0 auto}
+.r-b.neg{background:var(--red)}
+.r-llista{margin:0;padding-left:20px}
+.r-rank{font-variant-numeric:tabular-nums;margin:0;padding:0;list-style:none}
+.r-com h3{margin:12px 0 4px;font-size:1rem}
+.r-com p{margin:2px 0;font-size:.95rem}
+.r-acc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+@media print{.barra,.vots,textarea,.copia,.r-entrada,.r-acc,.r-volta{display:none}main{padding-top:0}.fitxa{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -100,6 +131,21 @@ textarea{width:100%;min-height:44px;font:inherit;font-size:.95rem;padding:8px 10
  <label class="amaga"><input type="checkbox" id="amaga"> Amaga les errades, per buscar-les tu primer</label>
 </section>
 <div id="seccions"></div>
+<section id="resultats" aria-labelledby="r-titol">
+ <a class="r-volta" href="#">← Torna al banc</a>
+ <h1 id="r-titol">Resultats de l'enquesta</h1>
+ <p class="sub">Tot es calcula en aquest navegador: no s'envia res enlloc.</p>
+ <div class="r-entrada">
+  <label for="r-fitxer">Carrega el fitxer .docx amb els correus</label>
+  <input type="file" id="r-fitxer" accept=".docx">
+  <div class="r-zona" id="r-zona" role="button" tabindex="0">…o arrossega aquí el fitxer .docx (o prem Intro per triar-lo)</div>
+  <label for="r-text">…o enganxa aquí el text dels correus</label>
+  <textarea id="r-text" placeholder="BANC-ERRORS v3&#10;1 MM&#10;2 M | comentari…"></textarea>
+  <button type="button" id="r-calcula">Calcula</button>
+ </div>
+ <div id="r-resum" aria-live="polite"></div>
+ <div id="r-detall"></div>
+</section>
 </main>
 <script>
 const DADES = {"versio":"v3","items":[{"n":1,"seccio":"equacions","id":"DISTRIBUTIVA","nom":"Propietat distributiva","descripcio":"El nombre de fora del parèntesi no multiplica tots els termes de dins.","origen":"banc","alumne":"la Laia","linies":[["6·(x − 3)","=","−24"],["6x","− 3","=","−24"],["6x","=","−24","+ 3"],["6x","=","−21"],["x","=","{−21|6}"],["x","=","−{7|2}"]],"j":1,"termes":[1],"bona":"6x − 18 = −24","expl":"El $6$ multiplica tots els termes del parèntesi, també el $−3$. Només ha multiplicat la $x$."},{"n":2,"seccio":"equacions","id":"DIST_SIGNE","nom":"Signe davant d'un parèntesi","descripcio":"El signe negatiu de davant del parèntesi no canvia el signe de tots els termes de dins.","origen":"banc","alumne":"en Biel","linies":[["10","− 2·(x + 7)","=","−9x","+ 10"],["10","− 2x","+ 14","=","−9x","+ 10"],["24","− 2x","=","−9x","+ 10"],["−2x","+ 9x","=","10","− 24"],["7x","=","−14"],["x","=","{−14|7}"],["x","=","−2"]],"j":1,"termes":[2],"bona":"10 − 2x − 14 = −9x + 10","expl":"El $−2$ multiplica tots els termes del parèntesi amb el seu signe: el $7$ també havia de canviar de signe."},{"n":3,"seccio":"equacions","id":"SUMA_ABANS_PRODUCTE","nom":"La suma abans que el producte (suma abans de multiplicar)","descripcio":"Suma el nombre de davant amb el que multiplica el parèntesi abans de multiplicar: 3 + 2·(x − 4) → 5·(x − 4), o fins i tot → 5x − 4.","origen":"fix","alumne":"la Júlia","linies":[["3","+ 2·(x − 4)","=","3x","+ x","− 2"],["5·(x − 4)","=","3x","+ x","− 2"],["5x","− 20","=","3x","+ x","− 2"],["5x","− 20","=","4x","− 2"],["5x","− 4x","=","−2","+ 20"],["x","=","18"]],"j":1,"termes":[0],"bona":"3 + 2x − 8 = 3x + x − 2","expl":"La multiplicació va abans que la suma: el $2$ multiplica el parèntesi, i el $3$ no s'hi podia sumar abans."},{"n":4,"seccio":"equacions","id":"SUMA_ABANS_PRODUCTE","nom":"La suma abans que el producte (i, a més, només multiplica la x)","descripcio":"Suma el nombre de davant amb el que multiplica el parèntesi abans de multiplicar: 3 + 2·(x − 4) → 5·(x − 4), o fins i tot → 5x − 4.","origen":"fix","alumne":"la Carla","linies":[["3","+ 2·(x − 4)","=","3x","+ x","− 2"],["5x","− 4","=","3x","+ x","− 2"],["5x","− 4","=","4x","− 2"],["5x","− 4x","=","−2","+ 4"],["x","=","2"]],"j":1,"termes":[0],"bona":"3 + 2x − 8 = 3x + x − 2","expl":"La multiplicació va abans que la suma: el $2$ multiplica el parèntesi, i el $3$ no s'hi podia sumar abans."},{"n":5,"seccio":"equacions","id":"DIST_SUMA","nom":"Suma en lloc de multiplicar","descripcio":"El nombre de fora del parèntesi se suma al coeficient de la x de dins en lloc de multiplicar-s'hi: −2·(3x + 6) → −5x − 12.","origen":"banc","alumne":"en Pau","linies":[["x","− 2·(3x + 6)","=","3x","+ 7"],["x","− 5x","− 12","=","3x","+ 7"],["−4x","− 12","=","3x","+ 7"],["−4x","− 3x","=","7","+ 12"],["−7x","=","19"],["x","=","{19|−7}"],["x","=","−{19|7}"]],"j":1,"termes":[1],"bona":"x − 6x − 12 = 3x + 7","expl":"$−2 · 3x$ no fa $−5x$: el nombre de fora del parèntesi multiplica el $3x$, no s'hi suma."},{"n":6,"seccio":"equacions","id":"SIGNE_TRANSPOSAR","nom":"Signe en passar un terme","descripcio":"Un terme (o tots els que passen) canvia de membre sense canviar de signe.","origen":"banc","alumne":"en Pau","linies":[["2x","+ 4","=","6"],["2x","=","6","+ 4"],["2x","=","10"],["x","=","{10|2}"],["x","=","5"]],"j":1,"termes":[3],"bona":"2x = 6 − 4","expl":"El $+4$ ha passat a l'altre membre sense canviar de signe, i en passar-hi havia de canviar de signe."},{"n":7,"seccio":"equacions","id":"SIGNE_COPIAT","nom":"Signe copiat malament","descripcio":"Un o dos termes que en aquest pas només s'havien de copiar surten amb el signe canviat.","origen":"banc","alumne":"l'Arnau","linies":[["9x","+ 7","=","3x","− 23"],["9x","− 3x","=","23","− 7"],["6x","=","16"],["x","=","{16|6}"],["x","=","{8|3}"]],"j":1,"termes":[3],"bona":"9x − 3x = −23 − 7","expl":"Ha escrit $+23$, però aquest terme no intervenia en aquest pas: s'havia de copiar tal com era a la línia de sobre."},{"n":8,"seccio":"equacions","id":"TERMES_NO_SEMBLANTS","nom":"Termes no semblants","descripcio":"Suma termes amb x i termes sense x com si fossin semblants (2x + 3 → 5x; 2x + 3 + 4x → 9x).","origen":"banc","alumne":"la Noa","linies":[["9x","− 13","− 6x","=","5"],["−10x","=","5"],["x","=","{5|−10}"],["x","=","−{1|2}"]],"j":1,"termes":[0],"bona":"3x − 13 = 5","expl":"El $−13$ no té $x$: no és un terme semblant a $9x$ i $−6x$, i no s'hi pot sumar."},{"n":9,"seccio":"equacions","id":"COEFICIENT_U","nom":"La x sola no es compta","descripcio":"En sumar termes en x, oblida la x que no porta coeficient (x vol dir 1x): 3x + x + 6x → 9x.","origen":"banc","alumne":"l'Arnau","linies":[["3x","+ x","+ 6x","=","4","− 2x"],["9x","=","4","− 2x"],["9x","+ 2x","=","4"],["11x","=","4"],["x","=","{4|11}"]],"j":1,"termes":[0],"bona":"10x = 4 − 2x","expl":"La $x$ vol dir $1x$: també s'havia de comptar en fer $3x + x + 6x$."},{"n":10,"seccio":"equacions","id":"CALCUL","nom":"Error de càlcul amb signes","descripcio":"L'estratègia és bona, però en sumar dos termes amb algun signe negatiu s'equivoca en el signe del resultat, o suma els valors quan s'havien de restar (o al revés).","origen":"banc","alumne":"l'Arnau","linies":[["2x","− 2","=","−4"],["2x","=","−4","+ 2"],["2x","=","−6"],["x","=","{−6|2}"],["x","=","−3"]],"j":2,"termes":[2],"bona":"2x = −2","expl":"$−4 + 2$ no fa $−6$: quan els dos termes tenen signes diferents, no se sumen els seus valors."},{"n":11,"seccio":"equacions","id":"OPERACIO_INVERSA","nom":"Operació inversa","descripcio":"Per aïllar la x no divideix entre el coeficient: resta (3x = 12 → x = 9 o x = −9), multiplica (x = 36) o suma (x = 15).","origen":"fix","alumne":"la Marta","linies":[["4x","+ 3","=","23"],["4x","=","23","− 3"],["4x","=","20"],["x","=","16"]],"j":3,"termes":[2],"bona":"x = {20|4}","expl":"El $4$ multiplica la $x$: per aïllar-la s'han de dividir els dos membres entre $4$. Ha restat."},{"n":12,"seccio":"equacions","id":"COEFICIENT_OBLIDAT","nom":"Coeficient oblidat","descripcio":"En aïllar la x, el coeficient desapareix sense dividir: 3x = 12 → x = 12.","origen":"generador","alumne":"l'Aina","linies":[["3x","− 4","=","−2"],["3x","=","−2","+ 4"],["3x","=","2"],["x","=","2"]],"j":3,"termes":[2],"bona":"x = {2|3}","expl":"El $3$ multiplica la $x$: per deixar-la sola s'han de dividir els dos membres entre $3$, i el $3$ ha desaparegut sense dividir."},{"n":13,"seccio":"equacions","id":"DIVISIO_SIGNE","nom":"Signe en dividir","descripcio":"Divideix pel coeficient de la x sense tenir-ne en compte el signe.","origen":"banc","alumne":"en Pau","linies":[["2·(x − 8)","=","9x","+ 5"],["2x","− 16","=","9x","+ 5"],["2x","− 9x","=","5","+ 16"],["−7x","=","21"],["x","=","{21|7}"],["x","=","3"]],"j":4,"termes":[2],"bona":"x = {21|−7}","expl":"El coeficient de la $x$ és $−7$: s'ha de dividir entre $−7$, amb el seu signe."},{"n":14,"seccio":"equacions","id":"QUOCIENT_INVERTIT","nom":"Divisió al revés","descripcio":"Divideix el coeficient de la x entre el terme independent, i no al revés. Passa sobretot quan el coeficient és més gran (12x = 3 → x = 12/3 = 4): l'alumne creu que «3 entre 12 no es pot fer».","origen":"banc","alumne":"la Carla","linies":[["2x","+ 11","=","15"],["2x","=","15","− 11"],["2x","=","4"],["x","=","{2|4}"],["x","=","{1|2}"]],"j":3,"termes":[2],"bona":"x = {4|2}","expl":"Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient de la $x$, i ha dividit al revés."},{"n":15,"seccio":"equacions","id":"QUOCIENT_INVERTIT","nom":"Divisió al revés (cas bessó)","descripcio":"Divideix el coeficient de la x entre el terme independent, i no al revés. Passa sobretot quan el coeficient és més gran (12x = 3 → x = 12/3 = 4): l'alumne creu que «3 entre 12 no es pot fer».","origen":"fix","alumne":"l'Èric","linies":[["12x","− 5","=","−2"],["12x","=","−2","+ 5"],["12x","=","3"],["x","=","{12|3}"],["x","=","4"]],"j":3,"termes":[2],"bona":"x = {3|12}","expl":"Per aïllar la $x$ s'ha de dividir el terme independent entre el coeficient: $3 : 12$. Que el numerador sigui més petit no vol dir que no es pugui fer: dona una fracció."},{"n":16,"seccio":"equacions","id":"INVERS_X","nom":"La x al denominador","descripcio":"Amb la x al denominador, la passa a l'altre membre multiplicant i hi passa el nombre: 30/x = 5 → x = 30·5, en lloc de 30 = 5x.","origen":"fix","alumne":"la Noa","linies":[["{30|x}","=","5"],["x","=","30·5"],["x","=","150"]],"j":1,"termes":[2],"bona":"5x = 30","expl":"La $x$ és al denominador: si $30 : x = 5$, la $x$ és el nombre que fa aquesta divisió, és a dir, $30 : 5$. No s'havia de multiplicar."},{"n":17,"seccio":"equacions","id":"CANVI_SIGNE_PARCIAL","nom":"Canvi de signe incomplet (un terme de la dreta)","descripcio":"En canviar el signe de tota l'equació, n'hi ha algun terme que no el canvia: −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x.","origen":"fix","alumne":"la Laia","linies":[["−4x","+ 5","− 3x","=","6","− x"],["4x","− 5","+ 3x","=","6","+ x"],["7x","− 5","=","6","+ x"],["7x","− x","=","6","+ 5"],["6x","=","11"],["x","=","{11|6}"]],"j":1,"termes":[4],"bona":"4x − 5 + 3x = −6 + x","expl":"Per canviar el signe de tota l'equació s'han de canviar els signes de tots els termes, dels dos membres: el $+6$ també havia de canviar de signe."},{"n":18,"seccio":"equacions","id":"CANVI_SIGNE_PARCIAL","nom":"Canvi de signe incomplet (un terme de l'esquerra)","descripcio":"En canviar el signe de tota l'equació, n'hi ha algun terme que no el canvia: −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x.","origen":"fix","alumne":"la Júlia","linies":[["−4x","+ 5","− 3x","=","6","− x"],["4x","+ 5","+ 3x","=","−6","+ x"],["7x","+ 5","=","−6","+ x"],["7x","− x","=","−6","− 5"],["6x","=","−11"],["x","=","{−11|6}"]],"j":1,"termes":[1],"bona":"4x − 5 + 3x = −6 + x","expl":"Per canviar el signe de tota l'equació s'han de canviar els signes de tots els termes, dels dos membres: el $+5$ també havia de canviar de signe."},{"n":19,"seccio":"equacions","id":"DENOMINADORS","nom":"Treure denominadors (el signe de davant de la fracció)","descripcio":"En treure els denominadors, el signe − de davant d'una fracció no canvia tot el numerador ((3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x), o els termes sense denominador no es multipliquen.","origen":"fix","alumne":"la Noa","linies":[["{3x + 5|2}","− {x − 4|3}","=","5x"],["9x","+ 15","− 2x","− 8","=","30x"],["7x","+ 7","=","30x"],["7x","− 30x","=","−7"],["−23x","=","−7"],["x","=","{−7|−23}"],["x","=","{7|23}"]],"j":1,"termes":[3],"bona":"9x + 15 − 2x + 8 = 30x","expl":"El signe $−$ de davant de la fracció afecta tot el numerador: en treure el denominador, el $−4$ també havia de canviar de signe."},{"n":20,"seccio":"equacions","id":"DENOMINADORS","nom":"Treure denominadors (els termes sense denominador)","descripcio":"En treure els denominadors, el signe − de davant d'una fracció no canvia tot el numerador ((3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x), o els termes sense denominador no es multipliquen.","origen":"fix","alumne":"en Marc","linies":[["{3x + 5|2}","− {x − 4|3}","=","5x"],["9x","+ 15","− 2x","+ 8","=","5x"],["7x","+ 23","=","5x"],["7x","− 5x","=","−23"],["2x","=","−23"],["x","=","{−23|2}"]],"j":1,"termes":[5],"bona":"9x + 15 − 2x + 8 = 30x","expl":"Per treure els denominadors es multipliquen els dos membres per $6$: s'han de multiplicar tots els termes, també els que no tenen denominador."},{"n":21,"seccio":"prioritat","id":"ESQUERRA_DRETA","nom":"D'esquerra a dreta","descripcio":"Fa una suma o una resta abans d'una multiplicació o una divisió, perquè surt primer: 6 + 5 · 2 → 11 · 2.","origen":"generador","alumne":"la Noa","linies":[["10","− 6",": 2","· 3"],["=","4",": 2","· 3"],["=","2","· 3"],["=","6"]],"j":1,"termes":[1,2],"bona":"= 10 − 3 · 3","expl":"Les multiplicacions i les divisions van abans que les sumes i les restes: $10 − 6$ no es podia fer encara."},{"n":22,"seccio":"prioritat","id":"SUMA_ABANS_RESTA","nom":"La suma abans que la resta","descripcio":"Fa una suma abans d'una resta que hi ha a l'esquerra: 10 − 3 + 2 → 10 − 5.","origen":"generador","alumne":"la Marta","linies":[["7","− 4",": 2","+ 9",": 3"],["=","7","− 2","+ 3"],["=","7","− 5"],["=","2"]],"j":2,"termes":[1,2],"bona":"= 5 + 3","expl":"Les sumes i les restes es fan d'esquerra a dreta, en l'ordre en què surten: la suma no va abans que la resta."},{"n":23,"seccio":"prioritat","id":"PRODUCTE_ABANS_DIVISIO","nom":"La multiplicació abans que la divisió","descripcio":"Fa una multiplicació abans d'una divisió que hi ha a l'esquerra: 24 : 2 · 3 → 24 : 6.","origen":"generador","alumne":"la Noa","linies":[["5","+ 6",": 3","· 2"],["=","5","+ 6",": 6"],["=","5","+ 1"],["=","6"]],"j":1,"termes":[2,3],"bona":"= 5 + 2 · 2","expl":"Les multiplicacions i les divisions es fan d'esquerra a dreta, en l'ordre en què surten: la multiplicació no va abans que la divisió."},{"n":24,"seccio":"prioritat","id":"PARENTESI_IGNORAT","nom":"Parèntesi oblidat","descripcio":"El nombre de davant del parèntesi només multiplica el primer nombre de dins: 2 · (11 − 1) → 22 − 1.","origen":"generador","alumne":"en Biel","linies":[["14","− 6","· (1 − 4 · 3)"],["=","14","− 6","· (1 − 12)"],["=","14","− 6","− 12"],["=","8","− 12"],["=","−4"]],"j":2,"termes":[3],"bona":"= 14 − 6 · (−11)","expl":"El parèntesi vol dir que primer s'ha de fer $1 − 12$: el $6$ multiplica tot el parèntesi."},{"n":25,"seccio":"prioritat","id":"POTENCIA_PER_EXPONENT","nom":"Potència com a multiplicació","descripcio":"Multiplica la base per l'exponent, a totes les potències d'aquell pas: 3² → 6.","origen":"fix","alumne":"la Marta","linies":[["5^2","− 6",": 2","+ 3"],["=","10","− 6",": 2","+ 3"],["=","10","− 3","+ 3"],["=","7","+ 3"],["=","10"]],"j":1,"termes":[1],"bona":"= 25 − 6 : 2 + 3","expl":"$5^2$ no vol dir multiplicar la base per l'exponent."},{"n":26,"seccio":"prioritat","id":"POTENCIA_DESPRES","nom":"La multiplicació abans que la potència","descripcio":"Multiplica abans de fer la potència: 2 · 3² → 6².","origen":"generador","alumne":"l'Èric","linies":[["15","+ 4^2","− 2","· 3^2"],["=","15","+ 16","− 6^2"],["=","15","+ 16","− 36"],["=","31","− 36"],["=","−5"]],"j":1,"termes":[3],"bona":"= 15 + 16 − 2 · 9","expl":"La potència va abans que la multiplicació: l'exponent només és del $3$."},{"n":27,"seccio":"prioritat","id":"RESTA_NEGATIVA","nom":"Resta amb resultat negatiu","descripcio":"Quan es resta un nombre més gran, escriu el resultat positiu: 15 − 27 → 12.","origen":"generador","alumne":"en Marc","linies":[["5","− 3^2","+ (4 − 8)"],["=","5","− 3^2","+ (−4)"],["=","5","− 9","+ (−4)"],["=","4","+ (−4)"],["=","0"]],"j":3,"termes":[1],"bona":"= −4 + (−4)","expl":"$5 − 9$ no fa $4$: el nombre que es resta és més gran."},{"n":28,"seccio":"prioritat","id":"SIGNE_PRODUCTE","nom":"Signe d'un producte","descripcio":"Multiplica o divideix nombres de signes diferents i el resultat li surt positiu: (−8) · 8 → 64.","origen":"generador","alumne":"la Marta","linies":[["10","− (9 − 8)","− (−6)",": 3"],["=","10","− 1","− (−6)",": 3"],["=","10","− 1","− 2"],["=","9","− 2"],["=","7"]],"j":2,"termes":[3],"bona":"= 10 − 1 − (−2)","expl":"$(−6) : 3$ no fa $2$: si els dos nombres tenen signes diferents, el resultat és negatiu."}]};
@@ -210,6 +256,222 @@ document.addEventListener('input', ev => {
 });
 $('#amaga').addEventListener('change', ev => document.body.classList.toggle('sense', ev.target.checked));
 pinta();
+/* ===== Mode resultats (#resultats): llegeix el .docx amb els correus i calcula les puntuacions ===== */
+const PUNTS = { MM: 3, M: 2, '-': 0, N: -4 };
+/*PUR:inici*/
+// --- ZIP mínim (sense llibreries): només el que cal per llegir word/document.xml ---
+function llegeixZip(buf) {
+ const d = new DataView(buf), n = buf.byteLength;
+ let e = -1;
+ for (let i = n - 22; i >= Math.max(0, n - 22 - 65535); i--) if (d.getUint32(i, true) === 0x06054b50) { e = i; break; }
+ if (e < 0) throw new Error('NO_ZIP');
+ const cnt = d.getUint16(e + 10, true);
+ let p = d.getUint32(e + 16, true);
+ const mapa = new Map(), td = new TextDecoder();
+ for (let k = 0; k < cnt; k++) {
+  if (p + 46 > n || d.getUint32(p, true) !== 0x02014b50) throw new Error('NO_ZIP');
+  const nl = d.getUint16(p + 28, true), el = d.getUint16(p + 30, true), cl = d.getUint16(p + 32, true);
+  const nom = td.decode(new Uint8Array(buf, p + 46, nl));
+  mapa.set(nom, { nom, metode: d.getUint16(p + 10, true), comp: d.getUint32(p + 20, true), offset: d.getUint32(p + 42, true) });
+  p += 46 + nl + el + cl;
+ }
+ return mapa;
+}
+async function extreuZip(buf, en) {
+ const d = new DataView(buf), o = en.offset;
+ if (o + 30 > buf.byteLength || d.getUint32(o, true) !== 0x04034b50) throw new Error('NO_ZIP');
+ const ini = o + 30 + d.getUint16(o + 26, true) + d.getUint16(o + 28, true);
+ if (ini + en.comp > buf.byteLength) throw new Error('NO_ZIP');
+ const bytes = new Uint8Array(buf, ini, en.comp);
+ if (en.metode === 0) return bytes.slice();
+ if (en.metode !== 8) throw new Error('METODE');
+ if (typeof DecompressionStream === 'undefined') throw new Error('SENSE_DS');
+ return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+}
+// --- XML de Word → línies de text (sense DOMParser, perquè funcioni també a Node) ---
+function desentitat(s) {
+ return s.replace(/&(#x[0-9a-fA-F]+|#\d+|amp|lt|gt|quot|apos);/g, (m, g) => {
+  if (g[0] === '#') {
+   const c = g[1] === 'x' ? parseInt(g.slice(2), 16) : parseInt(g.slice(1), 10);
+   try { return String.fromCodePoint(c); } catch (e) { return m; }
+  }
+  return { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[g];
+ });
+}
+function liniesDocx(xml) {
+ const out = [];
+ for (const p of xml.match(/<w:p(?=[ >])[\s\S]*?<\/w:p>/g) || []) {
+  const sensePr = p.replace(/<w:pPr[\s>][\s\S]*?<\/w:pPr>/g, '');
+  let t = '';
+  for (const m of sensePr.matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:(?:tab|br)\b[^>]*\/>/g)) t += m[1] !== undefined ? desentitat(m[1]) : ' ';
+  out.push(t);
+ }
+ return out;
+}
+// --- Anàlisi: línies → blocs de respondents ---
+function analitza(linies, items) {
+ const blocs = [], avisos = [];
+ const reCap = /^BANC-ERRORS\s+(\S+)\s*$/, reVot = /^(\d+)\s+(MM|M|N|-)(?:\s*\|\s*(.*))?$/;
+ let b = null;
+ const curta = s => (s.length > 70 ? s.slice(0, 70) + '…' : s);
+ for (const crua of linies) {
+  const orig = String(crua).replace(/\u00A0/g, ' ').trim();
+  if (!orig || /^Llegenda\b/i.test(orig) || /^FI$/i.test(orig)) continue;
+  const norm = orig.replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g, '-'); // mateixa longitud que orig
+  let m = norm.match(reCap);
+  if (m) { b = { k: blocs.length + 1, versio: m[1], vots: new Map(), dups: [], errors: [], valid: false }; blocs.push(b); continue; }
+  m = norm.match(reVot);
+  if (m) {
+   if (!b) { avisos.push(`Vot fora de cap bloc (cap línia BANC-ERRORS abans): «${curta(orig)}»`); continue; }
+   const n = +m[1];
+   const c = m[3] === undefined ? '' : orig.slice(norm.length - m[3].length).replace(/\s+/g, ' ').trim();
+   if (b.vots.has(n)) b.dups.push(n); else b.vots.set(n, { v: m[2], c });
+   continue;
+  }
+  avisos.push(b ? `Bloc ${b.k}: línia no reconeguda «${curta(orig)}»` : `Línia no reconeguda abans del primer bloc: «${curta(orig)}»`);
+ }
+ const llista = a => a.join(', ');
+ const nItems = new Set(items.map(i => i.n));
+ for (const x of blocs) {
+  if (x.versio !== DADES.versio) x.errors.push(`Bloc ${x.k}: versió ${x.versio} ≠ ${DADES.versio}`);
+  const dup = [...new Set(x.dups)].sort((a, c) => a - c);
+  if (dup.length) x.errors.push(dup.length === 1 ? `Bloc ${x.k}: l'activitat ${dup[0]} apareix més d'una vegada` : `Bloc ${x.k}: les activitats ${llista(dup)} apareixen més d'una vegada`);
+  const falten = items.map(i => i.n).filter(n => !x.vots.has(n));
+  if (falten.length) x.errors.push(falten.length === 1 ? `Bloc ${x.k}: falta l'activitat ${falten[0]}` : `Bloc ${x.k}: falten les activitats ${llista(falten)}`);
+  const sobren = [...x.vots.keys()].filter(n => !nItems.has(n)).sort((a, c) => a - c);
+  if (sobren.length) x.errors.push(`Bloc ${x.k}: hi ha activitats que no existeixen: ${llista(sobren)}`);
+  x.valid = !x.errors.length;
+  avisos.push(...x.errors.map(e => e + ' → bloc exclòs dels totals'));
+ }
+ return { blocs, avisos };
+}
+function puntua(valids, items, P) {
+ return items.map(it => {
+  const r = { n: it.n, MM: 0, M: 0, '-': 0, N: 0, punts: 0, comentaris: [] };
+  for (const b of valids) {
+   const x = b.vots.get(it.n);
+   r[x.v]++; r.punts += P[x.v];
+   if (x.c) r.comentaris.push({ resp: b.k, v: x.v, text: x.c });
+  }
+  return r;
+ });
+}
+// --- Derivats per a la sortida ---
+const fp = n => (n < 0 ? '−' + (-n) : String(n));
+function ranquing(res) {
+ const g = new Map();
+ for (const r of res) { if (!g.has(r.punts)) g.set(r.punts, []); g.get(r.punts).push(r.n); }
+ return [...g.entries()].sort((a, b) => b[0] - a[0]).map(([p, ns]) => ({ punts: p, ns: ns.sort((a, b) => a - b) }));
+}
+function destacats(res) {
+ const max = res.length ? Math.max(...res.map(r => r.punts)) : 0;
+ return { max, ambMax: res.filter(r => r.punts === max).map(r => r.n), negatives: res.filter(r => r.punts < 0).map(r => r.n), ambN: res.filter(r => r.N > 0).length };
+}
+function resumLinia(R, T, P) {
+ let s = `${R} respondents vàlids (de ${T} blocs).`;
+ if (R) s += ` Màxim possible: ${P.MM}·R = ${fp(P.MM * R)}; mínim: ${fp(P.N)}·R = ${fp(P.N * R)}.`;
+ return s;
+}
+function tsv(res, items) {
+ const nom = new Map(items.map(i => [i.n, i.nom]));
+ return ['n\tnom\tMM\tM\t-\tN\tpunts'].concat(res.map(r => [r.n, String(nom.get(r.n)).replace(/\s+/g, ' '), r.MM, r.M, r['-'], r.N, r.punts].join('\t'))).join('\n');
+}
+function resumText(res, items, R, T, P) {
+ const nom = new Map(items.map(i => [i.n, i.nom])), d = destacats(res), l = [`Resultats del banc d'errades (${DADES.versio})`, resumLinia(R, T, P), '', 'Ranquing per puntuació:'];
+ for (const g of ranquing(res)) l.push(`${fp(g.punts)}: ${g.ns.join(', ')}`);
+ l.push('', `Puntuació màxima (${fp(d.max)}): ${d.ambMax.join(', ')}`, `Puntuació negativa: ${d.negatives.length ? d.negatives.join(', ') : 'cap'}`, `Activitats amb almenys un N: ${d.ambN}`);
+ const amb = res.filter(r => r.comentaris.length);
+ if (amb.length) {
+  l.push('', 'Comentaris:');
+  for (const r of amb) for (const c of r.comentaris) l.push(`${r.n} ${nom.get(r.n)} · Resp. ${c.resp} · ${c.v} · ${c.text}`);
+ }
+ return l.join('\n');
+}
+/*PUR:fi*/
+// --- Interfície ---
+const SEC_NOM = Object.fromEntries(SECCIONS.map(s => [s.id, s.nom]));
+let RES = null, ordrePunts = false;
+function copiaText(t, ok) {
+ try { navigator.clipboard.writeText(t).then(() => avis(ok), () => modal(t)); } catch (e) { modal(t); }
+}
+function pintaTaula() {
+ const { res, R, items } = RES, nom = new Map(items.map(i => [i.n, i])), mx = 3 * R;
+ const files = res.slice().sort((a, b) => (ordrePunts ? b.punts - a.punts || a.n - b.n : a.n - b.n));
+ $('#r-taula').innerHTML = `<table><thead><tr><th scope="col">#</th><th scope="col">Activitat</th><th scope="col">MM</th><th scope="col">M</th><th scope="col">−</th><th scope="col">N</th><th scope="col">Punts</th></tr></thead><tbody>`
+  + files.map(r => {
+   const w = mx ? Math.min(100, Math.abs(r.punts) / mx * 100) : 0;
+   return `<tr><td>${r.n}</td><td>${esc(nom.get(r.n).nom)}<small>${esc(SEC_NOM[nom.get(r.n).seccio] || nom.get(r.n).seccio)}</small></td><td>${r.MM}</td><td>${r.M}</td><td>${r['-']}</td><td>${r.N}</td><td class="p"><b>${fp(r.punts)}</b><span class="r-b${r.punts < 0 ? ' neg' : ''}" style="width:${w.toFixed(1)}%"></span></td></tr>`;
+  }).join('') + '</tbody></table>';
+ const b = $('#r-ordena'); b.setAttribute('aria-pressed', String(ordrePunts));
+ b.textContent = ordrePunts ? 'Ordena per número' : 'Ordena per punts';
+}
+function mostra(linies) {
+ ordrePunts = false;
+ const items = DADES.items;
+ const { blocs, avisos } = analitza(linies, items);
+ const valids = blocs.filter(b => b.valid), R = valids.length, T = blocs.length;
+ $('#r-detall').innerHTML = '';
+ if (!T) {
+  RES = null;
+  $('#r-resum').innerHTML = `<div class="r-av"><b>No s'ha trobat cap bloc.</b> Cada respondent ha de començar amb una línia «BANC-ERRORS ${esc(DADES.versio)}».${avisos.length ? `<ul>${avisos.slice(0, 8).map(a => `<li>${esc(a)}</li>`).join('')}</ul>` : ''}</div>`;
+  return;
+ }
+ const res = puntua(valids, items, PUNTS);
+ RES = { res, R, T, items };
+ $('#r-resum').innerHTML = `<div class="r-bloc"><p><b>${esc(resumLinia(R, T, PUNTS))}</b></p>`
+  + (avisos.length ? `<div class="r-av"><b>Avisos:</b><ul>${avisos.map(a => `<li>${esc(a)}</li>`).join('')}</ul></div>` : '') + '</div>';
+ if (!R) return;
+ const d = destacats(res), nom = new Map(items.map(i => [i.n, i.nom]));
+ const rank = ranquing(res).map(g => `<li><b>${fp(g.punts)}</b>: ${g.ns.join(', ')}</li>`).join('');
+ const com = res.filter(r => r.comentaris.length).map(r => `<h3>${r.n} · ${esc(nom.get(r.n))}</h3>` + r.comentaris.map(c => `<p>Resp. ${c.resp} · <b>${esc(c.v)}</b> · ${esc(c.text)}</p>`).join('')).join('');
+ $('#r-detall').innerHTML = `<div class="r-bloc"><h2>Puntuació per activitat</h2><div class="r-acc"><button type="button" id="r-ordena" aria-pressed="false">Ordena per punts</button><button type="button" id="r-tsv">Copia la taula (TSV)</button><button type="button" id="r-txt">Copia el resum (text)</button></div><div class="r-taula" id="r-taula"></div></div>`
+  + `<div class="r-bloc"><h2>Ranquing per puntuació</h2><ul class="r-rank">${rank}</ul></div>`
+  + `<div class="r-bloc"><h2>Destacats</h2><ul class="r-llista"><li>Puntuació màxima (${fp(d.max)}): ${d.ambMax.join(', ')}</li><li>Puntuació negativa: ${d.negatives.length ? d.negatives.join(', ') : 'cap'}</li><li>Activitats amb almenys un N: ${d.ambN}</li></ul></div>`
+  + `<div class="r-bloc r-com"><h2>Comentaris</h2>${com || '<p>Cap comentari.</p>'}</div>`;
+ pintaTaula();
+}
+function errorMsg(e) {
+ const c = e && e.message;
+ if (c === 'NO_ZIP') return "Aquest fitxer no és un .docx vàlid (cal un document de Word modern; un .doc antic no serveix: desa'l com a .docx).";
+ if (c === 'METODE') return 'El .docx fa servir una compressió no suportada.';
+ if (c === 'SENSE_DS') return "Aquest navegador no sap descomprimir .docx: fes servir un navegador actual o enganxa el text a la caixa.";
+ return 'No s\'ha pogut llegir el fitxer: ' + (c || e);
+}
+function falla(m) { RES = null; $('#r-detall').innerHTML = ''; $('#r-resum').innerHTML = `<div class="r-av">${esc(m)}</div>`; avis(m); }
+async function carregaDocx(f) {
+ try {
+  const buf = await f.arrayBuffer();
+  const mapa = llegeixZip(buf), en = mapa.get('word/document.xml');
+  if (!en) return falla("Aquest fitxer és un ZIP, però no té word/document.xml: no és un document de Word (.docx).");
+  mostra(liniesDocx(new TextDecoder('utf-8').decode(await extreuZip(buf, en))));
+ } catch (e) { falla(errorMsg(e)); }
+}
+$('#r-fitxer').addEventListener('change', ev => { const f = ev.target.files[0]; if (f) carregaDocx(f); ev.target.value = ''; });
+const zona = $('#r-zona');
+zona.addEventListener('click', () => $('#r-fitxer').click());
+zona.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); $('#r-fitxer').click(); } });
+zona.addEventListener('dragover', ev => { ev.preventDefault(); zona.classList.add('sobre'); });
+zona.addEventListener('dragleave', () => zona.classList.remove('sobre'));
+zona.addEventListener('drop', ev => {
+ ev.preventDefault(); zona.classList.remove('sobre');
+ const f = ev.dataTransfer && ev.dataTransfer.files[0];
+ if (f) carregaDocx(f);
+});
+$('#r-calcula').addEventListener('click', () => {
+ const t = $('#r-text').value;
+ if (!t.trim()) return falla('No hi ha text per calcular: enganxa els correus a la caixa.');
+ mostra(t.split(/\r?\n/));
+});
+$('#resultats').addEventListener('click', ev => {
+ const id = ev.target.id;
+ if (!RES) return;
+ if (id === 'r-ordena') { ordrePunts = !ordrePunts; pintaTaula(); }
+ else if (id === 'r-tsv') copiaText(tsv(RES.res, RES.items), 'Taula copiada (TSV).');
+ else if (id === 'r-txt') copiaText(resumText(RES.res, RES.items, RES.R, RES.T, PUNTS), 'Resum copiat.');
+});
+const mode = () => document.body.classList.toggle('res', location.hash === '#resultats');
+window.addEventListener('hashchange', mode);
+mode();
 </script>
 </body>
 </html>
