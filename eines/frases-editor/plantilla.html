@@ -113,7 +113,7 @@ ul.comp li{margin:8px 0}
   <li>Les paraules entre claudàtors, com <span class="mk">[c]</span> o <span class="mk">[terme]</span>, són els valors de cada exemple. A cada situació hi ha què vol dir cada una i un valor d'exemple. Si n'hi poses una que la situació no té, surt un avís en groc.</li>
   <li>Les fórmules van entre <span class="mk">$…$</span>; una fracció s'escriu <span class="mk">${a|b}$</span>. Un valor entre claudàtors ja surt com a fórmula encara que no li posis els <span class="mk">$</span>, i un guionet davant d'un nombre o d'una x surt com a signe menys. Sota cada frase veus com la llegirà l'alumne amb els nombres de l'exemple.</li>
   <li>Sobre cada frase tens una barra d'eines: <b>N</b> o <b>Ctrl+B</b> (<b>⌘B</b> al Mac) posa en negreta el que hagis seleccionat (<span class="mk">\bold{…}</span>), «Oposat» escriu el valor amb el signe canviat, de $−1$ a $+1$ (<span class="mk">\oposite{…}</span>), «+ signe» escriu el valor amb el signe a la vista, de $3$ a $+3$ (<span class="mk">\signe{…}</span>), i els botons amb claudàtors insereixen els valors de la situació.</li>
-  <li>Una frase amb l'etiqueta <span class="tag comp">a 3 situacions</span> és compartida. Si la vols diferent només en una situació, prem «Fes-ne una còpia per aquí».</li>
+  <li>Una frase amb l'etiqueta <span class="tag comp">a 3 situacions</span> és compartida. <b>Si hi escrius, el canvi només s'aplica a la situació on ets</b>: l'editor en fa una còpia sola, i a les altres situacions la frase es queda com era. Si la vols canviar a totes, prem «Aplica-la a totes» a la còpia.</li>
   <li><b>Membre, costat, banda o part.</b> No escriguis «membre» directament: fes servir els botons <span class="mk">[membre]</span>, <span class="mk">[l'altre membre]</span>, <span class="mk">[al membre]</span>, <span class="mk">[els dos membres]</span>… i la web hi posarà la paraula triada a l'índex, amb el gènere i el plural bé (<i>l'altre membre</i> / <i>l'altra banda</i>). El desplegable de sota et deixa veure com queda.</li>
   <li><b>Sense signe:</b> <span class="mk">\nosign{…}</span> escriu el valor sense el signe, de $−23$ a $23$. A «Signe en passar termes» i «Signe copiat malament (dos termes)» tens <span class="mk">[primer terme]</span> i <span class="mk">[segon terme]</span> per parlar d'un sol dels dos.</li>
   <li>Pots treure un distractor, posar-ne un de nou, aprofitar-ne un d'una altra situació o fer que un distractor passi a ser la frase bona.</li>
@@ -269,6 +269,7 @@ function editor(id,ctx){ // ctx: {sid, rol, k, cond} o {sid:null}
   if(ctx.rol==='dolenta'){acc.push(`<button class="b" data-a="bona">Fes-la la bona</button>`,`<button class="b" data-a="treu">Treu-la d'aquí</button>`);}
  }
  if(modF(id)&&!F[id].nova)acc.push(`<button class="b" data-a="restaura">Restaura l'original</button>`);
+ if(ctx.sid&&F[id].de&&F[F[id].de]){cap.push(`<span class="tag cond" title="${esc(F[F[id].de].text)}">còpia només per a aquesta situació (${esc(F[id].de)} es queda com era a les altres)</span>`);acc.push(`<button class="b" data-a="atotes" title="La frase ${esc(F[id].de)} passa a dir això a totes les situacions on surt">Aplica-la a totes</button>`);}
  const usosTxt=!ctx.sid?`<div class="usos">${u.map(([si,r])=>`<a href="#s-${si}">${esc(nomSit(si))}</a> (${r==='bona'?'bona':'distractor'})`).join(' · ')}</div>`:'';
  return `<div class="fr${ctx.rol==='bona'?' bona':''}" data-f="${id}" data-s="${ctx.sid||''}" data-rol="${ctx.rol||''}" data-k="${ctx.k??''}">
 <div class="fr-cap">${cap.join('')}<span class="fr-acc">${acc.join('')}</span></div>
@@ -348,7 +349,7 @@ const busy={},dirty={},timers={};
 function setMode(m){mode=m;const s=$('#sav');s.dataset.m=m;s.textContent=m==="nuvol"?"Es desa sol a l'artifact: el puc llegir":m==="local"?"No es desa a l'artifact: només en aquest navegador":"Connectant amb el desat…";$('#avis').classList.toggle('on',m==="local");}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function docDe(clau){const[k,id]=clau.split('/');
- if(k==='f')return[api.collection('frases').doc(id),{text:F[id].text,nova:!!F[id].nova,autor:F[id].autor||'david',actualitzat:new Date().toISOString()}];
+ if(k==='f')return[api.collection('frases').doc(id),{text:F[id].text,nova:!!F[id].nova,autor:F[id].autor||'david',...(F[id].de?{de:F[id].de}:{}),actualitzat:new Date().toISOString()}];
  if(k==='s')return[api.collection('situacions').doc(id),{...U[id],actualitzat:new Date().toISOString()}];
  if(k==='g')return[api.collection('grups').doc(id),{...G[id],actualitzat:new Date().toISOString()}];
  return[api.doc('general/notes'),{text:gen,actualitzat:new Date().toISOString()}];}
@@ -367,6 +368,13 @@ const mesTard=(clau,ms=800)=>{saveLocal();clearTimeout(timers[clau]);timers[clau
 const nouId=()=>'N'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);
 document.addEventListener('input',ev=>{
  const t=ev.target;
+ if(t.matches('textarea[data-f]')&&t.closest('.fr').dataset.s){const fr=t.closest('.fr'),id=t.dataset.f,sid=fr.dataset.s;
+  if(new Set(usos(id).map(x=>x[0])).size>1){ // David 27/11/2026: el canvi només s'aplica aquí; les altres situacions es queden com eren
+   const pos=t.selectionStart,nid=nouId();F[nid]={text:t.value.slice(0,600),orig:'',nova:true,autor:'david',de:id};
+   if(fr.dataset.rol==='bona')U[sid].bona=nid;else{const k=Number(fr.dataset.k);U[sid].dolentes[k]={...U[sid].dolentes[k],id:nid};}
+   push('f/'+nid);push('s/'+sid);pinta();
+   const ta=document.querySelector(`#s-${sid} textarea[data-f="${nid}"]`);if(ta){ta.focus();try{ta.setSelectionRange(pos,pos);}catch(e){}}
+   return;}}
  if(t.matches('textarea[data-f]')){const id=t.dataset.f;F[id].text=t.value.slice(0,600);F[id].autor='david';refrescaFrase(id,t);t.closest('.fr').querySelector('.fr-cap .tag.canv')||null;mesTard('f/'+id);return;}
  if(t.matches('textarea[data-c]')){U[t.dataset.c].comentari=t.value.slice(0,4000);mesTard('s/'+t.dataset.c);compta();return;}
  if(t.matches('textarea[data-gc]')){G[t.dataset.gc].comentari=t.value.slice(0,4000);mesTard('g/'+t.dataset.gc);return;}
@@ -415,6 +423,7 @@ document.addEventListener('click',ev=>{
  const id=fr.dataset.f, sid=fr.dataset.s, rol=fr.dataset.rol, k=Number(fr.dataset.k);
  if(a==='restaura'){F[id].text=F[id].orig;F[id].autor='david';push('f/'+id);pinta();return;}
  if(a==='copia'){const nid=nouId();F[nid]={text:F[id].text,orig:'',nova:true};if(rol==='bona')U[sid].bona=nid;else U[sid].dolentes[k]={...U[sid].dolentes[k],id:nid};push('f/'+nid);push('s/'+sid);pinta();document.querySelector(`#s-${sid} textarea[data-f="${nid}"]`)?.focus();return;}
+ if(a==='atotes'){const o=F[id].de;if(!o||!F[o])return;F[o].text=F[id].text;F[o].autor='david';if(rol==='bona')U[sid].bona=o;else U[sid].dolentes[k]={...U[sid].dolentes[k],id:o};push('f/'+o);push('s/'+sid);pinta();return;}
  if(a==='treu'){U[sid].dolentes.splice(k,1);push('s/'+sid);pinta();return;}
  if(a==='bona'){const vella=U[sid].bona;U[sid].bona=id;U[sid].dolentes[k]={id:vella};push('s/'+sid);pinta();return;}
 });
@@ -441,7 +450,7 @@ async function initDb(){
  try{
   let carregat={f:false,s:false};
   const fet=()=>{if(carregat.f&&carregat.s){clearTimeout(tm);api=a;setMode("nuvol");saveLocal();pinta();}};
-  a.collection("frases").onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};if(typeof x.text!=="string"||ocupat('f/'+d.id))return;const ta=document.activeElement;if(ta&&ta.dataset&&ta.dataset.f===d.id)return;if(F[d.id]){F[d.id].text=x.text;F[d.id].autor=x.autor||'david';}else if(x.nova)F[d.id]={text:x.text,orig:'',nova:true,autor:x.autor||'david'};});
+  a.collection("frases").onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};if(typeof x.text!=="string"||ocupat('f/'+d.id))return;const ta=document.activeElement;if(ta&&ta.dataset&&ta.dataset.f===d.id)return;if(F[d.id]){F[d.id].text=x.text;F[d.id].autor=x.autor||'david';}else if(x.nova)F[d.id]={text:x.text,orig:'',nova:true,autor:x.autor||'david',...(typeof x.de==='string'?{de:x.de}:{})};});
    if(!carregat.f){carregat.f=true;fet();}else snap.docs.forEach(d=>{if(F[d.id]&&!document.querySelector(`textarea[data-f="${d.id}"]`))pinta();else if(F[d.id])refrescaFrase(d.id,document.activeElement);});},()=>{clearTimeout(tm);setMode("local");});
   a.collection("situacions").onSnapshot(snap=>{let canvi=false;snap.docs.forEach(d=>{const x=d.data()||{};if(!U[d.id]||ocupat('s/'+d.id)||typeof x.bona!=="string"||!Array.isArray(x.dolentes))return;
     const nou={bona:x.bona,dolentes:x.dolentes.filter(o=>o&&typeof o.id==="string").map(o=>o.cond?{id:o.id,cond:String(o.cond)}:{id:o.id}),comentari:typeof x.comentari==="string"?x.comentari:""};

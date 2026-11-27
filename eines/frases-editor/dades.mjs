@@ -1,3 +1,6 @@
+// ATENCIÓ (27/11/2026): cataleg.json és antic. La font bona és dades.json (dades de la versió publicada 1795678340-090d,
+// més [primer terme], [segon terme], [altre càlcul] i [termes en x]). No tornis a executar aquest fitxer: esborraria valors.
+throw new Error("dades.json és la font: no el regeneris des de cataleg.json");
 import fs from 'node:fs';
 const C = JSON.parse(fs.readFileSync('cataleg.json', 'utf8'));
 const T = JSON.parse(fs.readFileSync(new URL('../../data/errors.json', import.meta.url), 'utf8'));

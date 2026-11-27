@@ -92,6 +92,13 @@ lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when th
    membre; masc membre/costat, fem banda/part). David's F16/F18/F19/F22/F24 now use them. **Integration must add:**
    an index parameter for that word (+ README/index tests), the three features in the template renderer, and the
    generator values for `primer terme`/`segon terme`. Then continue with the rest of this item as below.
+   **Fix (same day, afternoon):** that republish had rebuilt `dades.json` from a STALE `cataleg.json` and dropped markers
+   ([Els termes], [escrit], [càlcul], [operació]…). `dades.json` is now the source of truth (live data of version
+   `1795678340-090d` + [primer terme]/[segon terme]/[altre càlcul]/[termes en x]); `dades.mjs` throws on purpose.
+   Shared sentences David had edited for one situation were split (new db docs `R01TNS1`, `R16SC1`, `R16ST2`,
+   `R44DSIG2`, `R08CAL1`, each with `de: <original id>`). The editor now auto-copies a shared sentence when David types
+   in it (button «Aplica-la a totes» on the copy). Live version `1795768610-68e0`. Integration: sentences are per
+   situation (`situacions/<id>.bona/dolentes`), and copies are new ids, not F01–F70.
 1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug
    `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, live version
    `1795678340-090d`, capabilities `{db:{}, user:{}}`. **David is filling it in now.** When he says «Revisa
