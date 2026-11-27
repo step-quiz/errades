@@ -97,6 +97,11 @@ browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
      negatives is valid.
    - One teacher asks for a distributive case with a term before the bracket: `2x+6(x-3)=-24 → 2x+6x-3=-24`.
    - Unanimous MM: 2, 7, 13, 19, 20, 21.
+   - **Weighted ranking** (David's weights: MM +3, M +2, not rated 0, N −4; full tables in the docs file), best
+     first, item (points):
+     - Equations: 2 (12), 7 (12), 13 (12), 19 (12), 20 (12), 15 (11), 1 (10), 6 (10), 14 (10), 8 (9), 3 (8), 16 (8), 9 (7), 10 (7), 11 (1), 17 (1), 18 (1), 4 (0), 12 (0), 5 (-10).
+     - Order of operations: 21 (12), 23 (10), 25 (10), 26 (10), 28 (10), 27 (8), 22 (4), 24 (-6).
+     Keep the two categories separate. Recompute with the same weights when the 2 missing answers arrive.
 
    When David pastes the 2 missing codes, add them to that file, redo the tally and propose changes per item. That
    is ≥ 5 points, so use a review artifact. Decode the item numbers with `node eines/banc-errors.mjs`.

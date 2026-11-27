@@ -40,6 +40,50 @@ numbered list (it also regenerates `banc-errors.html`; do not commit that file u
 **Items with at least one N:** 5 (3 N, the clearest rejection), 24 (2 N), 4, 11, 12, 17, 18 and 22 (1 N each).
 **Unanimous MM:** 2, 7, 13, 19, 20 and 21.
 
+## Weighted ranking (David's weights, 2026-11-27)
+
+Points per vote: MM (m'agrada molt) +3 · M (m'agrada) +2 · «-» (not rated, taken as *indiferent*) 0 · N (no
+m'agrada) −4. Score = sum over the answers. With 4 answers the maximum is 12. Ties share a rank and are listed by
+item number. **Recompute when the 2 missing answers arrive** (the maximum becomes 18).
+
+### Equations (items 1–20)
+
+| Rank | Item | Points | MM | M | N | - |
+|---|---|---|---|---|---|---|
+| 1 | 2 | 12 | 4 | 0 | 0 | 0 |
+| 1 | 7 | 12 | 4 | 0 | 0 | 0 |
+| 1 | 13 | 12 | 4 | 0 | 0 | 0 |
+| 1 | 19 | 12 | 4 | 0 | 0 | 0 |
+| 1 | 20 | 12 | 4 | 0 | 0 | 0 |
+| 6 | 15 | 11 | 3 | 1 | 0 | 0 |
+| 7 | 1 | 10 | 2 | 2 | 0 | 0 |
+| 7 | 6 | 10 | 2 | 2 | 0 | 0 |
+| 7 | 14 | 10 | 2 | 2 | 0 | 0 |
+| 10 | 8 | 9 | 1 | 3 | 0 | 0 |
+| 11 | 3 | 8 | 0 | 4 | 0 | 0 |
+| 11 | 16 | 8 | 2 | 1 | 0 | 1 |
+| 13 | 9 | 7 | 1 | 2 | 0 | 1 |
+| 13 | 10 | 7 | 1 | 2 | 0 | 1 |
+| 15 | 11 | 1 | 1 | 1 | 1 | 1 |
+| 15 | 17 | 1 | 1 | 1 | 1 | 1 |
+| 15 | 18 | 1 | 1 | 1 | 1 | 1 |
+| 18 | 4 | 0 | 0 | 2 | 1 | 1 |
+| 18 | 12 | 0 | 0 | 2 | 1 | 1 |
+| 20 | 5 | -10 | 0 | 1 | 3 | 0 |
+
+### Order of operations (items 21–28)
+
+| Rank | Item | Points | MM | M | N | - |
+|---|---|---|---|---|---|---|
+| 1 | 21 | 12 | 4 | 0 | 0 | 0 |
+| 2 | 23 | 10 | 2 | 2 | 0 | 0 |
+| 2 | 25 | 10 | 2 | 2 | 0 | 0 |
+| 2 | 26 | 10 | 2 | 2 | 0 | 0 |
+| 2 | 28 | 10 | 2 | 2 | 0 | 0 |
+| 6 | 27 | 8 | 0 | 4 | 0 | 0 |
+| 7 | 22 | 4 | 2 | 1 | 1 | 0 |
+| 8 | 24 | -6 | 0 | 1 | 2 | 1 |
+
 ## Comments, verbatim (Catalan)
 
 - **Teacher 1, item 1 (MM):** «podem afegir un altre cas, que de vegades l'errada es comet quan hi ha més d'informació, per exemple: "2x+6(x-3)=-24" -> "2x+6x-3=-24"». This asks for a DISTRIBUTIVA case with a term before the bracket. Check whether the generator already produces it.
