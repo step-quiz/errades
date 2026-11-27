@@ -326,6 +326,21 @@ export const REGLES = {
         },
         expl: d => `$${opTxt(d.a, '−', d.b)}$ no fa $${d.b - d.a}$: el nombre que es resta és més gran.`,
     },
+    RESTA_GIRADA: {
+        // 3 − 8 · 5 → 40 − 3: fa bé el producte, però el posa davant i gira la resta (alumne real del David, 27/11/2026)
+        pes: 3,
+        fes(E, r) {
+            return aLlista(E, r, L => {
+                if (L.length < 3 || L[1].o !== '−' || !MUL.includes(L[2].o) || L.slice(0, 3).some(t => t.x.k !== 'n')) return null;
+                if (L.slice(3).some(t => MUL.includes(t.o))) return null; // cap altre producte en aquest pas
+                const a = L[0].x.v,
+                    p = opera(L[1].x.v, L[2].o, L[2].x.v);
+                if (p === null || a <= 0 || p <= a) return null; // el gira perquè el resultat li surti positiu
+                return { L: [it(L[0].o, N(p)), it('−', N(a)), ...L.slice(3)], dades: { a, b: L[1].x.v, m: L[2].o, c: L[2].x.v, p } };
+            });
+        },
+        expl: d => `Després de fer $${opTxt(d.b, d.m, d.c)} = ${d.p}$, havia de quedar $${d.a} − ${d.p}$: el $${d.p}$ és el que es resta, i no es pot posar davant.`,
+    },
     SIGNE_PRODUCTE: {
         pes: 2,
         fes(E) {
@@ -403,6 +418,12 @@ const PERQUE = {
         return {
             bona: `Ha fet $${opTxt(d.b, '−', d.a)}$ en lloc de $${opTxt(d.a, '−', d.b)}$: el resultat havia de ser negatiu.`,
             dolentes: [`Havia de sumar $${d.a} + ${d.b < 0 ? '(' + menys(d.b) + ')' : d.b}$.`, `Ha fet les operacions en un ordre equivocat.`, `Ha copiat malament un dels nombres.`],
+        };
+    },
+    RESTA_GIRADA(d) {
+        return {
+            bona: `És una errada escriure $${d.p} − ${d.a}$: havia de ser $${d.a} − ${d.p}$, perquè el $${d.p}$ és el que es resta.`,
+            dolentes: [`Ha fet la resta abans que la multiplicació.`, `S'ha equivocat calculant $${opTxt(d.b, d.m, d.c)}$.`, `Ha copiat malament un dels nombres.`],
         };
     },
     SIGNE_PRODUCTE(d) {

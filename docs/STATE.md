@@ -397,3 +397,12 @@ Dialog answers: M01 depends on the lasso («Has marcat la línia i.» / «Has ma
 termes …»); equations C12 = «que, cadascuna, no es pot deduir de la línia anterior» (order of operations unchanged).
 Claude's fixes: K04 «…però no el terme.» (missing «no»), X03 «Torna-ho a repassar.» (double pronoun); the order of
 operations compensating note was reworded the same way as the equations one. Tests updated to the new texts.
+
+## New order-of-operations rule RESTA_GIRADA (2026-11-27, David's pupil)
+
+`3 − 8 · 5 = 40 − 3 = 37` (photo of a real pupil's work). The product is right, but it is moved to the front and
+the subtraction is reversed (value −37 → 37: N1 error on the line `40 − 3`). Rule `RESTA_GIRADA` in
+`js/prioritat/generador.js` (`pes` 3; md stage; `a − b·c` with a > 0, b·c > a, the only product of the step),
+with `expl`, a `PERQUE` entry, `data/errors-prioritat.json`, README and SPEC rows and two tests. David gave it
+**10 points** in the survey ranking (it was not in the survey; listed with the order-of-operations items).
+Not filtered by `versemblant()`.

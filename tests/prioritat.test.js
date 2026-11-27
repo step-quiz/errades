@@ -33,6 +33,8 @@ igual(fa('POTENCIA_PER_EXPONENT', E([null, 7], ['+', W(3, 2)])), '7 + 6', 'POTEN
 igual(fa('POTENCIA_PER_EXPONENT', E([null, 7], ['+', W(2, 2)])), null, 'POTENCIA_PER_EXPONENT: 2^2 = 2 · 2, no és cap errada');
 igual(fa('POTENCIA_DESPRES', E([null, 1], ['+', 2], ['·', W(3, 2)])), '1 + 6^2', 'POTENCIA_DESPRES: 2 · 3^2 → 6^2');
 igual(fa('RESTA_NEGATIVA', E([null, 15], ['−', 27])), '12', 'RESTA_NEGATIVA: 15 − 27 → 12');
+igual(fa('RESTA_GIRADA', E([null, 3], ['−', 8], ['·', 5])), '40 − 3', 'RESTA_GIRADA: 3 − 8 · 5 → 40 − 3 (alumne del David)');
+igual(fa('RESTA_GIRADA', E([null, 50], ['−', 8], ['·', 5])), null, 'RESTA_GIRADA: no si el primer nombre és més gran que el producte');
 igual(fa('RESTA_NEGATIVA', E([null, -24], ['−', 5])), null, 'RESTA_NEGATIVA: no amb un primer nombre negatiu');
 igual(fa('SIGNE_PRODUCTE', E([null, 7], ['−', -8], ['·', 8])), '7 − 64', 'SIGNE_PRODUCTE: (−8) · 8 → 64');
 

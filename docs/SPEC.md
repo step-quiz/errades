@@ -188,6 +188,7 @@ the README has examples and sources):
 | `POTENCIA_PER_EXPONENT` | base times exponent, in every power of the step | `3^2 → 6` |
 | `POTENCIA_DESPRES` | multiplies before the power | `2 · 3^2 → 6^2` |
 | `RESTA_NEGATIVA` | negative difference written positive | `15 − 27 → 12` |
+| `RESTA_GIRADA` | product done, moved to the front, subtraction reversed (David's pupil, 27/11/2026) | `3 − 8 · 5 → 40 − 3` |
 | `SIGNE_PRODUCTE` | sign rule of the product ignored | `(−8) · 8 → 64` |
 
 ## 6. Levels and URL parameters

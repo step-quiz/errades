@@ -101,6 +101,9 @@ browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
      first, item (points):
      - Equations: 2 (12), 7 (12), 13 (12), 19 (12), 20 (12), 15 (11), 1 (10), 6 (10), 14 (10), 8 (9), 3 (8), 16 (8), 9 (7), 10 (7), 11 (1), 17 (1), 18 (1), 4 (0), 12 (0), 5 (-10).
      - Order of operations: 21 (12), 23 (10), 25 (10), 26 (10), 28 (10), 27 (8), 22 (4), 24 (-6).
+     - **New, added by David with 10 points:** rule `RESTA_GIRADA`, `3 − 8 · 5 → 40 − 3` (a real pupil's error,
+       27/11/2026; already implemented, see `docs/STATE.md`). It ranks with 23, 25, 26 and 28. Add it to the
+       sentence editor and to `banc-errors.html` in the next round.
      Keep the two categories separate. Recompute with the same weights when the 2 missing answers arrive.
 
    When David pastes the 2 missing codes, add them to that file, redo the tally and propose changes per item. That

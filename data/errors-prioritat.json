@@ -28,6 +28,10 @@
     "nom": "Resta amb resultat negatiu",
     "descripcio": "Quan es resta un nombre més gran, escriu el resultat positiu: 15 − 27 → 12."
   },
+  "RESTA_GIRADA": {
+    "nom": "Resta capgirada",
+    "descripcio": "Fa bé la multiplicació, però la posa davant i gira la resta: 3 − 8 · 5 → 40 − 3."
+  },
   "SIGNE_PRODUCTE": {
     "nom": "Signe d'un producte",
     "descripcio": "Multiplica o divideix nombres de signes diferents i el resultat li surt positiu: (−8) · 8 → 64."

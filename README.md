@@ -102,6 +102,7 @@ differs from the line above. Level 1: naturals, `+ − · :`, ≤ 5 numbers, no 
 | `POTENCIA_PER_EXPONENT` | `3^2 → 6` (every power of the step: `2·3^2 + 5^2 → 2·6 + 10`) | classic; no source read |
 | `POTENCIA_DESPRES` | `2 · 3^2 → 6^2` | classic; no source read |
 | `RESTA_NEGATIVA` | `15 − 27 → 12` (two positive numbers, the second larger) | parallels `CALCUL` («signe») of the equations |
+| `RESTA_GIRADA` | `3 − 8 · 5 → 40 − 3` (product done right, moved to the front, subtraction reversed; only when the product is larger than the first number and is the only product of the step) | David's pupil, 27/11/2026 |
 | `SIGNE_PRODUCTE` | `(−8) · 8 → 64` | parallels the sign errors in Gasa and Erbaş et al. |
 
 Weights `pes`: 5, 3, 2, 3, 4, 3, 2, 2. «Corregeix-la» distractors: other rules' lines for the same step, then
