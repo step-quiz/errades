@@ -114,6 +114,10 @@ body.res .intro,body.res #seccions,body.res #compta,body.res #copia,body.res .ba
 .r-com h3{margin:12px 0 4px;font-size:1rem}
 .r-com p{margin:2px 0;font-size:.95rem}
 .r-acc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.r-grup{display:inline-flex;flex-wrap:wrap;gap:8px}
+.r-acc button[aria-pressed=true]{background:var(--accs);border-color:var(--acc);color:var(--acc);font-weight:700}
+.r-acc button[aria-pressed=true]:hover{background:#ddd5fb}
+.r-taula tr.r-gr th{text-align:left;white-space:normal;background:var(--accs);color:var(--acc)}
 @media print{.barra,.vots,textarea,.copia,.r-entrada,.r-acc,.r-volta{display:none}main{padding-top:0}.fitxa{break-inside:avoid}}
 </style>
 </head>
@@ -372,14 +376,45 @@ function resumLinia(R, T, P) {
  if (R) s += ` Màxim possible: ${P.MM}·R = ${fp(P.MM * R)}; mínim: ${fp(P.N)}·R = ${fp(P.N * R)}.`;
  return s;
 }
-function tsv(res, items) {
- const nom = new Map(items.map(i => [i.n, i.nom]));
- return ['n\tnom\tMM\tM\t-\tN\tpunts'].concat(res.map(r => [r.n, String(nom.get(r.n)).replace(/\s+/g, ' '), r.MM, r.M, r['-'], r.N, r.punts].join('\t'))).join('\n');
+const fd = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',').replace('-', '−');
+function quartils(res) { // [Q1, Q2, Q3] amb interpolació lineal (com QUARTILE.INC); sobre les puntuacions de totes les activitats
+ const v = res.map(r => r.punts).sort((a, b) => a - b), n = v.length;
+ if (!n) return [0, 0, 0];
+ const q = p => { const x = (n - 1) * p, i = Math.floor(x), f = x - i; return i + 1 < n ? v[i] + f * (v[i + 1] - v[i]) : v[i]; };
+ return [q(0.25), q(0.5), q(0.75)];
 }
-function resumText(res, items, R, T, P) {
+// 1 = quartil superior (puntuacions ≥ Q3) … 4 = quartil inferior (< Q1). Els empats van sempre al mateix grup.
+const quartilDe = (p, q) => (p >= q[2] ? 1 : p >= q[1] ? 2 : p >= q[0] ? 3 : 4);
+// mode: 'cap' | 'cat' (per secció) | 'q' (per quartils). → [{ titol, sub, files, mitjana }], dins de cada grup per número o per punts.
+function agrupa(res, items, mode, perPunts, secNoms) {
+ const info = new Map(items.map(i => [i.n, i]));
+ const ord = a => a.slice().sort((x, y) => (perPunts ? y.punts - x.punts || x.n - y.n : x.n - y.n));
+ const mitjana = a => (a.length ? a.reduce((s, r) => s + r.punts, 0) / a.length : 0);
+ const grup = (titol, sub, a) => { const f = ord(a); return { titol, sub, files: f, mitjana: mitjana(f) }; };
+ if (mode === 'cat') {
+  return [...new Set(items.map(i => i.seccio))].map(id => grup((secNoms || {})[id] || id, '', res.filter(r => info.get(r.n).seccio === id))).filter(g => g.files.length);
+ }
+ if (mode === 'q') {
+  const q = quartils(res), nom = ['1r quartil (més ben valorades)', '2n quartil', '3r quartil', '4t quartil (menys ben valorades)'];
+  const rang = [`punts ≥ ${fd(q[2])}`, `${fd(q[1])} ≤ punts < ${fd(q[2])}`, `${fd(q[0])} ≤ punts < ${fd(q[1])}`, `punts < ${fd(q[0])}`];
+  return [1, 2, 3, 4].map(k => grup(nom[k - 1], rang[k - 1], res.filter(r => quartilDe(r.punts, q) === k))).filter(g => g.files.length);
+ }
+ return [grup('', '', res)];
+}
+function tsv(res, items, mode, perPunts, secNoms) { // les 7 primeres columnes no canvien; al final, categoria i quartil
+ const info = new Map(items.map(i => [i.n, i])), q = quartils(res);
+ const fila = r => [r.n, String(info.get(r.n).nom).replace(/\s+/g, ' '), r.MM, r.M, r['-'], r.N, r.punts, (secNoms || {})[info.get(r.n).seccio] || info.get(r.n).seccio, quartilDe(r.punts, q)].join('\t');
+ return ['n\tnom\tMM\tM\t-\tN\tpunts\tcategoria\tquartil'].concat(agrupa(res, items, mode, perPunts, secNoms).flatMap(g => g.files.map(fila))).join('\n');
+}
+function resumText(res, items, R, T, P, secNoms) {
  const nom = new Map(items.map(i => [i.n, i.nom])), d = destacats(res), l = [`Resultats del banc d'errades (${DADES.versio})`, resumLinia(R, T, P), '', 'Ranquing per puntuació:'];
  for (const g of ranquing(res)) l.push(`${fp(g.punts)}: ${g.ns.join(', ')}`);
  l.push('', `Puntuació màxima (${fp(d.max)}): ${d.ambMax.join(', ')}`, `Puntuació negativa: ${d.negatives.length ? d.negatives.join(', ') : 'cap'}`, `Activitats amb almenys un N: ${d.ambN}`);
+ l.push('', 'Per categoria (mitjana de punts):');
+ for (const g of agrupa(res, items, 'cat', false, secNoms)) l.push(`${g.titol}: ${fd(g.mitjana, 1)} (${g.files.length} activitats)`);
+ const q = quartils(res);
+ l.push('', `Quartils de la puntuació: Q1 = ${fd(q[0])}; Q2 = ${fd(q[1])}; Q3 = ${fd(q[2])}`);
+ for (const g of agrupa(res, items, 'q', false, secNoms)) l.push(`${g.titol} [${g.sub}]: ${g.files.map(r => r.n).join(', ')}`);
  const amb = res.filter(r => r.comentaris.length);
  if (amb.length) {
   l.push('', 'Comentaris:');
@@ -390,23 +425,24 @@ function resumText(res, items, R, T, P) {
 /*PUR:fi*/
 // --- Interfície ---
 const SEC_NOM = Object.fromEntries(SECCIONS.map(s => [s.id, s.nom]));
-let RES = null, ordrePunts = false;
+let RES = null, ordrePunts = false, agrupaPer = 'cap';
 function copiaText(t, ok) {
  try { navigator.clipboard.writeText(t).then(() => avis(ok), () => modal(t)); } catch (e) { modal(t); }
 }
 function pintaTaula() {
  const { res, R, items } = RES, nom = new Map(items.map(i => [i.n, i])), mx = 3 * R;
- const files = res.slice().sort((a, b) => (ordrePunts ? b.punts - a.punts || a.n - b.n : a.n - b.n));
+ const fila = r => {
+  const w = mx ? Math.min(100, Math.abs(r.punts) / mx * 100) : 0;
+  return `<tr><td>${r.n}</td><td>${esc(nom.get(r.n).nom)}<small>${esc(SEC_NOM[nom.get(r.n).seccio] || nom.get(r.n).seccio)}</small></td><td>${r.MM}</td><td>${r.M}</td><td>${r['-']}</td><td>${r.N}</td><td class="p"><b>${fp(r.punts)}</b><span class="r-b${r.punts < 0 ? ' neg' : ''}" style="width:${w.toFixed(1)}%"></span></td></tr>`;
+ };
+ const cap = g => `<tr class="r-gr"><th colspan="7" scope="colgroup">${esc(g.titol)}${g.sub ? ' · ' + esc(g.sub) : ''} · ${g.files.length} ${g.files.length === 1 ? 'activitat' : 'activitats'} · mitjana ${fd(g.mitjana, 1)}</th></tr>`;
  $('#r-taula').innerHTML = `<table><thead><tr><th scope="col">#</th><th scope="col">Activitat</th><th scope="col">MM</th><th scope="col">M</th><th scope="col">−</th><th scope="col">N</th><th scope="col">Punts</th></tr></thead><tbody>`
-  + files.map(r => {
-   const w = mx ? Math.min(100, Math.abs(r.punts) / mx * 100) : 0;
-   return `<tr><td>${r.n}</td><td>${esc(nom.get(r.n).nom)}<small>${esc(SEC_NOM[nom.get(r.n).seccio] || nom.get(r.n).seccio)}</small></td><td>${r.MM}</td><td>${r.M}</td><td>${r['-']}</td><td>${r.N}</td><td class="p"><b>${fp(r.punts)}</b><span class="r-b${r.punts < 0 ? ' neg' : ''}" style="width:${w.toFixed(1)}%"></span></td></tr>`;
-  }).join('') + '</tbody></table>';
+  + agrupa(res, items, agrupaPer, ordrePunts, SEC_NOM).map(g => (agrupaPer === 'cap' ? '' : cap(g)) + g.files.map(fila).join('')).join('') + '</tbody></table>';
  const b = $('#r-ordena'); b.setAttribute('aria-pressed', String(ordrePunts));
  b.textContent = ordrePunts ? 'Ordena per número' : 'Ordena per punts';
+ document.querySelectorAll('#r-detall button[data-g]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.g === agrupaPer)));
 }
 function mostra(linies) {
- ordrePunts = false;
  const items = DADES.items;
  const { blocs, avisos } = analitza(linies, items);
  const valids = blocs.filter(b => b.valid), R = valids.length, T = blocs.length;
@@ -424,7 +460,7 @@ function mostra(linies) {
  const d = destacats(res), nom = new Map(items.map(i => [i.n, i.nom]));
  const rank = ranquing(res).map(g => `<li><b>${fp(g.punts)}</b>: ${g.ns.join(', ')}</li>`).join('');
  const com = res.filter(r => r.comentaris.length).map(r => `<h3>${r.n} · ${esc(nom.get(r.n))}</h3>` + r.comentaris.map(c => `<p>Resp. ${c.resp} · <b>${esc(c.v)}</b> · ${esc(c.text)}</p>`).join('')).join('');
- $('#r-detall').innerHTML = `<div class="r-bloc"><h2>Puntuació per activitat</h2><div class="r-acc"><button type="button" id="r-ordena" aria-pressed="false">Ordena per punts</button><button type="button" id="r-tsv">Copia la taula (TSV)</button><button type="button" id="r-txt">Copia el resum (text)</button></div><div class="r-taula" id="r-taula"></div></div>`
+ $('#r-detall').innerHTML = `<div class="r-bloc"><h2>Puntuació per activitat</h2><div class="r-acc"><button type="button" id="r-ordena" aria-pressed="false">Ordena per punts</button><span class="r-grup" role="group" aria-label="Agrupa la taula"><button type="button" data-g="cap" aria-pressed="true">Sense grups</button><button type="button" data-g="cat" aria-pressed="false">Per categoria</button><button type="button" data-g="q" aria-pressed="false">Per quartils</button></span><button type="button" id="r-tsv">Copia la taula (TSV)</button><button type="button" id="r-txt">Copia el resum (text)</button></div><div class="r-taula" id="r-taula"></div></div>`
   + `<div class="r-bloc"><h2>Ranquing per puntuació</h2><ul class="r-rank">${rank}</ul></div>`
   + `<div class="r-bloc"><h2>Destacats</h2><ul class="r-llista"><li>Puntuació màxima (${fp(d.max)}): ${d.ambMax.join(', ')}</li><li>Puntuació negativa: ${d.negatives.length ? d.negatives.join(', ') : 'cap'}</li><li>Activitats amb almenys un N: ${d.ambN}</li></ul></div>`
   + `<div class="r-bloc r-com"><h2>Comentaris</h2>${com || '<p>Cap comentari.</p>'}</div>`;
@@ -463,11 +499,12 @@ $('#r-calcula').addEventListener('click', () => {
  mostra(t.split(/\r?\n/));
 });
 $('#resultats').addEventListener('click', ev => {
- const id = ev.target.id;
+ const id = ev.target.id, g = ev.target.dataset && ev.target.dataset.g;
  if (!RES) return;
- if (id === 'r-ordena') { ordrePunts = !ordrePunts; pintaTaula(); }
- else if (id === 'r-tsv') copiaText(tsv(RES.res, RES.items), 'Taula copiada (TSV).');
- else if (id === 'r-txt') copiaText(resumText(RES.res, RES.items, RES.R, RES.T, PUNTS), 'Resum copiat.');
+ if (g) { agrupaPer = g; pintaTaula(); }
+ else if (id === 'r-ordena') { ordrePunts = !ordrePunts; pintaTaula(); }
+ else if (id === 'r-tsv') copiaText(tsv(RES.res, RES.items, agrupaPer, ordrePunts, SEC_NOM), 'Taula copiada (TSV), amb l\'ordre i els grups actuals.');
+ else if (id === 'r-txt') copiaText(resumText(RES.res, RES.items, RES.R, RES.T, PUNTS, SEC_NOM), 'Resum copiat.');
 });
 const mode = () => document.body.classList.toggle('res', location.hash === '#resultats');
 window.addEventListener('hashchange', mode);
