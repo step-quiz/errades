@@ -18,7 +18,7 @@ import { generaExemple, perPagina, creaAtzar } from './generador.js';
 import { exempleAmbParaula } from './frases.js';
 import { encaixaBanc, NIVELLS, PROPORCIO_BANC } from './nivells.js';
 import { parametres } from '../motor/nivells.js';
-import { iniciaSessio } from '../motor/sessio.js';
+import { iniciaSessio, clauSessio, llegeixDesat } from '../motor/sessio.js';
 import { CONFIG_PER_DEFECTE } from '../motor/estat.js';
 import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/parametres.js';
 
@@ -59,7 +59,10 @@ async function engega() {
     } catch (e) {
         banc = [];
     }
-    let base = par.llavor ?? llavorNova();
+    // una sessió desada d'aquesta mateixa adreça continua on era, amb la mateixa llavor (auditoria E2)
+    const clau = clauSessio(),
+        desat = llegeixDesat(clau);
+    let base = desat && Number.isInteger(desat.llavor) ? desat.llavor : par.llavor ?? llavorNova();
     const sessio = parametres(par.nivell, par.noerrors, 0);
     const encercla = encerclaDe(par, esTactil());
     const cfg = { ...CONFIG_PER_DEFECTE, activitat: 'equacions', maxIntents: par.maxIntents, anuncia: sessio.anuncia, escriu: par.escriu, encercla };
@@ -74,6 +77,9 @@ async function engega() {
         onNova: () => {
             base = llavorNova();
         },
+        clau,
+        llavor: () => base,
+        desat,
     });
 }
 

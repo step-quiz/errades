@@ -25,6 +25,8 @@ body {
 /* La barra de desplaçament sempre té el seu lloc: res no es mou quan apareix o desapareix (auditoria B5) */
 html {
     scrollbar-gutter: stable;
+    /* la capçalera és fixa a dalt: el que s'hi desplaça no ha de quedar-hi a sota */
+    scroll-padding-top: 64px;
 }
 body {
     background: var(--fons);
@@ -33,42 +35,78 @@ body {
     overflow-x: clip;
 }
 .barra {
+    /* Capçalera compacta, d'una sola línia i sempre a la vista (auditoria D1, D2): el títol, el nivell (en gris; si no
+       hi cap, es talla amb «…») i, a la dreta, els punts de progrés. Sense «← Activitats» (E1). */
+    position: sticky;
+    top: 0;
+    z-index: 40;
     display: flex;
-    gap: 16px;
-    align-items: center;
+    align-items: baseline;
+    gap: 2px 14px;
     flex-wrap: wrap;
-    padding: 12px max(4vw, 16px);
+    min-height: 48px;
+    padding: 10px max(4vw, 16px) 8px;
     background: var(--blau-suau);
     color: var(--text);
     border-bottom: 1px solid var(--vora);
 }
 .barra h1 {
     margin: 0;
-    font-size: 22px;
-    line-height: 1.2;
-}
-/* «Nivell 2 · una errada…» i, després, el progrés: el separador només quan ja hi ha el nivell (auditoria B3) */
-#nivell:not(:empty)::after {
-    content: ' · ';
+    font-size: 18px;
+    line-height: 1.3;
+    white-space: nowrap;
 }
 .barra p {
-    margin: 2px 0 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.3;
     color: var(--text-suau);
-    font-size: 15px;
 }
-.barra a.tornar {
-    color: var(--blau);
+.barra .nivell {
+    flex: 1 1 12rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.barra .progres {
+    margin-left: auto;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+/* Els punts de progrés (D2): un per exercici; fets plens (lila; gris si han valgut 0), el d'ara amb un anell */
+.pp {
+    display: inline-flex;
+    gap: 6px;
+    vertical-align: -1px;
+    margin-right: 4px;
+}
+.pp i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-suau);
+    background: transparent;
+}
+.pp i.fet {
+    background: var(--encert);
+    border-color: var(--encert);
+}
+.pp i.zero {
+    background: var(--noencert);
+    border-color: var(--noencert);
+}
+.pp i.ara {
+    border: 2.5px solid var(--blau);
     background: var(--paper);
-    text-decoration: none;
-    font-weight: 700;
-    padding: 8px 12px;
-    border: 1.5px solid var(--blau);
-    border-radius: 10px;
 }
-html:not(.tacte) .barra a.tornar:hover {
-    background: var(--hover-fons);
-    border-color: var(--hover-vora);
-    box-shadow: inset 0 0 0 1.5px var(--hover-vora);
+/* el que el lector de pantalla llegeix i no es veu */
+.vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 .pagina {
     max-width: 900px;

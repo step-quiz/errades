@@ -104,6 +104,11 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     // Activitat: 2 exemples, llavor fixa
     await pg.goto(BASE + 'equacions.html?totaloperations=2&llavor=11');
     await pg.waitForSelector('#llibreta .ln');
+    // Etapa 3: capçalera d'una línia, sense «← Activitats», amb els punts de progrés; la lletra de l'alumne
+    ok((await pg.locator('.barra a').count()) === 0, 'E1: sense «← Activitats»');
+    ok((await pg.locator('#progres .pp i').count()) === 2 && (await pg.locator('#progres .pp i.ara').count()) === 1, 'D2: un punt de progrés per exercici, el d\'ara marcat');
+    if (!tactil) ok(await pg.evaluate(() => document.querySelector('.barra').getBoundingClientRect().height <= 52), 'D1: capçalera compacta (≤ 52 px)');
+    ok(await pg.locator('#llibreta .fila[data-i="1"] .ln').evaluate(e => getComputedStyle(e).fontFamily.startsWith('"Patrick Hand"')), 'F1: la lletra de l\'alumne és Patrick Hand');
     const errada = primera(sessio(11, 0));
     const bona = errada === 1 ? 2 : 1;
     ok((await pg.locator('#llibreta [data-a=comprova]').count()) === 0, 'al principi no hi ha cap botó «Comprova»');
@@ -122,6 +127,10 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(/^Aquesta línia és correcta, perquè /.test(await pg.textContent('#llibreta .msg')), 'línia bona: explica per què és correcta (sense salt de línia)');
     ok((await pg.locator(tactil ? '#llibreta .barra-msg .msg' : '#llibreta .msg-cv .msg').count()) === 1, `T5: el missatge va ${tactil ? 'a la barra de baix' : "a la columna de l'esquerra"}`);
     ok(JSON.stringify(await posicions()) === JSON.stringify(abans), 'T5: triar i comprovar una línia bona no mou cap línia');
+    // E2: recarregar a mig exercici: la línia bona continua revisada (✓) i l'intent gastat
+    await pg.reload();
+    await pg.waitForSelector('#llibreta .ln');
+    ok((await pg.locator(`#llibreta .fila[data-i="${bona}"] .mk.c`).count()) === 1 && /Intents: ●●○/.test(await pg.textContent('#llibreta .chip.intents')), 'E2: recarregar a mig exercici continua on era');
     ok(await pg.locator('#llibreta .ln.enunciat').evaluate(e => getComputedStyle(e).cursor) === 'not-allowed', 'la línia 0 té el cursor de prohibit');
     ok((await pg.textContent('#llibreta .ln.enunciat .n')).trim() === '0', 'la primera línia és la 0');
     ok((await pg.locator('#llibreta .mk.c').count()) === 1, 'línia bona: ✓ de llapis');
@@ -210,10 +219,18 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.waitForSelector('#final:not([hidden])');
     ok(/Has acabat/.test(await pg.textContent('#final')) && (await pg.locator('#final .resum li').count()) === 2, 'pantalla final amb 2 exemples');
     ok(/Nota/.test(await pg.textContent('#final .nota')), 'pantalla final amb la nota');
+    ok((await pg.locator('#final a, #final .b').count()) === 1, 'E1: al final, només «Torna a començar»');
+    // E2: la pantalla final també es desa: en recarregar, hi torna
+    await pg.reload();
+    await pg.waitForSelector('#final:not([hidden])');
+    ok(/Has acabat/.test(await pg.textContent('#final')) && (await pg.locator('#final .resum li').count()) === 2, 'E2: recarregar la pàgina acabada torna a la pantalla final');
     if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `final-${mida.width}.png`) });
     await clica('#torna');
     await pg.waitForSelector('#llibreta .ln');
     ok(await pg.isHidden('#final'), '«Torna a començar» torna a la llibreta');
+    await pg.reload();
+    await pg.waitForSelector('#llibreta .ln');
+    ok(await pg.isHidden('#final'), "E2: després de «Torna a començar», recarregar no torna a la pantalla final");
     if (process.env.CAPTURES) {
         await pg.goto(BASE + 'equacions.html?nivell=2&llavor=5');
         await pg.waitForSelector('#llibreta .ln');
@@ -388,6 +405,15 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         const xsP = await pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila .ex > .t')].filter(e => e.textContent.trim() === '=').map(e => Math.round(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2)));
         ok(xsP.length >= 3 && xsP.every(x => Math.abs(x - xsP[0]) <= 1), `prioritat: tots els «=» a la mateixa vertical (${xsP})`);
         ok(await lateral(), 'prioritat: desplaçament lateral');
+        {
+            // D3: el bloc de les expressions, centrat a la línia
+            const bloc = await pg.evaluate(() => {
+                const ex = [...document.querySelectorAll('#llibreta .ln > .ex')].map(e => e.getBoundingClientRect());
+                const ts = [...document.querySelectorAll('#llibreta .ln > .ex > *')].map(e => e.getBoundingClientRect()).filter(b => b.width);
+                return { mig: (ex[0].left + ex[0].right) / 2, a: Math.min(...ts.map(b => b.left)), b: Math.max(...ts.map(b => b.right)) };
+            });
+            ok(Math.abs((bloc.a + bloc.b) / 2 - bloc.mig) < 40, `D3: prioritat, el bloc centrat (${Math.round((bloc.a + bloc.b) / 2)} / ${Math.round(bloc.mig)})`);
+        }
         if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `prioritat-${mida.width}.png`), fullPage: true });
     }
 

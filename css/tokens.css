@@ -13,24 +13,21 @@ ARQUITECTURA:
     vermell ni verd, i sempre amb text.
 - La franja «Següent» comuna (css/seguent.css) fa servir --success, --danger i
   --primary: aquí són l'encert, el no encert i la tinta.
-- Lletres (R2): Kalam per a l'alumne fictici i Permanent Marker per a la
+- Lletres (R2): Patrick Hand per a l'alumne fictici (abans Kalam) i Permanent Marker per a la
   correcció, allotjades a vendor/fonts (cap petició a tercers).
 DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
 ============================================================================
 */
+/* Patrick Hand (OFL 1.1) per a l'alumne fictici: el 5 no s'assembla a una S, com passava amb la Kalam (auditoria F1,
+   el David, 28/11/2026). size-adjust: és més petita que la Kalam, i així les línies fan la mateixa alçada. La Kalam
+   es queda a vendor/fonts per a eines/banc-errors.mjs (el registre de l'enquesta). */
 @font-face {
-    font-family: 'Kalam';
+    font-family: 'Patrick Hand';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('../vendor/fonts/kalam-latin-400-normal.woff2') format('woff2');
-}
-@font-face {
-    font-family: 'Kalam';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('../vendor/fonts/kalam-latin-700-normal.woff2') format('woff2');
+    size-adjust: 115%;
+    src: url('../vendor/fonts/patrick-hand-latin-400-normal.woff2') format('woff2');
 }
 @font-face {
     font-family: 'Permanent Marker';
@@ -77,6 +74,6 @@ DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
     --primary-hover: #14205e;
 
     --lletra-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    --lletra-alumne: 'Kalam', 'Segoe Print', 'Comic Sans MS', cursive;
+    --lletra-alumne: 'Patrick Hand', 'Segoe Print', 'Comic Sans MS', cursive;
     --lletra-correccio: 'Permanent Marker', 'Comic Sans MS', cursive;
 }

@@ -156,6 +156,29 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
         padding-bottom: 160px;
     }
 }
+/* Pantalles baixes (el Chromebook: ~650 px útils): línies de 48 px i menys aire a dalt (auditoria D1) */
+@media (max-height: 720px) and (min-width: 561px) {
+    .ln {
+        min-height: 48px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+    .pagina.activitat {
+        padding-top: 12px;
+    }
+    .llibreta {
+        padding-top: 14px;
+    }
+    .cap-ex {
+        margin-bottom: 8px;
+    }
+}
+/* Prioritat d'operacions (D3): les línies són «= expressió» i el membre esquerre és buit; les columnes fan l'ample
+   just (el de la línia més llarga, --ma i --mb) i el bloc va centrat: el «=» continua alineat */
+.llibreta.prioritat .ex {
+    grid-template-columns: var(--ma, max-content) 1.6rem var(--mb, max-content);
+    justify-content: center;
+}
 @media (min-width: 1000px) {
     .llibreta {
         --aside: 15rem;
@@ -202,7 +225,7 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     align-items: center;
 }
 .escrit {
-    font: 24px Kalam, cursive;
+    font: 24px var(--lletra-alumne);
     color: var(--tinta);
     width: 9em;
     padding: 6px 12px;
@@ -228,13 +251,6 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     font: 700 20px var(--lletra-ui);
     min-height: 48px;
     padding: 0;
-}
-.vh {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
 }
 .fase .pista {
     margin: -4px 0 0;

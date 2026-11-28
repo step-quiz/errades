@@ -45,14 +45,14 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `js/motor/estat.js` | Pure state machine of one example (select, check, attempts ladder, term phase, «Per què?», «Corregeix-la» by choice or typing, points). |
 | `js/motor/escriure.js` | Pure: is a correction typeable (`escrivible`), reading what the student typed (`llegeix`), comparing values (`correcte`). |
 | `js/motor/llibreta.js` | DOM: draws the notebook, handles mouse, touch, lasso strokes and keyboard; texts per activity (`cfg.activitat`, `TEXTOS`); `parts()` splits a line («A = B», «= expr» or a statement without «=»); `^n` is drawn as an exponent. `alinea()` gives every line the widest member width (`--ma`, `--mb`) so «=» stays on one vertical even when a line overflows. |
-| `js/motor/sessio.js` | A session of N examples: progress line, «Següent» band, final screen with the mark. |
+| `js/motor/sessio.js` | A session of N examples: progress dots in the header (one per example; the text «Exercici n de N · p punts» only for screen readers), «Següent» band, final screen with the mark and only «Torna a començar». Saves the session in `localStorage` (`clauSessio()`: page + URL parameters; valid 12 h, `VIGENCIA_MS`): seed, example, results and the state of the example in progress (`onCanvi` of `creaLlibreta`, which restores it with `estat`); reopening the same address continues, also the final screen; «Torna a començar» deletes it. No personal data. |
 | `css/tokens.css` | Colours with meaning (two layers, R1) and the self-hosted fonts. |
 | `css/pagina.css`, `css/llibreta.css` | Page structure and buttons; the notebook. |
 | `js/comu/punts.js`, `js/comu/seguent.js`, `css/seguent.css`, `LICENSE`, `LLICENCIA.md` | **Shared files** from `step-quiz/step-quiz-commons` (`comuns.json`, web `errades`). Never edit here. |
 | `HANDOUT.md` | Cold-start brief for the next AI session: how to work with David and the recurring procedures (sentence editor rounds, deletions). |
 | `eines/frases-editor/` | Sources of the sentence editor, artifact «Frases de «Per què és una errada?» · Equacions (editor nou)», https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, capabilities `{db:{}, user:{}}`). `dades.json`: the catalogue (v2; situations with their markers, sample and sentences; `desactivada: true` hides one; `reserva` lists reserve sentences). `plantilla.html` + `dades.json` → `index.html` (replace `/*DADES*/`, escape `</`). `prova.mjs`, `prova-focus.mjs`: Playwright tests with a mocked `window.claude`. `exporta.mjs`: `dades.json` + `editor-db.json` (what David wrote, read from the artifact's db by Claude) → `js/equacions/frases-dades.js`. `banc.mjs`: rewrites the «Per què?» sentences of `data/banc.json`. Not part of the site. |
 | `banc-errors.html`, `eines/banc-errors.mjs`, `eines/banc-errors.plantilla.html` | **Teachers' review page** (the department survey, closed on 28/11; keep v3 unchanged as its record): one example per error type of both activities, numbered 1…28 (equations first, in `data/errors.json` order, then order of operations), each with the error circled, the correct line and the explanation; buttons «M'agrada molt / M'agrada / No m'agrada» and an optional comment, kept in `localStorage` (`banc-errors-v3`). «Copia codi amb les preferències» copies a plain-text code (`BANC-ERRORS v3`, a legend line, one line per example `n MM\|M\|N\|- [ \| comment]`, `FI`). `banc-errors.html#resultats` reads the codes back (pasted text or the .docx of the e-mails) and computes the tally with David's weights (MM +3, M +2, not rated 0, N −4), ranking, quartiles and comments, all in the browser. Self-contained (data, CSS, JS and the two fonts in base64). **Generated, never edit by hand:** `node eines/banc-errors.mjs`; bump `VERSIO` in the script whenever the set of examples changes. |
-| `vendor/fonts/` | Kalam (OFL 1.1) and Permanent Marker (Apache 2.0), latin subsets, with their licences. |
+| `vendor/fonts/` | Patrick Hand (OFL 1.1, the pupil's handwriting since 28/11/2026, `size-adjust: 115%`), Kalam (OFL 1.1, now only embedded by `eines/banc-errors.mjs`) and Permanent Marker (Apache 2.0), latin subsets, with their licences. |
 | `tests/` | Node tests (`run-all.js`) and a Playwright smoke test (`navegador/prova.mjs`). |
 | `docs/STATE.md`, `docs/SPEC.md`, `docs/HISTORY.md`, `docs/enquesta-banc-errors.md` | Current state (authoritative after the code), original specification with David's decision IDs, the 25–28/11 log (historical only), the department survey (tally, comments, decision). `docs/workflows/` holds copies of the GitHub workflows. |
 | `_headers` | Cloudflare Pages cache headers. |
@@ -70,6 +70,14 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `maxintents` | 1–5 | 3 | Attempts per example: 1st miss explains the tapped line, 2nd adds the direction, the last one shows the error (0 points). |
 | `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as the select «Repartiment: Iguals per a tothom»; it generates the seed, there is no free seed field). |
 | `membre` | `membre`, `costat`, `banda`, `part` | `membre` | Equations only (index row «Paraula»). The word for the two sides of the equation in the «Per què?» sentences, with gender and plural handled (`membre`, `costat` masculine; `banda`, `part` feminine): «a la banda de la dreta», «l'altra banda», «les dues bandes». |
+
+## Header and layout (audit, stage 3)
+
+Activity pages: one sticky header line (`.barra`: title, level in grey with an ellipsis, progress dots and points on
+the right; no «← Activitats», the index is for teachers); `scroll-padding-top` and `fesVisible()` keep content out
+from under it. On screens up to 720 px high (Chromebooks), lines are 48 px and the top spacing is smaller, so a
+7-line example fits in about 650 px. Order of operations (`.llibreta.prioritat`): the line grid is
+`--ma | = | --mb` with exact widths, centred.
 
 ## A calm screen (David, 28/11/2026)
 

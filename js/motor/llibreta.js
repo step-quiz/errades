@@ -110,8 +110,9 @@ const ESTRET = mm('(max-width: 560px)');
 /** Després de pintar, durant aquest temps un toc no compta: un doble toc no respon la pregunta que surt sota el dit (T2). */
 const BLOQUEIG_MS = 300;
 
-export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
-    const S = nouEstat();
+export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = {}) {
+    // estat: el d'una sessió desada (auditoria E2): l'exemple continua on era
+    const S = estat ? Object.assign(nouEstat(), estat) : nouEstat();
     let acabat = false,
         tsel = null, // terme amb el focus del teclat a la fase del terme
         valorEscrit = '', // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
@@ -120,6 +121,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const T = TEXTOS[cfg.activitat] || TEXTOS.equacions;
     let ignoraClic = false; // després d'un traç, el clic que el navegador hi afegeix no compta
     contenidor.classList.toggle('encercla', !!cfg.encercla);
+    contenidor.classList.toggle('prioritat', cfg.activitat === 'prioritat');
 
     /**
      * Totes les línies (i les correccions) amb el mateix ample de membre esquerre i de membre dret:
@@ -354,12 +356,15 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     /** Desplaça la finestra el mínim perquè es vegi el bloc [des, fins] (sense la franja `baix` de sota); si no hi cap, n'ensenya el començament. */
     function fesVisible(des, fins, baix = 0) {
         if (!des || !fins) return;
+        // dalt: el que tapa la capçalera fixa (D1); baix: el que tapa la barra fixa de baix (T5)
+        const cap = document.querySelector('.barra'),
+            dalt = cap ? Math.max(0, cap.getBoundingClientRect().bottom) : 0;
         const marge = 12,
-            a = des.getBoundingClientRect().top - marge,
+            a = des.getBoundingClientRect().top - marge - dalt,
             b = fins.getBoundingClientRect().bottom + marge,
-            alt = innerHeight - baix; // baix: el que tapa la barra fixa de baix
+            alt = innerHeight - baix;
         let dy = 0;
-        if (b - a > alt || a < 0) dy = a;
+        if (b - a > alt || a < 0) dy = a; // no hi cap (b − a = alçada del bloc + dalt), o és a sobre: el començament
         else if (b > alt) dy = b - alt;
         if (dy) scrollBy({ top: dy, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     }
@@ -422,6 +427,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             acabat = true;
             if (typeof onAcaba === 'function') onAcaba(punts(S), S);
         }
+        // la sessió es desa a cada canvi (auditoria E2)
+        if (typeof onCanvi === 'function') onCanvi(S);
     }
 
     // ---------- Encerclar amb el dit (R3) ----------

@@ -53,8 +53,9 @@ Hard rules (David's, all approved in the review artifact «Localitza l'errada»)
   (see `docs/STATE.md`, research review).
 - **Two colour layers (R1):** the notebook (red = teacher's pen, ONLY for errors; pencil grey ✓ for correct
   lines) vs. the real student's answer (lilac = right, grey = wrong; never red/green; always with text).
-- **Fonts (R2):** Kalam for the pupil, Permanent Marker for the teacher's correction, self-hosted in
-  `vendor/fonts/` (no third-party requests: the students are minors).
+- **Fonts (R2):** Patrick Hand for the pupil (since the audit of 28/11/2026, F1: Kalam's 5 looked like an S; Kalam
+  stays in `vendor/fonts/` only for `eines/banc-errors.mjs`), Permanent Marker for the teacher's correction,
+  self-hosted in `vendor/fonts/` (no third-party requests: the students are minors).
 - **Notebook only (P1)**, lines aligned at «=» (R4), line numbers (P2).
 - **Hover rule:** every clickable control gets a thick pure-black border and a light-grey background on hover,
   with no layout shift (`box-shadow`). Mouse only: `html.tacte` (set after a finger or pen touch) disables it, so it
