@@ -1,5 +1,5 @@
 // tests/estat.test.js — la màquina d'estats d'un exemple (js/motor/estat.js).
-import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, arrossega, intentsQueden, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
+import { termeUnic, nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, arrossega, intentsQueden, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
 import { ok, igual, informe } from './lib.js';
 
 // L'exemple del David: 2·(x + 4) = 13 − 7x, errada a la línia 2 (índex 1)
@@ -75,6 +75,12 @@ const CAP = { ...EX, errades: {}, correctes: { 1: 'ok', 2: 'ok', 3: 'ok', 4: 'ok
 S = nouEstat();
 capMes(S, CAP, sense);
 igual([S.fi, punts(S)], [true, 10], 'cap errada: «No hi ha cap errada» → 10 punts');
+// Una línia bona marcada i després «No hi ha cap errada»: el missatge final és el d'encert (auditoria E2)
+S = nouEstat();
+selecciona(S, CAP, 2);
+comprova(S, CAP, sense);
+capMes(S, CAP, sense);
+igual([S.fi, punts(S), S.msg.tipus, /no hi havia cap errada/.test(S.msg.text)], [true, 8, 'encert', true], 'cap errada després d\'un intent fallat: «Molt bé: no hi havia cap errada.»');
 
 // maxIntents = 1: el primer error ensenya l'errada
 S = nouEstat();
@@ -105,6 +111,19 @@ selecciona(S, EX, 1);
 comprova(S, EX, cfg);
 triaTerme(S, EX, cfg, 0);
 ok(S.fase === 'perque' && punts(S) === 0, 'els intents de la línia i del terme es compten junts');
+
+// Una línia «x = valor»: només hi ha un terme possible i la fase del terme se salta (auditoria P6)
+const UN = {
+    alumne: 'en Pau',
+    linies: [['5x', '=', '35'], ['x', '=', '{5|35}'], ['x', '=', '{1|7}']],
+    errades: { 1: { tipus: 'QUOCIENT_INVERTIT', terme: 2, expl: 'Ha dividit al revés.', bona: 'x = {35|5}', perque: [['a', true], ['b', false], ['c', false]], opcions: [['x = {35|5}', true], ['x = 30', false], ['x = 35', false]] } },
+    correctes: { 2: 'ok' },
+};
+ok(termeUnic(UN, 1) && !termeUnic(EX, 1), 'termeUnic: «x = 5/35» sí, «2x + 4 = 13 − 7x» no');
+S = nouEstat();
+selecciona(S, UN, 1);
+comprova(S, UN, cfg);
+igual([S.fase, S.termes[1], S.msg.tipus, punts(S)], ['perque', true, 'encert', 10], 'x = valor: sense fase del terme, directament «Per què?»');
 
 // Dues errades, anunciades: després de la primera, se'n continua buscant una altra
 const EX2 = {

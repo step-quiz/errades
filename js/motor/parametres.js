@@ -10,7 +10,8 @@
  *   totaloperations (1–20, per defecte 6), maxintents (1–5, per defecte 3),
  *   llavor (enter ≥ 0; la mateixa llavor dona els mateixos exemples),
  *   membre (la paraula per als dos costats de l'equació a les frases de «Per què?»:
- *   membre, costat, banda o part; per defecte membre. El David, 27/11/2026).
+ *   membre, costat, banda o part; per defecte membre. El David, 27/11/2026),
+ *   nota (0/1, per defecte 1: amb nota=0 la pantalla final no mostra la nota ni el trofeu; auditoria P10).
  * - encerclaDe(par, tactil): R3, encerclar amb el dit per defecte a les pantalles
  *   tàctils (qualsevol, també un Chromebook tàctil en mode portàtil) i tocar amb el
  *   ratolí, tret que l'adreça digui el contrari.
@@ -36,6 +37,7 @@ export function llegeixParametres(cerca) {
         maxIntents: ent('maxintents', 3, 1, 5),
         llavor: Number.isInteger(llavor) && llavor >= 0 ? llavor : null,
         membre: PARAULES_MEMBRE.includes(p.get('membre')) ? p.get('membre') : 'membre',
+        nota: ent('nota', 1, 0, 1) === 1,
     };
 }
 

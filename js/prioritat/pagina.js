@@ -57,6 +57,7 @@ function engega() {
         anuncia: sessio.anuncia,
         escriu: par.escriu,
         encercla: encerclaDe(par, esTactil()),
+        nota: par.nota,
     };
     document.getElementById('nivell').textContent = `Nivell ${par.nivell} · ${NIVELLS[par.nivell]}${par.noerrors ? " · pot ser que no n'hi hagi cap" : ''}`;
     iniciaSessio({

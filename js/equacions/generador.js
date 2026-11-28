@@ -950,7 +950,8 @@ function fraccionari(r, A) {
 }
 
 const LIMITS = { 1: [4, 6], 2: [6, 8] };
-const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol'];
+// Noms dels alumnes ficticis: paritaris i diversos, com a les aules (auditoria P11, 28/11/2026)
+const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol', 'la Fàtima', 'en Youssef', 'la Lucía', 'en Wei', "l'Ilyas", "l'Andrea", 'la Nerea', 'en Bilal'];
 const dinsMarge = l => [...l.L, ...l.R].every(t => {
     if (t.k === 'x') return Math.abs(t.c.n) <= 40 && t.c.d === 1;
     if (t.k === 'n') return Math.abs(t.v.n) <= 120 && t.v.d <= 40;

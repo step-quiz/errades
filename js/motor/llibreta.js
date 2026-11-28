@@ -31,6 +31,9 @@
  *   per navegador). Els textos nous, a TEXTOS_ETAPA2.
  * - Dues activitats (cfg.activitat): 'equacions' (cada línia «A = B») i 'prioritat'
  *   (l'enunciat sense «=» i cada línia «= expressió»): parts() separa els membres.
+ * - Lector de pantalla (auditoria E3, 28/11/2026): cada línia i cada terme porten un nom llegible
+ *   (llegible(): «35 partit per x igual a 5») i els missatges s'anuncien des d'una sola regió aria-live
+ *   (#anunci-llibreta), fora de la llibreta.
  * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos;
  *   **…** = negreta a les frases de «Per què?»).
  *   Tot el que s'escriu passa per esc(): el contingut és nostre, però així no
@@ -94,6 +97,32 @@ export const txt = s =>
         .join('')
         .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 const maj = s => s.charAt(0).toUpperCase() + s.slice(1);
+/**
+ * Una expressió per al lector de pantalla (auditoria E3, 28/11/2026): «{35|x} = 5» → «35 partit per x igual a 5».
+ * Accepta una línia de fitxes o un text de fórmula.
+ */
+export const llegible = s =>
+    String(Array.isArray(s) ? s.join(' ') : s)
+        .replace(/\*\*/g, '')
+        .replace(/\$/g, '')
+        .replace(/\{([^|{}]+)\|([^|{}]+)\}/g, '$1 partit per $2')
+        .replace(/\^(\d+)/g, ' elevat a $1')
+        .replace(/·/g, ' per ')
+        .replace(/ : /g, ' entre ')
+        .replace(/=/g, ' igual a ')
+        .replace(/\+/g, ' més ')
+        .replace(/−|-(?=[\dx(])/g, ' menys ')
+        .replace(/\s+/g, ' ')
+        .trim();
+/** Un missatge en text pla per a la regió aria-live: les fórmules ($…$) es llegeixen amb llegible(). */
+export const textPla = s =>
+    String(s)
+        .replace(/\*\*/g, '')
+        .split('$')
+        .map((p, k) => (k % 2 ? llegible(p) : p))
+        .join('')
+        .replace(/\s+/g, ' ')
+        .trim();
 
 // El «hover» només amb el ratolí (auditoria T1): amb el dit o el llapis, el navegador deixa el gris i la vora negra
 // enganxats al lloc tocat, i el botó nou que hi surt semblaria triat. html.tacte = l'últim punter no és un ratolí.
@@ -121,6 +150,23 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
     const T = TEXTOS[cfg.activitat] || TEXTOS.equacions;
     let ignoraClic = false; // després d'un traç, el clic que el navegador hi afegeix no compta
     contenidor.classList.toggle('encercla', !!cfg.encercla);
+    // Una sola regió aria-live per a tots els exercicis, fora de la llibreta (que es torna a pintar sencera): auditoria E3
+    let anunci = document.getElementById('anunci-llibreta');
+    if (!anunci) {
+        anunci = document.createElement('div');
+        anunci.id = 'anunci-llibreta';
+        anunci.className = 'vh';
+        anunci.setAttribute('aria-live', 'polite');
+        contenidor.after(anunci);
+    }
+    let anunciat = '';
+    /** Diu al lector de pantalla el missatge nou i la tasca de la fase d'ara (només si han canviat). */
+    function anuncia() {
+        const cf = consignaFase();
+        const t = [S.msg ? textPla(S.msg.text) : '', cf || ''].filter(Boolean).join(' ');
+        if (t && t !== anunciat) anunci.textContent = t;
+        anunciat = t;
+    }
     contenidor.classList.toggle('prioritat', cfg.activitat === 'prioritat');
 
     /**
@@ -145,8 +191,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         const qui = `${maj(ex.alumne)} ${T.fet}`;
         const v = cfg.encercla ? 'encercla' : 'toca';
         if (n === 0 || !cfg.anuncia) return [qui + '.', `Si hi ha alguna línia ${T.on}, ${v}-la; si no n'hi ha cap, indica-ho.`];
-        if (n === 1) return [qui + ' però ha comès una errada.', `${maj(v)} la primera línia ${T.on}.`];
-        return [qui + ' però ha comès dues errades.', `${maj(v)} les dues línies ${T.ons}.`];
+        if (n === 1) return [qui + ', però ha comès una errada.', `${maj(v)} la primera línia ${T.on}.`];
+        return [qui + ', però ha comès dues errades.', `${maj(v)} les dues línies ${T.ons}.`];
     }
 
     function expr(i) {
@@ -159,7 +205,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         const cercle = trobada && e && (S.termes[i] || S.ajuda.includes(i));
         const terme = (t, j) =>
             tria
-                ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(t)}">${fm(t)}</button>`
+                ? `<button type="button" class="tb${tsel === j ? ' sel' : ''}" data-tm="${j}" aria-label="Terme ${esc(llegible(t))}">${fm(t)}</button>`
                 : `<span class="t${cercle && (e.termes || [e.terme]).includes(j) ? ' mal' : ''}" data-j="${j}">${fm(t)}</span>`;
         const a = esq.map((t, j) => terme(t, j)).join(''),
             b = dre.map((t, j) => terme(t, j + des)).join('');
@@ -177,7 +223,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
     /** La línia bona, amb la lletra del professor i el «=» a la mateixa vertical que els altres (R4). */
     function correccio(bona) {
         const [ba, igual, bb] = partsTxt(bona);
-        return `<span class="corr ex" aria-label="Seria correcte d'aquesta manera: ${esc(bona)}"><span class="ma">${fm(ba)}</span><span class="t">${igual ? '=' : ''}</span><span class="mb">${fm(bb)}</span></span>`;
+        return `<span class="corr ex" aria-label="Seria correcte d'aquesta manera: ${esc(llegible(bona))}"><span class="ma">${fm(ba)}</span><span class="t">${igual ? '=' : ''}</span><span class="mb">${fm(bb)}</span></span>`;
     }
 
     /** Des de quina línia les següents arrosseguen una errada ja corregida (null si encara no toca). */
@@ -213,7 +259,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         const ref = cls.includes(' ref') ? `<span class="etiqueta" aria-hidden="true">${esc(TEXTOS_ETAPA2.compara)}</span>` : '';
         const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}${ref}`;
         const ln = seleccionable(S, ex, i)
-            ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`
+            ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}: ${esc(llegible(ex.linies[i]))}">${dins}</button>`
             : `<div class="${cls}"${i === 0 ? ' title="A l\'enunciat no pot haver-hi cap errada"' : ''}>${dins}</div>`;
         // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026); al mòbil, a la barra
         const cv = S.sel === i && S.fase === 'busca' && !S.fi && !ESTRET.matches ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
@@ -223,7 +269,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}${trobada ? ' trobada' : ''}" data-i="${i}"><div class="cv">${cv}${msg}</div>${ln}</div>`;
     }
 
-    const msgHTML = () => `<div class="msg ${S.msg.tipus}" role="status" aria-live="polite">${txt(S.msg.text)}</div>`;
+    // els missatges s'anuncien des d'una sola regió aria-live que no es torna a crear (auditoria E3): vegeu anuncia()
+    const msgHTML = () => `<div class="msg ${S.msg.tipus}">${txt(S.msg.text)}</div>`;
 
     /** Una pregunta ja contestada: la triada i la correcta, marcades amb text (C6, R1). */
     function respostaHTML(titol, opcions, triada, format, cls = '') {
@@ -257,7 +304,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
     /** Els passos de cada errada, amb el d'ara marcat (C1): ✓ Línia › Terme › Per què › Corregeix. */
     function pasHTML() {
         const P = TEXTOS_ETAPA2.passos.filter((p, k) => (k === 2 ? cfg.perque : k === 3 ? cfg.corregeix : true));
-        const ara = S.fi ? P.length : { busca: 0, terme: 1, perque: 2, corregeix: cfg.perque ? 3 : 2 }[S.fase] ?? 0;
+        // en un exemple sense errades, al final només s'ha fet el pas de la línia (auditoria E2)
+        const ara = S.fi ? (n ? P.length : 1) : { busca: 0, terme: 1, perque: 2, corregeix: cfg.perque ? 3 : 2 }[S.fase] ?? 0;
         // text simple, sense requadres: «✓ Línia › Terme › Per què › Corregeix» (pantalla més neta, el David 28/11/2026)
         return `<ol class="passos" aria-label="Passos">${P.map(
             (p, k) => `<li class="${k < ara ? 'fet' : k === ara ? 'ara' : ''}"${k === ara ? ' aria-current="step"' : ''}>${k < ara ? '✓ ' : ''}${esc(p)}</li>`
@@ -427,6 +475,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
             acabat = true;
             if (typeof onAcaba === 'function') onAcaba(punts(S), S);
         }
+        anuncia();
         // la sessió es desa a cada canvi (auditoria E2)
         if (typeof onCanvi === 'function') onCanvi(S);
     }

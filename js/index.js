@@ -9,7 +9,8 @@
  * - enllac(base, valors) i pagina(activitat) són purs (tests/index.test.js).
  * - Paràmetres (els llegeix js/motor/parametres.js): nivell, noerrors, escriu,
  *   encercla (auto = no s'escriu), totaloperations, maxintents, llavor (buida =
- *   no s'escriu), membre (només equacions: membre, costat, banda o part). Els valors
+ *   no s'escriu), membre (només equacions: membre, costat, banda o part), nota (0 = sense
+ *   nota ni trofeu a la pantalla final; auditoria P10). Els valors
  *   per defecte no s'escriuen, perquè l'enllaç quedi curt.
  * - Les etiquetes dels nivells són curtes; només el 2 canvia amb l'activitat.
  * - Fins que no es tria l'activitat, els paràmetres i l'enllaç són amagats.
@@ -20,8 +21,8 @@
  */
 import { llavorNova, PARAULES_MEMBRE } from './motor/parametres.js';
 
-export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '', membre: 'membre' };
-const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], encercla: [0, 1], totaloperations: [1, 20], maxintents: [1, 5], llavor: [0, 4294967295] };
+export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '', membre: 'membre', nota: '1' };
+const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], encercla: [0, 1], totaloperations: [1, 20], maxintents: [1, 5], llavor: [0, 4294967295], nota: [0, 1] };
 export const PAGINES = { equacions: 'equacions.html', prioritat: 'prioritat.html' };
 export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
 

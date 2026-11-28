@@ -514,7 +514,8 @@ export function enunciat(r, forma) {
     return E;
 }
 const LIMITS = { 1: [4, 6], 2: [5, 8] };
-const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol'];
+// Noms dels alumnes ficticis: paritaris i diversos, com a les aules (auditoria P11, 28/11/2026)
+const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol', 'la Fàtima', 'en Youssef', 'la Lucía', 'en Wei', "l'Ilyas", "l'Andrea", 'la Nerea', 'en Bilal'];
 /** Nombres raonables a totes les línies; a la forma 1, cap nombre negatiu. */
 function dinsMarge(E, forma) {
     const max = forma === 1 ? 120 : 200;

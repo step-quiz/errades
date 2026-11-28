@@ -45,7 +45,7 @@ DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
     --quadricula: #e2ebf7;
     --hover-fons: #ebebeb;
     --hover-vora: #000000;
-    --focus: #8fa3e8;
+    --focus: #3d5bd6; /* 5,7:1 sobre blanc (auditoria E3); contorn de 2 px: només amb el teclat */
     /* La franja de punts on el dit desplaça la pàgina quan es pot encerclar (auditoria T3) i el traç del dit (F3) */
     --punts: #c4ccdc;
     --traca: rgba(47, 69, 184, 0.6);

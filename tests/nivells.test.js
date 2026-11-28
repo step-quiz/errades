@@ -28,7 +28,7 @@ for (const n of [1, 2, 3, 4, 5]) {
 }
 igual([1, 2, 3, 4, 5].map(n => parametres(n, false, 1).anuncia), [true, true, false, true, false], 'es diu quantes n\'hi ha als nivells 1, 2 i 4');
 ok([1, 2, 3, 4, 5].every(n => !parametres(n, true, 1).anuncia), 'amb noerrors no es diu mai');
-igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, encercla: -1, total: 6, maxIntents: 3, llavor: 7, membre: 'membre' }, 'paràmetres de l\'adreça');
+igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, encercla: -1, total: 6, maxIntents: 3, llavor: 7, membre: 'membre', nota: true }, 'paràmetres de l\'adreça');
 ok(llegeixParametres('?escriu=1').escriu === true, 'escriu=1');
 import { encerclaDe } from '../js/motor/parametres.js';
 ok(encerclaDe(llegeixParametres(''), true) && !encerclaDe(llegeixParametres(''), false), 'encercla automàtic: només a les pantalles tàctils');
@@ -46,13 +46,32 @@ for (const nivell of [1, 2, 3, 4, 5])
 // El banc: si n'hi ha exemples que encaixen, en surt més o menys 1 de cada 3
 const delBanc = perPagina(generaExemple({ llavor: 99, nivell: 1, errades: 1 }, TIPUS));
 let delBancN = 0;
-for (let i = 0; i < 600; i++) if (JSON.stringify(exempleSessio(i, { base: 5, nivell: 1, noerrors: false, tipus: TIPUS, banc: [delBanc] })) === JSON.stringify(delBanc)) delBancN++;
+const mateix = (a, b) => JSON.stringify(a.linies) === JSON.stringify(b.linies);
+for (let i = 0; i < 600; i++) if (mateix(exempleSessio(i, { base: 5, nivell: 1, noerrors: false, tipus: TIPUS, banc: [delBanc] }), delBanc)) delBancN++;
 ok(delBancN > 150 && delBancN < 250, `banc: n'hauria de sortir 1 de cada 3 (${delBancN} de 600)`);
 ok(exempleSessio(0, { base: 5, nivell: 4, noerrors: false, tipus: TIPUS, banc: [delBanc] }) !== delBanc || false, 'un exemple d\'una errada no surt al nivell 4');
 let n4 = 0;
-for (let i = 0; i < 100; i++) if (exempleSessio(i, { base: 5, nivell: 4, noerrors: false, tipus: TIPUS, banc: [delBanc] }) === delBanc) n4++;
+for (let i = 0; i < 100; i++) if (mateix(exempleSessio(i, { base: 5, nivell: 4, noerrors: false, tipus: TIPUS, banc: [delBanc] }), delBanc)) n4++;
 ok(n4 === 0, 'el banc només dona exemples que encaixen amb el nivell');
 // Els exemples del banc (data/banc.json) són vàlids
 const banc = JSON.parse(fs.readFileSync(new URL('../data/banc.json', import.meta.url), 'utf8')).exemples;
 ok(Array.isArray(banc), 'data/banc.json té una llista «exemples»');
+// Dins d'una sessió, cap exemple del banc no es repeteix mentre n'hi hagi d'altres (auditoria E1): nivell 4, 4 exemples
+let repetides = 0;
+for (let base = 1; base <= 400; base++) {
+    const ids = [];
+    for (let i = 0; i < 6; i++) {
+        const ex = exempleSessio(i, { base, nivell: 4, noerrors: false, tipus: TIPUS, banc });
+        if (ex.banc) ids.push(ex.banc);
+    }
+    if (ids.length <= 4 && new Set(ids).size !== ids.length) repetides++;
+}
+ok(repetides === 0, `cap exemple del banc repetit en una sessió de 6 (${repetides} sessions amb repeticions)`);
+// Les opcions dels exemples del banc es barregen: la frase certa de «Per què?» no és sempre al mateix lloc
+const llocs = new Set();
+for (let i = 0; i < 300; i++) {
+    const ex = exempleSessio(i, { base: 11, nivell: 1, noerrors: false, tipus: TIPUS, banc });
+    if (ex.banc) for (const e of Object.values(ex.errades)) llocs.add(e.perque.findIndex(o => o[1]));
+}
+ok(llocs.size === 3, 'banc: la frase certa canvia de lloc');
 informe('nivells');

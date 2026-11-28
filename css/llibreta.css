@@ -238,7 +238,7 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     color: var(--text-suau);
 }
 .escrit:focus-visible {
-    outline: 3px solid var(--focus);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
 }
 .teclat {
@@ -595,7 +595,7 @@ html:not(.tacte) .tb:hover {
 }
 .tb.sel,
 .tb:focus-visible {
-    outline: 3px solid var(--focus);
+    outline: 2px solid var(--focus);
 }
 .tags {
     display: flex;

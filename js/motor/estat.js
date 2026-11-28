@@ -10,7 +10,8 @@
  *   i la configuració cfg, i modifiquen S (i el tornen).
  * - Fases: 'busca' → (encert) ['terme'] → 'perque' → 'corregeix' → 'busca' (si en
  *   queden) → 'fi'. La fase 'terme' (R4) demana el terme equivocat de la línia
- *   (a tots els nivells, amb toc o amb traç, si el traç no l'ha encerclat ja). Cada
+ *   (a tots els nivells, amb toc o amb traç, si el traç no l'ha encerclat ja; si la línia només té
+ *   un terme possible, com «x = 5/35», s'encercla sol: auditoria P6). Cada
  *   terme bo triat (també el que s'ha encerclat amb la línia) és un intent fallat; a
  *   cfg.maxIntents s'ensenya el terme, l'exemple val 0 i es continua (el David,
  *   26/11/2026). Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
@@ -116,6 +117,14 @@ function ensenya(S, ex, cfg, k, text) {
     return despres(S, ex, cfg);
 }
 
+/** La línia equivocada i només té un terme que es pugui triar (sense comptar «=» ni una x sola), i és l'equivocat. */
+export function termeUnic(ex, i) {
+    const L = ex.linies[i],
+        e = ex.errades[i];
+    const candidats = L.map((t, j) => j).filter(j => L[j] !== '=' && L[j] !== 'x');
+    return candidats.length === 1 && (e.termes || [e.terme]).includes(candidats[0]);
+}
+
 /** «Comprova» amb la línia seleccionada. */
 export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const i = S.sel;
@@ -145,6 +154,12 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
                 return faseSeguent(S, ex, cfg, 'Molt bé, has localitzat la línia i el terme on hi ha l\'errada.');
             }
             return termeFallat(S, ex, cfg, "Has localitzat la línia correctament, però no el terme. Has de localitzar el terme on hi ha l'errada.");
+        }
+        // Una línia amb un sol terme possible (a més d'una x sola), com «x = 5/35»: la fase del terme no fa pensar
+        // res, i el terme s'encercla sol (auditoria P6, 28/11/2026)
+        if (termeUnic(ex, i)) {
+            S.termes[i] = true;
+            return faseSeguent(S, ex, cfg, 'Molt bé, en aquesta línia hi ha una errada.');
         }
         // la pregunta («Quin terme està malament?») ja és a sota, al mateix bloc (auditoria C2)
         S.msg = { tipus: 'encert', text: 'Molt bé, en aquesta línia hi ha una errada.' };
@@ -285,7 +300,8 @@ export function capMes(S, ex, cfg = CONFIG_PER_DEFECTE) {
     S.msgLinia = null;
     const p = pendents(S, ex);
     if (!p.length) {
-        if (!S.msg || S.msg.tipus !== 'noEncert')
+        // el missatge d'abans només es conserva si diu quina era l'errada ensenyada; si no, «Molt bé…» (auditoria E2)
+        if (!S.msg || S.msg.tipus !== 'noEncert' || !S.ajuda.length)
             S.msg = { tipus: 'encert', text: errades(ex).length ? "Molt bé: no n'hi ha cap més." : 'Molt bé: no hi havia cap errada.' };
         return acaba(S);
     }

@@ -47,6 +47,7 @@ const BASE = `http://127.0.0.1:${servidor.address().port}/`;
 
 // Els exemples que la pàgina farà sortir (generador o banc), calculats igual que pagina.js
 const PAG = await import('../../js/equacions/pagina.js');
+const { termeUnic } = await import('../../js/motor/estat.js');
 const ERRORS = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'errors.json'), 'utf8'));
 const BANC = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'banc.json'), 'utf8')).exemples;
 const sessio = (base, i = 0, nivell = 1, noerrors = false) => PAG.exempleSessio(i, { base, nivell, noerrors, tipus: ERRORS, banc: BANC });
@@ -77,7 +78,8 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const comprovaSel = tactil ? '#llibreta .barra-msg [data-a=comprova]' : '#llibreta .cv [data-a=comprova]';
     const posicions = async () => pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila')].map(f => Math.round(f.getBoundingClientRect().top + scrollY)));
     // fase del terme (a tots els nivells): després de trobar la línia i, toca el terme equivocat
-    const tocaTerme = async (ex, i) => clica(`#llibreta [data-tm="${ex.errades[i].terme}"]`);
+    // (si la línia només té un terme possible, com «x = 5/35», la fase se salta: auditoria P6)
+    const tocaTerme = async (ex, i) => (termeUnic(ex, i) ? null : clica(`#llibreta [data-tm="${ex.errades[i].terme}"]`));
     const lateral = async () => pg.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
     // Índex: fins que no es tria l'activitat, els paràmetres són amagats
@@ -208,9 +210,12 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     {
         // fase del terme amb el teclat: → fins al terme equivocat, Enter
         const ex2 = sessio(11, 1), ids = ex2.linies[errada2].map((t, j) => (t === '=' ? -1 : j)).filter(j => j >= 0);
-        for (let k = 0; k <= ids.indexOf(ex2.errades[errada2].terme); k++) await pg.keyboard.press('ArrowRight');
-        await pg.keyboard.press('Enter');
-        ok(/Has trobat /.test(await pg.textContent('#llibreta .msg')), 'teclat: terme encertat amb ← / →');
+        if (termeUnic(ex2, errada2)) ok((await pg.locator('#llibreta .fase [data-pq]').count()) === 3, 'P6: línia amb un sol terme: directament «Per què?»');
+        else {
+            for (let k = 0; k <= ids.indexOf(ex2.errades[errada2].terme); k++) await pg.keyboard.press('ArrowRight');
+            await pg.keyboard.press('Enter');
+            ok(/Has trobat /.test(await pg.textContent('#llibreta .msg')), 'teclat: terme encertat amb ← / →');
+        }
     }
     await pg.keyboard.press('Enter'); // «Per què?»: primer botó amb focus
     await pg.keyboard.press('Enter'); // «Corregeix-la»: primer botó amb focus
@@ -281,6 +286,13 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     for (const [k, e] of [[0, e1], [1, e2]]) {
         await clica(`#llibreta [data-l="${e}"]`);
         await clica('#llibreta [data-a=comprova]');
+        if (termeUnic(ex4, e)) {
+            ok(/Molt bé, en aquesta línia hi ha una errada/.test(await pg.textContent('#llibreta .msg')) && (await pg.locator('#llibreta .fase [data-pq]').count()) === 3, `nivell 4, errada ${k + 1}: P6, un sol terme, directament «Per què?»`);
+            await pg.waitForTimeout(400);
+            await clica('#llibreta [data-pq="0"]');
+            await clica('#llibreta [data-co="0"]');
+            continue;
+        }
         ok((await pg.locator('#llibreta .tb').count()) > 1, `nivell 4, errada ${k + 1}: els termes de la línia es poden tocar`);
         const bo = ex4.errades[e].terme;
         const bons = ex4.errades[e].termes || [bo];

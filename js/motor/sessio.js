@@ -27,6 +27,8 @@
  *   verd ni vermell; la línia bona, amb la lletra i el bolígraf del professor. Sense
  *   «Copiar codi» (el codi de verificació és l'etapa 3 del projecte). Cap enllaç a
  *   l'índex (E1: és del professorat).
+ * - Amb cfg.nota === false (paràmetre nota=0, auditoria P10), la pantalla final no mostra la nota ni el trofeu:
+ *   només els punts de cada exercici.
  * - Sense codi de verificació (etapa 3).
  * DEPENDÈNCIES: js/motor/llibreta.js, js/comu/seguent.js, js/comu/punts.js.
  * ============================================================================
@@ -160,14 +162,17 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         return `<li class="inf-i ${p === PUNTS_MAX ? 'ok' : 'ko'}"><div class="inf-cap"><b>Exercici ${i + 1}</b><span>${textPunts(p).replace('+', '')}</span></div><div class="inf-enunciat">${fm(lin(ex.linies[0]))}</div>${errs}</li>`;
     }
 
-    /** L'informe (el botó «📋 Informe»): els encerts i les errades, com a operacions. */
+    /**
+     * L'informe (el botó «📋 Informe»): els exercicis amb 10 punts i els que cal repassar. No es diu «Encerts» /
+     * «Errades», perquè «errada» és l'errada de l'alumne fictici (auditoria P9, 28/11/2026).
+     */
     function informe() {
         const ok = [],
             ko = [];
         resultats.forEach((p, i) => (p === PUNTS_MAX ? ok : ko).push(itemInforme(i)));
         final.innerHTML = `<div class="informe"><h2>Resum de les teves respostes</h2>
-<h3 class="inf-t ok">Encerts (${ok.length})</h3><ul class="inf-llista">${ok.join('') || '<li class="inf-buit">Cap encert en aquesta partida.</li>'}</ul>
-<h3 class="inf-t ko">Errades (${ko.length})</h3><ul class="inf-llista">${ko.join('') || '<li class="inf-buit">Cap errada! Partida perfecta 🎉</li>'}</ul>
+<h3 class="inf-t ok">Amb 10 punts (${ok.length})</h3><ul class="inf-llista">${ok.join('') || '<li class="inf-buit">Encara cap exercici amb 10 punts.</li>'}</ul>
+<h3 class="inf-t ko">Per repassar (${ko.length})</h3><ul class="inf-llista">${ko.join('') || '<li class="inf-buit">Res per repassar: partida perfecta 🎉</li>'}</ul>
 ${botons(false)}</div>`;
         lligaBotons();
         final.scrollIntoView({ block: 'start' });
@@ -187,8 +192,8 @@ ${botons(false)}</div>`;
 <div class="final-layout"><div class="final-summary"><ol class="resum">${resultats
             .map((p, i) => `<li><span>Exercici ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`)
             .join('')}</ol>
-<div class="nota"><div class="nota-t">La nota és:</div><div class="nota-v">${notaTxt(v)} / 10</div></div></div>
-<div class="trofeu" aria-hidden="true">🏆</div></div>
+${cfg.nota === false ? '' : `<div class="nota"><div class="nota-t">La nota és:</div><div class="nota-v">${notaTxt(v)} / 10</div></div>`}</div>
+${cfg.nota === false ? '' : '<div class="trofeu" aria-hidden="true">🏆</div>'}</div>
 ${botons()}</div>`;
         lligaBotons();
         final.querySelector('#informe').focus({ preventScroll: true });
