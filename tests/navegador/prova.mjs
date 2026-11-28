@@ -74,7 +74,6 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     });
     // els tocs esperen el bloqueig de 300 ms que hi ha després de cada canvi (auditoria T2)
     const clica = async sel => (await pg.waitForTimeout(330), tactil ? pg.tap(sel) : pg.click(sel));
-    const ara = async sel => (tactil ? pg.tap(sel) : pg.click(sel)); // sense esperar
     const comprovaSel = tactil ? '#llibreta .barra-msg [data-a=comprova]' : '#llibreta .cv [data-a=comprova]';
     const posicions = async () => pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila')].map(f => Math.round(f.getBoundingClientRect().top + scrollY)));
     // fase del terme (a tots els nivells): després de trobar la línia i, toca el terme equivocat
@@ -108,6 +107,12 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const errada = primera(sessio(11, 0));
     const bona = errada === 1 ? 2 : 1;
     ok((await pg.locator('#llibreta [data-a=comprova]').count()) === 0, 'al principi no hi ha cap botó «Comprova»');
+    // Etapa 2: «Exercici n de N», el xip d'intents, els passos i la consigna de cada fase sense canviar d'alçada
+    ok(/Exercici 1 de 2/.test(await pg.textContent('#progres')), 'C11: «Exercici 1 de 2»');
+    ok(/Intents: ●●●/.test(await pg.textContent('#llibreta .chip.intents')), 'C3: «Intents: ●●●»');
+    ok((await pg.textContent('#llibreta .passos li.ara')).includes('Línia'), 'C1: pas d\'ara, «Línia»');
+    const altCap = async () => pg.evaluate(() => Math.round(document.querySelector('#llibreta .cap-ex').getBoundingClientRect().height));
+    const alt0 = await altCap();
     const abans = await posicions();
     await clica(`#llibreta [data-l="${bona}"]`);
     if (tactil) ok((await pg.locator(comprovaSel).count()) === 1, 'mòbil: «Comprova» surt a la barra de baix');
@@ -150,11 +155,29 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     }, errada);
     ok(vista.dins, 'la línia anterior, la línia equivocada i les opcions es veuen a la pantalla');
     ok(vista.opcions === 3, '«Per què?» amb 3 opcions');
+    ok((await pg.textContent('#llibreta .passos li.ara')).includes('Per què') && (await pg.locator('#llibreta .passos li.fet').count()) === 2, 'C1: pas d\'ara, «Per què» (Línia i Terme fets)');
+    ok((await pg.textContent('#llibreta .ins-pila')).includes('Tria per què és una errada.'), 'C1: la consigna diu la tasca d\'ara');
+    ok((await altCap()) === alt0, `C1: la capçalera de l'exercici no canvia d'alçada (${alt0})`);
+    ok((await pg.locator('#llibreta .bloc').count()) === 1 && (await pg.locator('#llibreta .bloc .msg + .fase').count()) === 1, 'C2: el missatge i la pregunta, en un sol bloc');
     ok(vista.atenuades.length === vista.n - 2 && !vista.atenuades.includes(errada) && !vista.atenuades.includes(errada - 1), 'les altres línies queden esvaïdes');
     await clica('#llibreta [data-pq="0"]');
+    {
+        // C6: la resposta de «Per què?» es queda a la vista, amb la triada i la correcta marcades
+        const exS = sessio(11, 0), bonaPq = exS.errades[errada].perque.findIndex(([, b]) => b);
+        ok((await pg.locator('#llibreta .bloc .resposta .resp li').count()) === (bonaPq === 0 ? 1 : 2) && (await pg.locator('#llibreta .resp li.bona').count()) === 1 && (await pg.locator('#llibreta .resp li.triada').count()) === (bonaPq === 0 ? 0 : 1), 'C6: «Per què?» contestada: la triada i la correcta, marcades');
+        ok((await pg.locator('#llibreta .fase [data-co]').count()) === 3, 'C6: i a sota, «Corregeix-la»');
+        globalThis.__bonaPq = bonaPq;
+    }
     await clica('#llibreta [data-co="0"]');
     ok(await pg.isVisible('.franja-final'), 'franja «Següent» a la vista');
     ok(/punts/.test(await pg.textContent('.franja-final')), 'la franja diu els punts');
+    ok(/Exercici finalitzat/.test(await pg.textContent('.franja-final')), 'C4: la franja diu «Exercici finalitzat»');
+    {
+        // C5-A: 2 menys per la línia bona assenyalada i 1 menys per cada resposta equivocada
+        const exS = sessio(11, 0), esp = 10 - 2 - (globalThis.__bonaPq === 0 ? 0 : 1) - (exS.errades[errada].opcions[0][1] ? 0 : 1);
+        ok((await pg.textContent('.franja-final .franja-punts')).includes(`+${esp} punts`), `C5-A: ${esp} punts`);
+        ok((await pg.locator('#llibreta .bloc .resposta').count()) === 2, 'C6: en acabar, les dues respostes es queden a la vista');
+    }
     ok((await pg.locator('#llibreta .corr').count()) === 1, 'la correcció del professor és a la llibreta');
     ok(await pg.locator('#llibreta .ln.enunciat .ex').evaluate(e => !/Kalam/.test(getComputedStyle(e).fontFamily)), "l'enunciat va en lletra d'impremta");
     const ratlles = await pg.evaluate(() => {
@@ -229,7 +252,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.waitForSelector('#llibreta .ln');
     const ex4 = sessio(21, 0, 4);
     const [e1, e2] = Object.keys(ex4.errades).map(Number).sort((a, b) => a - b);
-    ok(/Errades: 2/.test(await pg.textContent('#llibreta .chips')), 'nivell 4: «Errades: 2»');
+    ok(/Trobades: 0 de 2/.test(await pg.textContent('#llibreta .chips')), 'nivell 4: «Trobades: 0 de 2»');
     for (const [k, e] of [[0, e1], [1, e2]]) {
         await clica(`#llibreta [data-l="${e}"]`);
         await clica('#llibreta [data-a=comprova]');
@@ -243,7 +266,8 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         ok(/Has trobat (el|un dels) termes? equivocats?/.test(await pg.textContent('#llibreta .msg')), `nivell 4, errada ${k + 1}: terme encertat`);
         if (k === 0) {
             // T2: un segon toc immediat (doble toc) no respon «Per què?»
-            await ara('#llibreta [data-pq="1"]');
+            // (un clic de punter, detail 1, enviat just després de pintar: el toc real pot trigar més, si la pàgina es desplaça)
+            await pg.evaluate(() => document.querySelector('#llibreta [data-pq="1"]').dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 })));
             ok((await pg.locator('#llibreta .fase [data-pq]').count()) === 3, 'T2: un toc just després de canviar de fase no compta');
         }
         await clica('#llibreta [data-pq="0"]');
@@ -265,7 +289,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await pg.waitForSelector('#llibreta .ln');
     const ex3 = sessio(8, 0, 3);
     const e3 = primera(ex3);
-    ok(!/Errades:/.test(await pg.textContent('#llibreta .chips')), 'nivell 3: no es diu quantes errades hi ha');
+    ok(/Trobades: 0(?! de)/.test(await pg.textContent('#llibreta .chips')), 'nivell 3: no es diu quantes errades hi ha («Trobades: 0»)');
     await clica(`#llibreta [data-l="${e3}"]`);
     await clica('#llibreta [data-a=comprova]');
     await tocaTerme(ex3, e3);
@@ -296,9 +320,18 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(/Molt bé\./.test(await pg.textContent('#llibreta .msg')), `escriu=1: el terme «${bo}» escrit amb el teclat és correcte`);
 
     // Encerclar amb el dit (R3): un cercle al voltant del terme equivocat, i un traç per dues línies
+    // (al mòbil, totes les pàgines d'abans ja eren de traç, i la demostració ja s'havia vist: s'oblida)
+    await pg.evaluate(() => localStorage.removeItem('errades-demo-encercla'));
     await pg.goto(BASE + `equacions.html?encercla=1&totaloperations=1&llavor=${LT_LLAVOR}`);
     await pg.waitForSelector('#llibreta .linies.llac');
     ok(/Encercla la primera línia/.test(await pg.textContent('#llibreta .cap-ex')), 'encercla=1: la consigna diu «Encercla»');
+    // C8: la demostració del traç surt el primer cop en aquest navegador, i després ja no
+    await pg.waitForTimeout(300);
+    ok((await pg.locator('#llibreta .demo ellipse').count()) === 1, 'C8: el primer cop, la demostració del traç');
+    await pg.reload();
+    await pg.waitForSelector('#llibreta .linies.llac');
+    await pg.waitForTimeout(300);
+    ok((await pg.locator('#llibreta .demo').count()) === 0, 'C8: el segon cop (recordat al navegador), ja no surt');
     ok(await pg.evaluate(() => getComputedStyle(document.querySelector('#llibreta .linies .ln')).touchAction === 'none' && getComputedStyle(document.querySelector('#llibreta .linies')).touchAction === 'auto' && getComputedStyle(document.querySelector('#llibreta .linies'), '::before').backgroundImage.includes('radial-gradient')), "T3: sobre les línies el dit dibuixa; a la franja de punts de l'esquerra, desplaça la pàgina");
     const traca = async punts => {
         await pg.mouse.move(punts[0][0], punts[0][1]);
@@ -312,10 +345,12 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     await traca([[b1.x + 40, b1.y + 5], [b1.x + 60, (b1.y + bu.y + bu.height) / 2], [b1.x + 80, bu.y + bu.height - 4]]);
     ok(/^Has de tornar a marcar-ho, perquè/.test(await pg.textContent('#llibreta .msg')), 'traç per moltes línies: «Torna a marcar-ho»');
     const tm = sessio(LT_LLAVOR).errades[LT].terme;
+    // la línia ja triada, i un cercle nou: mentre el dit no s'aixeca, cap línia no es veu marcada (el David, 26/11/2026)
+    // (la posició del terme, després del toc: al mòbil, tocar la línia pot desplaçar la pàgina)
+    await clica(`#llibreta [data-l="${LT}"]`);
+    await pg.waitForTimeout(400);
     const bt = await caixa(`#llibreta .fila[data-i="${LT}"] .ln > .ex [data-j="${tm}"]`);
     const cx = bt.x + bt.width / 2, cy = bt.y + bt.height / 2, rx = bt.width / 2 + 10, ry = bt.height / 2 + 6;
-    // la línia ja triada, i un cercle nou: mentre el dit no s'aixeca, cap línia no es veu marcada (el David, 26/11/2026)
-    await clica(`#llibreta [data-l="${LT}"]`);
     const cercle = Array.from({ length: 25 }, (_, k) => [cx + rx * Math.cos((2 * Math.PI * k) / 24), cy + ry * Math.sin((2 * Math.PI * k) / 24)]);
     await pg.mouse.move(cercle[0][0], cercle[0][1]);
     await pg.mouse.down();

@@ -50,7 +50,7 @@ DEPENDÈNCIES: Cap. S'ha de carregar abans de cap altre CSS.
     --hover-vora: #000000;
     --focus: #8fa3e8;
     /* La franja de punts on el dit desplaça la pàgina quan es pot encerclar (auditoria T3) i el traç del dit (F3) */
-    --punts: #b3bdd2;
+    --punts: #c4ccdc;
     --traca: rgba(47, 69, 184, 0.6);
     /* Blau suau (amb més blanc) per a la barra de dalt i els botons principals (el David, 25/11/2026) */
     --blau: #2f45b8;

@@ -1,5 +1,5 @@
 // tests/estat.test.js — la màquina d'estats d'un exemple (js/motor/estat.js).
-import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, arrossega, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuCorreccio, escriuAra, capMes, punts, arrossega, intentsQueden, CONFIG_PER_DEFECTE } from '../js/motor/estat.js';
 import { ok, igual, informe } from './lib.js';
 
 // L'exemple del David: 2·(x + 4) = 13 − 7x, errada a la línia 2 (índex 1)
@@ -21,9 +21,19 @@ let S = nouEstat();
 tria(S, 1);
 igual([S.fase, S.msg.tipus], ['perque', 'encert'], 'encert → fase «Per què?»');
 triaPerque(S, EX, cfg, 0);
-igual([S.fase, S.msg.tipus], ['corregeix', 'noEncert'], '«Per què?» equivocat → «Corregeix-la», sense treure punts');
+igual([S.fase, S.msg.tipus, punts(S), S.respostes[1].perque], ['corregeix', 'noEncert', 9, 0], '«Per què?» equivocat → «Corregeix-la», 1 punt menys (C5-A) i la resposta es guarda (C6)');
 triaCorreccio(S, EX, cfg, 2);
-igual([S.fi, punts(S), S.corregides[1]], [true, 10, true], 'corregida → fi amb 10 punts');
+igual([S.fi, punts(S), S.corregides[1], S.respostes[1].corregeix], [true, 9, true, 2], 'corregida → fi amb 9 punts');
+S = nouEstat();
+tria(S, 1);
+triaPerque(S, EX, cfg, 1);
+triaCorreccio(S, EX, cfg, 0);
+igual([S.fi, punts(S)], [true, 9], '«Corregeix-la» equivocat: 1 punt menys (C5-A)');
+S = nouEstat();
+tria(S, 1);
+triaPerque(S, EX, cfg, 1);
+triaCorreccio(S, EX, cfg, 2);
+igual([S.fi, punts(S), intentsQueden(S, cfg)], [true, 10, 3], 'tot bé a la primera: 10 punts i 3 intents sense gastar');
 
 // L'enunciat no es pot assenyalar
 S = nouEstat();
@@ -121,13 +131,13 @@ ok(escriuAra(S, EXE, ce), 'amb escriu=1, «Corregeix-la» es fa escrivint');
 escriuCorreccio(S, EXE, ce, '+4');
 igual([S.fi, S.msg.tipus], [false, 'noEncert'], 'escriure malament: es pot tornar a provar');
 escriuCorreccio(S, EXE, ce, '8');
-igual([S.fi, punts(S), S.corregides[1]], [true, 10, true], 'escriure el terme bo: corregida, sense treure punts');
+igual([S.fi, punts(S), S.corregides[1]], [true, 9, true], 'escriure el terme bo al segon intent: corregida, 1 punt menys (C5-A)');
 S = nouEstat();
 troba(S, EXE, ce, 1);
 triaPerque(S, EXE, ce, 1);
 escriuCorreccio(S, EXE, ce, '4');
 escriuCorreccio(S, EXE, ce, '6');
-ok(S.fi && /Havia de ser/.test(S.msg.text), "al segon intent fallit s'ensenya el terme bo");
+ok(S.fi && /Havia de ser/.test(S.msg.text) && punts(S) === 8, "al segon intent fallit s'ensenya el terme bo (2 punts menys)");
 ok(!escriuAra(nouEstat(), EX, ce), 'sense fitxesBona no es pot escriure (es tria)');
 // Dos termes equivocats (SIGNE_TRANSPOSAR amb els dos termes): a la fase del terme valen tots dos
 {

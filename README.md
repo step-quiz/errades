@@ -71,6 +71,12 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as the select «Repartiment: Iguals per a tothom»; it generates the seed, there is no free seed field). |
 | `membre` | `membre`, `costat`, `banda`, `part` | `membre` | Equations only (index row «Paraula»). The word for the two sides of the equation in the «Per què?» sentences, with gender and plural handled (`membre`, `costat` masculine; `banda`, `part` feminine): «a la banda de la dreta», «l'altra banda», «les dues bandes». |
 
+## A calm screen (David, 28/11/2026)
+
+Every addition makes the screen fuller for a 13–15-year-old. Before adding a control, a chip, a label or a
+sentence, look for one to remove or merge; prefer plain text to boxed «pills»; show only what the current step
+needs (e.g. the chips were merged, answered questions keep only two options, the steps are plain text).
+
 ## Nothing moves by itself (audit, 28/11/2026)
 
 David's rule: no small layout movements. The left column of every line (`--aside`: 15 rem at ≥ 1000 px, where the
@@ -84,6 +90,22 @@ After every repaint, pointer clicks are ignored for 300 ms (`BLOQUEIG_MS`, keybo
 tap never answers the question that appears under the finger (audit T2). Hover styles apply only with a mouse:
 `html.tacte` (last pointer was a finger or a pen, set in `llibreta.js`) disables them (audit T1). Touch screens are
 detected with `any-pointer: coarse`, so a touch Chromebook in laptop mode also gets the lasso (audit T4).
+
+## Feedback (audit, 28/11/2026, stage 2)
+
+Beside the notebook's first sentence, two chips: «Trobades: 0 de 1» («Trobades: 0» when the count is not
+announced) and «Intents: ●●○» (the attempts left of `maxintents`, audit C3); under it, the steps of each error as
+plain text (`.passos`: «✓ Línia › Terme › Per què › Corregeix», the current one blue and bold; C1) and the instruction: David's search instruction, or the current phase's
+(`consignaFase()`); both are stacked in one grid cell (`.ins-pila`), the hidden one keeps its height, so the header
+never changes height. Under the line, one block (`.bloc`, C2): the questions already answered (`.resposta`: only the
+chosen option, grey and struck, and the right one, lilac, with «la teva» / «la correcta» / «la teva: és la
+correcta», C6; `S.respostes`),
+the message (what just happened) and the current question (`.fase`). Labels that take no room (`.etiqueta`, C9):
+«Compara-la amb aquesta» on the line above in the term phase, «Aquestes línies arrosseguen l'errada» on the
+bracketed lines. With the lasso, the first time in a browser (`localStorage` `errades-demo-encercla`) a circle draws
+itself around the statement (line 0: no hint) with a caption (C8). Each example is an «Exercici» (`Exercici 1 de 6`,
+C11); the band at its end always says «Exercici finalitzat» and the points (C4). All the new fixed texts are in
+`TEXTOS_ETAPA2` (`js/motor/llibreta.js`).
 
 ## Lasso (R3)
 
@@ -132,8 +154,11 @@ differs from the line above. Level 1: naturals, `+ − · :`, ≤ 5 numbers, no 
 Weights `pes`, in table order: 5, 3, 2, 3, 4, 3, 2, 3, 2. «Corregeix-la» distractors: other rules' lines for the same step, then
 `retoca()` (one result of the correct step computed with another operation, never 0 or invented negatives).
 
-Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if the error had to be shown
-(`puntsAmbErrors` of the shared `punts.js`). Final mark out of 10. No verification code yet (stage 3).
+Points per example (both activities, `punts()` in `js/motor/estat.js`): 10, minus 2 per failed attempt (a correct
+line marked as wrong, a correct term chosen, «No n'hi ha cap més» too early; `puntsAmbErrors` of the shared
+`punts.js`), minus 1 per wrong answer in «Per què?» or «Corregeix-la», typed attempts included (`S.fallades`,
+`PUNTS_PER_FALLADA`; audit C5-A, David 28/11/2026), floor 0; 0 if the error had to be shown. Final mark out of 10.
+No verification code yet (stage 3).
 
 ## How the generator works
 

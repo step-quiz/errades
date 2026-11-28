@@ -25,6 +25,10 @@
  *   (més estretes; al mòbil també «Comprova»), per sobre del contingut (T5).
  *   Tornar a tocar la línia triada = «Comprova» (C10). Després de pintar, 300 ms
  *   sense tocs (T2). El «hover», només amb el ratolí (html.tacte, T1).
+ * - Feedback (auditoria, etapa 2): xip d'intents, passos de cada errada i consigna
+ *   de la fase d'ara (sense canviar l'alçada), un sol bloc sota la línia amb les
+ *   respostes ja contestades a la vista, rètols i la demostració del traç (un cop
+ *   per navegador). Els textos nous, a TEXTOS_ETAPA2.
  * - Dues activitats (cfg.activitat): 'equacions' (cada línia «A = B») i 'prioritat'
  *   (l'enunciat sense «=» i cada línia «= expressió»): parts() separa els membres.
  * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos;
@@ -34,7 +38,7 @@
  * DEPENDÈNCIES: js/motor/estat.js.
  * ============================================================================
  */
-import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable, arrossega } from './estat.js';
+import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable, arrossega, intentsQueden } from './estat.js';
 import { avalua, llargada } from './llac.js';
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -59,6 +63,29 @@ const TEXTOS = {
     equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que, cadascuna, no es pot deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
     prioritat: { fet: 'ha calculat aquesta expressió', on: "on s'ha equivocat", ons: "on s'ha equivocat", teclat: ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '0'], exemple: '12' },
 };
+/**
+ * Els textos fixos de l'auditoria del 28/11/2026, etapa 2 (aprovats pel David, artifact «Auditoria UI/UX»,
+ * categoria X; X2 amb els seus canvis): els passos (C1), la consigna de cada fase (C1), les etiquetes de les respostes
+ * (C6), la demostració del traç (C8) i els rètols (C9).
+ */
+export const TEXTOS_ETAPA2 = {
+    passos: ['Línia', 'Terme', 'Per què', 'Corregeix'],
+    terme: n => `Toca el terme equivocat de la línia ${n}.`,
+    perque: 'Tria per què és una errada.',
+    corregeix: n => `Tria com ha de quedar la línia ${n}.`,
+    escriu: 'Escriu com ha de ser el terme encerclat.',
+    laTeva: 'la teva',
+    laCorrecta: 'la correcta',
+    laTevaCorrecta: 'la teva: és la correcta',
+    trobades: (k, n) => `Trobades: ${k}${n === null ? '' : ` de ${n}`}`,
+    intents: 'Intents',
+    intentsAria: (q, m) => `Et queden ${q} intents de ${m}`,
+    demo: "Així s'encercla: fes una volta amb el dit al voltant de la línia.",
+    compara: 'Compara-la amb aquesta',
+    arrossega: "Aquestes línies arrosseguen l'errada",
+};
+const DEMO_CLAU = 'errades-demo-encercla'; // localStorage: la demostració del traç ja s'ha vist en aquest navegador (C8)
+let demoFeta = false; // i, en tot cas, només un cop per pàgina
 /** Un text amb fórmules entre $…$ i **negreta** (les frases de «Per què?»). */
 export const txt = s =>
     String(s)
@@ -180,7 +207,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (trobada) marques += `<span class="mk e" title="Línia amb errada">✗</span>`;
         else if (revisada || bonaFinal) marques += '<span class="mk c" title="Línia correcta">✓</span>';
         const corr = trobada && S.corregides[i] ? correccio(ex.errades[i].bona) : '';
-        const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}`;
+        // la línia de sobre, a la fase del terme: un rètol que no ocupa lloc (C9)
+        const ref = cls.includes(' ref') ? `<span class="etiqueta" aria-hidden="true">${esc(TEXTOS_ETAPA2.compara)}</span>` : '';
+        const dins = `<span class="n">${i}</span>${expr(i)}<span class="tags">${marques}</span>${corr}${ref}`;
         const ln = seleccionable(S, ex, i)
             ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`
             : `<div class="${cls}"${i === 0 ? ' title="A l\'enunciat no pot haver-hi cap errada"' : ''}>${dins}</div>`;
@@ -193,6 +222,94 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     }
 
     const msgHTML = () => `<div class="msg ${S.msg.tipus}" role="status" aria-live="polite">${txt(S.msg.text)}</div>`;
+
+    /** Una pregunta ja contestada: la triada i la correcta, marcades amb text (C6, R1). */
+    function respostaHTML(titol, opcions, triada, format, cls = '') {
+        const T2 = TEXTOS_ETAPA2;
+        // només la triada i la correcta: la tercera no hi afegeix res (pantalla més neta, el David 28/11/2026)
+        return `<div class="resposta"><p class="resposta-t">${esc(titol)}</p><ul class="resp">${opcions
+            .map(([t, bona], j) => {
+                if (!bona && j !== triada) return '';
+                const et = bona ? (j === triada ? T2.laTevaCorrecta : T2.laCorrecta) : T2.laTeva;
+                return `<li class="${bona ? 'bona' : 'triada'}"><span class="tx${cls}">${format(t)}</span><span class="et">${esc(et)}</span></li>`;
+            })
+            .join('')}</ul></div>`;
+    }
+
+    /**
+     * Tot el que va sota la línia i, en un sol bloc (C2): les preguntes ja contestades (C6), el missatge (el que acaba
+     * de passar) i la pregunta d'ara. Sense res de tot això, només el missatge.
+     */
+    function blocHTML(i) {
+        const e = ex.errades[i],
+            r = S.respostes[i] || {},
+            ara = S.actual === i && !S.fi && S.fase !== 'busca';
+        let h = '';
+        if (e && r.perque !== undefined) h += respostaHTML('Per què és una errada?', e.perque, r.perque, txt);
+        if (e && r.corregeix !== undefined) h += respostaHTML(`Com hauria de quedar la línia ${i} per ser correcta?`, e.opcions, r.corregeix, fm, ' mat');
+        h += msgHTML();
+        if (ara) h += faseHTML();
+        return `<div class="sota"><div class="bloc">${h}</div></div>`;
+    }
+
+    /** Els passos de cada errada, amb el d'ara marcat (C1): ✓ Línia › Terme › Per què › Corregeix. */
+    function pasHTML() {
+        const P = TEXTOS_ETAPA2.passos.filter((p, k) => (k === 2 ? cfg.perque : k === 3 ? cfg.corregeix : true));
+        const ara = S.fi ? P.length : { busca: 0, terme: 1, perque: 2, corregeix: cfg.perque ? 3 : 2 }[S.fase] ?? 0;
+        // text simple, sense requadres: «✓ Línia › Terme › Per què › Corregeix» (pantalla més neta, el David 28/11/2026)
+        return `<ol class="passos" aria-label="Passos">${P.map(
+            (p, k) => `<li class="${k < ara ? 'fet' : k === ara ? 'ara' : ''}"${k === ara ? ' aria-current="step"' : ''}>${k < ara ? '✓ ' : ''}${esc(p)}</li>`
+        ).join('')}</ol>`;
+    }
+
+    /** Què ha de fer ara l'alumne, a les fases (C1); a la fase de buscar, la consigna del David. */
+    function consignaFase() {
+        if (S.fi || S.fase === 'busca') return null;
+        const T2 = TEXTOS_ETAPA2;
+        if (S.fase === 'terme') return T2.terme(S.actual);
+        if (S.fase === 'perque') return T2.perque;
+        return escriuAra(S, ex, cfg) ? T2.escriu : T2.corregeix(S.actual);
+    }
+
+    /**
+     * La demostració del traç (C8): el primer cop en aquest navegador, un cercle es dibuixa sol al voltant de
+     * l'enunciat (la línia 0, que no pot tenir cap errada: no dona cap pista) i s'esborra.
+     */
+    function demo() {
+        if (demoFeta || !cfg.encercla) return;
+        try {
+            if (localStorage.getItem(DEMO_CLAU)) return;
+        } catch (e) {
+            /* sense localStorage, es mostra cada cop que s'obre la pàgina */
+        }
+        const lin = contenidor.querySelector('.linies'),
+            ts = [...contenidor.querySelectorAll('.fila[data-i="0"] .ex .t')].filter(t => t.textContent.trim());
+        if (!lin || !ts.length || S.sel !== null || S.msg || S.fase !== 'busca') return;
+        demoFeta = true;
+        try {
+            localStorage.setItem(DEMO_CLAU, '1');
+        } catch (e) {
+            /* res */
+        }
+        const r = lin.getBoundingClientRect(),
+            q = ts.map(t => t.getBoundingClientRect()),
+            x0 = Math.min(...q.map(b => b.left)) - r.left,
+            x1 = Math.max(...q.map(b => b.right)) - r.left,
+            y0 = Math.min(...q.map(b => b.top)) - r.top,
+            y1 = Math.max(...q.map(b => b.bottom)) - r.top;
+        const cx = (x0 + x1) / 2,
+            cy = (y0 + y1) / 2,
+            rx = (x1 - x0) / 2 + 22,
+            ry = (y1 - y0) / 2 + 10;
+        const el = document.createElement('div');
+        el.className = 'demo';
+        el.setAttribute('aria-hidden', 'true');
+        el.innerHTML = `<svg><ellipse pathLength="1" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" transform="rotate(-4 ${cx.toFixed(1)} ${cy.toFixed(1)})"/></svg><span class="etiqueta" style="left:${Math.max(0, cx - rx).toFixed(0)}px;top:${(cy + ry + 6).toFixed(0)}px">${esc(TEXTOS_ETAPA2.demo)}</span>`;
+        lin.append(el);
+        const treu = () => el.remove();
+        setTimeout(treu, 4200);
+        contenidor.addEventListener('pointerdown', treu, { once: true });
+    }
     /** Un missatge de la fase de buscar (la línia bona, «revisa les de sobre», el traç…): no obre cap fase sota la línia. */
     const msgBusca = () => !!S.msg && !S.fi && S.fase === 'busca';
     let filaMsg = null; // la fila on va el missatge, a les pantalles amples (la calcula pinta())
@@ -213,8 +330,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         // errades compensades: la línia s'ha de comparar amb la de sobre tal com està escrita (el David, 26/11/2026)
         const k = arrossega(ex, S.actual),
             avis = k === null ? '' : `<p class="pista">Compara-la amb la línia ${S.actual - 1} tal com està escrita, encara que arrossegui l'errada de la línia ${k}.</p>`;
-        if (S.fase === 'terme')
-            return `<div class="fase"><h3>Quin terme està malament?</h3><p class="pista">Toca'l a la línia ${S.actual}.</p>${avis}</div>`;
+        // «Toca'l a la línia N» ja no hi és: ho diu la consigna de dalt (auditoria C1, C2)
+        if (S.fase === 'terme') return `<div class="fase"><h3>Quin terme està malament?</h3>${avis}</div>`;
         if (S.fase === 'perque')
             return `<div class="fase"><h3>Per què és una errada?</h3>${avis}<div class="opc">${e.perque
                 .map(([t], j) => `<button type="button" class="b" data-pq="${j}">${txt(t)}</button>`)
@@ -251,19 +368,23 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const teniaFocus = contenidor.contains(document.activeElement) || document.activeElement === contenidor;
         const [f1, f2] = consigna();
         let h = `<div class="cap-ex"><div class="fila-ins"><p class="ins">${esc(f1)}</p><div class="chips">`;
-        if (cfg.anuncia) h += `<span class="chip">Errades: ${n}</span>`;
-        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies${llacActiu() ? ' llac' : ''}${cfg.encercla ? ' encercla' : ''}">`;
+        // un sol xip per a les errades (pantalla més neta, el David 28/11/2026): «Trobades: 0 de 1», o «Trobades: 0»
+        const q = intentsQueden(S, cfg);
+        h += `<span class="chip">${esc(TEXTOS_ETAPA2.trobades(S.trobades.length, cfg.anuncia ? n : null))}</span><span class="chip intents" aria-label="${esc(TEXTOS_ETAPA2.intentsAria(q, cfg.maxIntents))}">${esc(TEXTOS_ETAPA2.intents)}: <span class="punts-i">${'●'.repeat(q)}${'○'.repeat(cfg.maxIntents - q)}</span></span></div></div>`;
+        // La consigna de la fase d'ara (C1); la del David hi és sempre, amagada a les fases, perquè l'alçada no canviï
+        const cf = consignaFase();
+        h += `${pasHTML()}<div class="ins-pila"><p class="ins${cf ? ' amagat' : ''}">${esc(f2)}</p>${cf ? `<p class="ins">${esc(cf)}</p>` : ''}</div></div><div class="linies${llacActiu() ? ' llac' : ''}${cfg.encercla ? ' encercla' : ''}">`;
         const arr = inicArrossega();
         const mb = msgBusca();
         filaMsg = mb && AMPLE.matches ? (S.msgLinia ?? 1) : null;
         let msgPosat = false;
         for (let i = 0; i < ex.linies.length; i++) {
-            if (i === arr) h += '<div class="arrossega">';
+            if (i === arr) h += `<div class="arrossega"><span class="etiqueta" aria-hidden="true">${esc(TEXTOS_ETAPA2.arrossega)}</span>`;
             h += liniaHTML(i);
             // El missatge i la fase, just a sota de la línia de què parlen: així la línia anterior, la línia,
             // el missatge i les opcions queden junts i caben a la pantalla. Els de la fase de buscar no hi van (T5).
             if (S.msg && !mb && S.msgLinia === i) {
-                h += `<div class="sota">${msgHTML()}${S.actual === i ? faseHTML() : ''}</div>`;
+                h += blocHTML(i);
                 msgPosat = true;
             }
         }
@@ -485,7 +606,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     // en passar d'una mida de pantalla a una altra, el missatge i «Comprova» canvien de lloc
     AMPLE.addEventListener('change', pinta);
     ESTRET.addEventListener('change', pinta);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(alinea);
+    // la demostració del traç, quan les lletres ja hi són (el cercle es calcula sobre la mida real dels termes)
+    if (document.fonts && document.fonts.ready)
+        document.fonts.ready.then(() => {
+            alinea();
+            demo();
+        });
+    else demo();
     pinta();
     return {
         estat: S,

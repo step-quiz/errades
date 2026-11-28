@@ -48,6 +48,10 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     gap: 8px;
     flex-wrap: wrap;
 }
+.chip.intents .punts-i {
+    letter-spacing: 1px;
+    color: var(--blau);
+}
 .chip {
     font-size: 14px;
     padding: 3px 10px;
@@ -172,10 +176,10 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     width: var(--aside);
     border-radius: 10px;
     background-color: var(--paper);
-    background-image: radial-gradient(circle, var(--punts) 1.2px, transparent 1.7px), radial-gradient(circle, var(--punts) 1.2px, transparent 1.7px);
+    background-image: radial-gradient(circle, var(--punts) 1px, transparent 1.5px), radial-gradient(circle, var(--punts) 1px, transparent 1.5px);
     background-size: 14px 24.25px;
     background-position: 0 0, 7px 12.12px;
-    box-shadow: inset 0 0 0 1px var(--vora);
+    box-shadow: inset 0 0 0 1px var(--quadricula);
 }
 /* Esvaïdes al 25 % (el David, 25/11/2026): les que no compten en una fase i les que vénen d'una errada */
 .fila.atenua,
@@ -205,6 +209,11 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     border: 1.5px solid var(--vora);
     border-radius: 10px;
 }
+.escrit::placeholder {
+    /* el text d'exemple, amb la lletra de la interfície: no sembla una resposta escrita (F2) */
+    font: italic 16px var(--lletra-ui);
+    color: var(--text-suau);
+}
 .escrit:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
@@ -231,6 +240,110 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     margin: -4px 0 0;
     color: var(--text-suau);
 }
+/* Els passos de cada errada (C1): text simple, sense requadres; el d'ara en blau i negreta, els fets amb ✓ */
+.passos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    list-style: none;
+    margin: 6px 0 4px;
+    padding: 0;
+    font: 500 14px/1.4 var(--lletra-ui);
+    color: var(--text-suau);
+}
+.passos li + li::before {
+    content: '›';
+    margin: 0 8px;
+    color: var(--vora);
+    font-weight: 700;
+}
+.passos li.fet {
+    color: var(--text);
+}
+.passos li.ara {
+    color: var(--blau);
+    font-weight: 800;
+}
+/* La consigna: la del David i la de la fase d'ara, una sobre l'altra; la que no toca, amagada però ocupant lloc,
+   perquè l'alçada no canviï mai (C1, regla «res no es mou») */
+.ins-pila {
+    display: grid;
+}
+.ins-pila > .ins {
+    grid-area: 1 / 1;
+}
+.ins.amagat {
+    visibility: hidden;
+}
+/* Rètols que no ocupen lloc, enganxats a la vora de dalt (C9) i el de la demostració del traç (C8) */
+.etiqueta {
+    position: absolute;
+    z-index: 4;
+    top: -0.85em;
+    right: 3.5rem;
+    padding: 1px 9px;
+    border: 1px solid var(--vora);
+    border-radius: 999px;
+    background: var(--paper);
+    font: 600 12px/1.5 var(--lletra-ui);
+    color: var(--text-suau);
+    white-space: nowrap;
+    pointer-events: none;
+}
+.arrossega > .etiqueta {
+    top: -0.6em;
+}
+.demo {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    animation: demo-fon 4.2s ease-in forwards;
+}
+.demo svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+.demo ellipse {
+    fill: none;
+    stroke: var(--traca);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: demo-dibuixa 1.4s ease-in-out 0.4s forwards;
+}
+.demo .etiqueta {
+    right: auto;
+    color: var(--blau);
+    border-color: var(--blau);
+    white-space: normal;
+    max-width: 22rem;
+}
+@keyframes demo-dibuixa {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+@keyframes demo-fon {
+    0%,
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .demo,
+    .demo ellipse {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+}
 .sota {
     margin-left: calc(var(--aside) + min(8px, var(--aside)));
 }
@@ -238,6 +351,7 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     margin-left: 0;
 }
 .ln {
+    position: relative;
     display: grid;
     grid-template-columns: 2.4em minmax(0, 1fr) 3rem;
     align-items: center;
@@ -539,12 +653,78 @@ i {
 .msg:empty {
     display: none;
 }
-.fase {
+/* Sota la línia, un sol bloc (auditoria C2): les preguntes ja contestades, el missatge (el que acaba de passar) i la
+   pregunta d'ara (.fase) */
+.bloc {
     margin-top: 14px;
     padding: 14px 16px;
     border: 1.5px solid var(--vora);
     border-radius: 12px;
     background: var(--paper);
+}
+.bloc > .msg {
+    margin: 0;
+}
+.bloc > .msg + .fase,
+.bloc > .resposta + .msg,
+.bloc > .resposta + .resposta {
+    margin-top: 14px;
+}
+/* Una pregunta ja contestada (C6): totes les opcions, desactivades; la triada i la correcta, amb text (R1: lila =
+   correcte, gris = no; mai vermell ni verd) */
+.resposta-t {
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-suau);
+}
+.resp {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+}
+.resp li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 10px;
+    padding: 6px 12px;
+    border: 1.5px solid var(--vora);
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--text-suau);
+}
+.resp li .tx.mat {
+    font: 19px var(--lletra-alumne);
+    color: var(--tinta);
+}
+.resp li.triada {
+    background: var(--noencert-fons);
+    border-color: var(--noencert);
+}
+.resp li.triada .tx {
+    text-decoration: line-through;
+    text-decoration-color: var(--noencert);
+}
+.resp li.bona {
+    background: var(--encert-fons);
+    border-color: var(--encert);
+    color: var(--text);
+}
+.resp li.bona .tx {
+    text-decoration: none;
+}
+.resp .et {
+    margin-left: auto;
+    font: 700 12px var(--lletra-ui);
+    white-space: nowrap;
+    color: var(--noencert);
+}
+.resp li.bona .et {
+    color: var(--encert);
 }
 .fase h3 {
     margin: 0 0 10px;

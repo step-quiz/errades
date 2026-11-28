@@ -7,7 +7,8 @@
  * ARQUITECTURA:
  * - iniciaSessio({ llibreta, progres, final, total, exemple, cfg }) on
  *   exemple(i) torna l'exemple i-èsim (0, 1, …) del generador de l'activitat.
- * - Cada exemple s'acaba amb mostraSeguent() de js/comu/seguent.js: la
+ * - Cada exemple (un «exercici», auditoria C11) s'acaba amb mostraSeguent() de
+ *   js/comu/seguent.js, amb el títol «Exercici finalitzat» i els punts (C4): la
  *   llibreta es queda a la vista fins que l'alumne prem «Següent» (o Enter).
  * - Nota final sobre 10: punts / (10 · N) · 10, amb coma decimal.
  * - Sense codi de verificació (etapa 3).
@@ -28,7 +29,7 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
 
     function posaProgres() {
         const fets = resultats.reduce((s, r) => s + r, 0);
-        progres.textContent = `Activitat ${index + 1} de ${total} · ${textPunts(fets).replace('+', '')}`;
+        progres.textContent = `Exercici ${index + 1} de ${total} · ${textPunts(fets).replace('+', '')}`;
     }
 
     function obre(i) {
@@ -48,7 +49,8 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
                     encert: p > 0,
                     ultima,
                     lloc: llibreta.parentElement,
-                    titol: p > 0 ? 'Molt bé!' : "T'he ensenyat l'errada",
+                    // sempre el mateix títol: els punts ja diuen com ha anat (auditoria C4, el David, 28/11/2026)
+                    titol: 'Exercici finalitzat',
                     onSeguent: () => (ultima ? acaba() : obre(i + 1)),
                 });
             },
@@ -73,7 +75,7 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         final.innerHTML = `<h2>Has acabat.</h2>
 <p class="nota"><span>Nota</span><strong>${notaTxt(v)}</strong></p>
 <p>${fets} punts de ${PUNTS_MAX * total} possibles.</p>
-<ol class="resum">${resultats.map((p, i) => `<li><span>Activitat ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>
+<ol class="resum">${resultats.map((p, i) => `<li><span>Exercici ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>
 <div class="acc"><button type="button" class="b pri" id="torna">Torna a començar</button><a class="b" href="index.html">Tria una altra activitat</a></div>`;
         final.querySelector('#torna').addEventListener('click', () => {
             resultats.length = 0;

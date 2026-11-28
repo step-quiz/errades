@@ -18,9 +18,12 @@
  * - Escala (docs/SPEC.md §2, F1/F2/F3): cada línia bona assenyalada s'explica
  *   i queda marcada (revisades); des del segon error s'hi afegeix cap on és
  *   l'errada; a cfg.maxIntents errors s'ensenya l'errada i l'exemple val 0.
- * - Punts: puntsAmbErrors(errors) de js/comu/punts.js (10, 2 menys per error);
- *   0 si s'ha hagut d'ensenyar alguna errada. «Per què?» i «Corregeix-la» no
- *   compten (E5).
+ * - Punts: puntsAmbErrors(errors) de js/comu/punts.js (10, 2 menys per error), i
+ *   1 menys per cada resposta equivocada a «Per què?» o a «Corregeix-la» (també
+ *   escrivint): S.fallades (auditoria C5-A, el David, 28/11/2026; abans no
+ *   comptaven, E5). Com a mínim 0; 0 si s'ha hagut d'ensenyar alguna errada.
+ * - S.respostes[i] = { perque, corregeix }: el que l'alumne ha triat a cada fase
+ *   de la línia i (la llibreta ho deixa a la vista, marcat; C6).
  * - Missatges: { tipus: 'encert' | 'noEncert' | 'info', text } i S.msgLinia, la línia
  *   de què parla (la llibreta el posa just a sota d'aquella línia; null = a baix) (R1: colors
  *   d'encert / no encert, mai vermell ni verd). Text amb $…$ per a les fórmules.
@@ -42,10 +45,14 @@ export const arrossega = (ex, i) => (ex.compensades ? (errades(ex).filter(k => k
 
 export function nouEstat() {
     // ltermes / traca: els termes encerclats i el traç (R3), mentre la línia encerclada espera «Comprova»
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
+    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fallades: 0, respostes: {}, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
 }
 
-export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
+/** Una resposta equivocada a «Per què?» o a «Corregeix-la» treu aquests punts (auditoria C5-A). */
+export const PUNTS_PER_FALLADA = 1;
+export const punts = S => (S.ajuda.length ? 0 : Math.max(0, puntsAmbErrors(S.errors) - PUNTS_PER_FALLADA * S.fallades));
+/** Els intents que queden per trobar les errades (línies i termes; «Per què?» i «Corregeix-la» no en gasten). */
+export const intentsQueden = (S, cfg = CONFIG_PER_DEFECTE) => Math.max(0, cfg.maxIntents - S.errors);
 
 /**
  * Es pot assenyalar la línia i? L'enunciat (línia 0) mai: no hi pot haver cap errada (el David, 25/11/2026).
@@ -139,7 +146,8 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
             }
             return termeFallat(S, ex, cfg, "Has localitzat la línia correctament, però no el terme. Has de localitzar el terme on hi ha l'errada.");
         }
-        S.msg = { tipus: 'encert', text: 'Molt bé, en aquesta línia hi ha una errada: ara selecciona quin és el terme equivocat.' };
+        // la pregunta («Quin terme està malament?») ja és a sota, al mateix bloc (auditoria C2)
+        S.msg = { tipus: 'encert', text: 'Molt bé, en aquesta línia hi ha una errada.' };
         return S;
     }
     // una línia bona
@@ -147,7 +155,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     const p = pendents(S, ex);
     if (S.errors >= cfg.maxIntents) {
         if (p.length) return ensenya(S, ex, cfg, p[0], 'Tampoc és aquí.');
-        S.msg = { tipus: 'noEncert', text: 'En aquesta activitat totes les línies eren correctes i no hi havia cap errada.' };
+        S.msg = { tipus: 'noEncert', text: 'En aquest exercici totes les línies eren correctes i no hi havia cap errada.' };
         S.msgLinia = null;
         S.ajuda.push(-1);
         return acaba(S);
@@ -213,6 +221,8 @@ export function triaPerque(S, ex, cfg, j) {
     if (S.fase !== 'perque') return S;
     const e = ex.errades[S.actual],
         bona = !!(e.perque[j] && e.perque[j][1]);
+    S.respostes[S.actual] = { ...S.respostes[S.actual], perque: j };
+    if (!bona) S.fallades++;
     S.msg = { tipus: bona ? 'encert' : 'noEncert', text: (bona ? 'És cert. ' : 'No és cert. ') + e.expl };
     if (cfg.corregeix) {
         S.fase = 'corregeix';
@@ -236,6 +246,7 @@ export function escriuCorreccio(S, ex, cfg, text) {
         return despres(S, ex, cfg);
     }
     S.intentsEscriu++;
+    S.fallades++;
     if (S.intentsEscriu >= 2) {
         S.corregides[S.actual] = true;
         S.msg = { tipus: 'noEncert', text: `No. Havia de ser $${bo}$, i la línia quedaria així: $${e.bona}$.` };
@@ -249,6 +260,8 @@ export function triaCorreccio(S, ex, cfg, j) {
     if (S.fase !== 'corregeix') return S;
     const e = ex.errades[S.actual],
         bona = !!(e.opcions[j] && e.opcions[j][1]);
+    S.respostes[S.actual] = { ...S.respostes[S.actual], corregeix: j };
+    if (!bona) S.fallades++;
     S.corregides[S.actual] = true;
     S.msg = bona
         ? { tipus: 'encert', text: 'Molt bé.' }
