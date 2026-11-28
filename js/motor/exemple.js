@@ -15,32 +15,40 @@
  *   en ordre) i, si no n'hi ha prou, retocades (fins a 40 intents). Crida l'atzar sempre en el
  *   mateix ordre que el codi que substitueix: les mateixes llavors donen els mateixos exemples.
  * - termesEquivocats(malF, bonaF, marca): el terme (i els termes) que s'han d'encerclar.
- * - NOMS, triaPonderada(r, llista, pes), frasaCorrecta(escrits), notaCompensades(…),
+ * - triaPerTipus(r, cs) i tipusSessio(base, i, tipus): P2, vegeu les funcions.
+ * - NOMS, frasaCorrecta(escrits), notaCompensades(…),
  *   problemesErrada(j, e) (les comprovacions de valida() que són iguals a tot arreu),
  *   perPagina(ex) (l'exemple sense les dades internes).
  * DEPENDÈNCIES: js/motor/atzar.js, js/motor/util.js.
  * ============================================================================
  */
-import { barreja } from './atzar.js';
+import { barreja, tria, creaAtzar } from './atzar.js';
 import { llista } from './util.js';
 
 export const DISTRACTORS_PERQUE = 2;
 
 export const opcionsPerque = (r, bona, dolentes) => barreja(r, [[bona, true], ...barreja(r, dolentes).slice(0, DISTRACTORS_PERQUE).map(t => [t, false])]);
 
+/** Per a les proves (tests/estadistica.test.js, P5): d'on surten les opcions falses de «Corregeix-la» que es mostren. */
+export const DIAGNOSI_CORREGEIX = { actiu: false, retoca: 0, concepcio: 0 };
+
 /** «Corregeix-la»: la línia bona i dues de dolentes, totes diferents i que no valguin el mateix que la línia d'abans. */
 export function opcionsCorregeix(r, { bona, mala, text, admet, alternatives, retoca }) {
     const vistes = new Set([text(bona), text(mala)]);
     const dolentes = [];
-    const afegeix = l => {
+    const retocades = new Set();
+    const afegeix = (l, ret) => {
         if (l && admet(l) && !vistes.has(text(l))) {
             vistes.add(text(l));
             dolentes.push(text(l));
+            if (ret) retocades.add(text(l));
         }
     };
     for (const fes of alternatives) afegeix(fes());
-    for (let i = 0; dolentes.length < 2 && i < 40; i++) afegeix(retoca());
-    return barreja(r, [[text(bona), true], ...barreja(r, dolentes).slice(0, 2).map(t => [t, false])]);
+    for (let i = 0; dolentes.length < 2 && i < 40; i++) afegeix(retoca(), true);
+    const triades = barreja(r, dolentes).slice(0, 2);
+    if (DIAGNOSI_CORREGEIX.actiu) for (const t of triades) DIAGNOSI_CORREGEIX[retocades.has(t) ? 'retoca' : 'concepcio']++;
+    return barreja(r, [[text(bona), true], ...triades.map(t => [t, false])]);
 }
 
 /** El primer terme diferent de la línia bona (o el que diu la regla, marca) i, si n'hi ha més d'un, tots. */
@@ -54,15 +62,28 @@ export function termesEquivocats(malF, bonaF, marca = null) {
 
 export const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol', 'la Fàtima', 'en Youssef', 'la Lucía', 'en Wei', "l'Ilyas", "l'Andrea", 'la Nerea', 'en Bilal'];
 
-/** Una regla a l'atzar, amb el pes de cadascuna. */
-export function triaPonderada(r, llista, pes) {
-    const total = llista.reduce((s, c) => s + pes(c), 0);
-    let x = r() * total;
-    for (const c of llista) {
-        x -= pes(c);
-        if (x < 0) return c;
-    }
-    return llista[llista.length - 1];
+/**
+ * Una injecció a l'atzar: primer el tipus d'errada (tots els que es poden aplicar valen igual: auditoria 2, P2,
+ * el David 28/11/2026; o el primer de prefereix que es pugui aplicar), després la línia i, al final, una de les possibles.
+ */
+export function triaPerTipus(r, cs, prefereix = []) {
+    const ids = [...new Set(cs.map(c => c.id))];
+    // si n'hi ha cap dels preferits (les cartes que vénen de la baralla de la sessió), el primer
+    const id = prefereix.find(t => ids.includes(t)) || tria(r, ids);
+    // i de les línies on es pot posar, una a l'atzar: que l'errada no caigui gairebé sempre a la mateixa (P1)
+    const delTipus = cs.filter(c => c.id === id);
+    const j = tria(r, [...new Set(delTipus.map(c => c.j))]);
+    return tria(r, delTipus.filter(c => c.j === j));
+}
+
+/**
+ * El tipus d'errada que es vol a l'exercici i d'una sessió (P2): els tipus surten com les cartes d'una baralla
+ * barrejada amb la llavor de la sessió, i no se'n repeteix cap fins que no han sortit tots.
+ */
+export function tipusSessio(base, i, tipus) {
+    if (!tipus || !tipus.length) return null;
+    const volta = Math.floor(i / tipus.length);
+    return barreja(creaAtzar(((base ^ 0x1f3a5c7e) + volta * 15485863) >>> 0), tipus)[i % tipus.length];
 }
 
 /** «Aquesta línia és correcta, perquè és correcte haver escrit $a$ i també és correcte haver escrit $b$.» */

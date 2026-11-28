@@ -2,7 +2,7 @@
 import { ok, informe } from './lib.js';
 import { esc, menys, llista } from '../js/motor/util.js';
 import { NIVELLS, capcalera } from '../js/motor/nivells.js';
-import { termesEquivocats, triaPonderada, frasaCorrecta, notaCompensades, problemesErrada } from '../js/motor/exemple.js';
+import { termesEquivocats, triaPerTipus, tipusSessio, frasaCorrecta, notaCompensades, problemesErrada } from '../js/motor/exemple.js';
 import { llavorExercici } from '../js/motor/activitat.js';
 import { creaAtzar } from '../js/motor/atzar.js';
 
@@ -25,10 +25,17 @@ for (const act of ['equacions', 'prioritat']) for (let n = 1; n <= 5; n++) ok(!/
 const t = termesEquivocats(['=', '2', '+', '5'], ['=', '2', '+', '3']);
 ok(t.terme === 3 && t.termes.length === 1 && t.termes[0] === 3, 'termesEquivocats: un terme');
 ok(termesEquivocats(['a', '=', 'b'], ['c', '=', 'd'], [2]).terme === 2, 'termesEquivocats: la marca mana');
+// P2: tots els tipus valen igual, encara que un tingui moltes més injeccions possibles; la preferència mana
 const r = creaAtzar(7);
 const compta = { a: 0, b: 0 };
-for (let i = 0; i < 3000; i++) compta[triaPonderada(r, [{ id: 'a' }, { id: 'b' }], c => (c.id === 'a' ? 3 : 1)).id]++;
-ok(compta.a > 2 * compta.b, `triaPonderada respecta els pesos (${compta.a}/${compta.b})`);
+const cs = [{ id: 'a', j: 1 }, { id: 'a', j: 1 }, { id: 'a', j: 2 }, { id: 'a', j: 2 }, { id: 'b', j: 3 }];
+for (let i = 0; i < 4000; i++) compta[triaPerTipus(r, cs).id]++;
+ok(Math.abs(compta.a - compta.b) < 300, `triaPerTipus: pesos iguals per tipus (${compta.a}/${compta.b})`);
+ok(triaPerTipus(r, cs, ['c', 'b']).id === 'b', 'triaPerTipus: el primer preferit que es pot aplicar');
+// P2: la baralla de la sessió: cap tipus repetit fins que no han sortit tots
+const baralla = ['A', 'B', 'C', 'D', 'E'];
+ok([0, 1, 2].every(v => new Set(baralla.map((t, k) => tipusSessio(99, v * 5 + k, baralla))).size === 5), 'tipusSessio: cada volta, tots els tipus un cop');
+ok(tipusSessio(99, 3, []) === null, 'tipusSessio sense tipus');
 ok(frasaCorrecta(['$2$', '$3$']) === 'Aquesta línia és correcta, perquè és correcte haver escrit $2$ i també és correcte haver escrit $3$.', 'frasaCorrecta');
 ok(frasaCorrecta([]) === 'Aquesta línia és correcta, perquè tot és correcte.', 'frasaCorrecta sense res');
 ok(/^El resultat \$7\$ és correcte, .* el càlcul és incorrecte, encara que doni el resultat correcte per casualitat\.$/.test(notaCompensades(7, { art: 'el resultat', adj: 'correcte' }, { art: 'el càlcul', adj: 'incorrecte' })), 'notaCompensades');

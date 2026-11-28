@@ -33,7 +33,7 @@
 
 import { perque as frasesPerque } from './frases.js';
 import { creaAtzar, enter, tria, signe, barreja } from '../motor/atzar.js';
-import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPonderada, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
+import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPerTipus, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
 import { menys, llista } from '../motor/util.js';
 
 export { perPagina };
@@ -365,10 +365,14 @@ const pTx = t => termeTxt(t, true);
  * per recuperar-ne una, treu-la d'aquesta llista. Els exemples del banc d'aquests tipus tampoc no surten.
  */
 export const DESACTIVADES = ['DIST_SUMA', 'CANVI_SIGNE_PARCIAL', 'SUMA_ABANS_PRODUCTE:x'];
+/** Els tipus que poden sortir amb cada forma d'enunciat (la baralla de la sessió, auditoria 2 P2; tests/estadistica.test.js ho comprova). */
+export const TIPUS_PER_FORMA = {
+    1: ['SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'COEFICIENT_OBLIDAT', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT', 'INVERS_X'],
+    2: ['DISTRIBUTIVA', 'DIST_SIGNE', 'SUMA_ABANS_PRODUCTE', 'DENOMINADORS', 'SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'COEFICIENT_OBLIDAT', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT'],
+};
 export const REGLES = {
     DISTRIBUTIVA: {
         op: 'exp',
-        pes: 3,
         fes(l, r) {
             const tots = [...l.L.map((t, i) => ['L', i, t]), ...l.R.map((t, i) => ['R', i, t])].filter(
                 ([, , t]) => t.k === 'p' && Math.abs(t.c) !== 1 && t.b !== 0
@@ -387,7 +391,6 @@ export const REGLES = {
     },
     DIST_SIGNE: {
         op: 'exp',
-        pes: 3,
         fes(l, r) {
             const tots = [...l.L.map((t, i) => ['L', i, t]), ...l.R.map((t, i) => ['R', i, t])].filter(
                 ([, , t]) => t.k === 'p' && t.c < 0 && t.b !== 0
@@ -410,7 +413,6 @@ export const REGLES = {
         // 3 + 2·(x − 4) → 5·(x − 4) (suma abans de multiplicar) o, fins i tot, → 5x − 4 (a més, només multiplica la x)
         // (el David, banc d'errades, 26/11/2026). Només amb un sol parèntesi a la línia, «a + c·(…)», a i c positius.
         op: 'exp',
-        pes: 2,
         fes(l, r) {
             const tots = [];
             for (const c of ['L', 'R'])
@@ -436,7 +438,6 @@ export const REGLES = {
     INVERS_X: {
         // 30/x = 5 → x = 30·5 (el David, 26/11/2026): passa la x a l'altre membre «multiplicant», i hi passa el 5
         op: 'inv',
-        pes: 3,
         fes(l) {
             if (!aplica('inv', l) || !l.R[0].v.enter) return null;
             const a = l.L[0].a,
@@ -450,7 +451,6 @@ export const REGLES = {
     CANVI_SIGNE_PARCIAL: {
         // −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x (el David, 26/11/2026): canvia els signes, però no de tots els termes
         op: 'neg',
-        pes: 3,
         fes(l, r) {
             const bo = aplica('neg', l);
             if (!bo) return null;
@@ -468,7 +468,6 @@ export const REGLES = {
         // (3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x (el David, 26/11/2026): el − de davant de la fracció no canvia
         // el signe del segon terme del numerador; o bé els termes sense denominador no es multipliquen (5x es queda 5x)
         op: 'den',
-        pes: 3,
         fes(l, r) {
             const bo = aplica('den', l);
             if (!bo) return null;
@@ -503,7 +502,6 @@ export const REGLES = {
         // El nombre de fora i el coeficient de dins se sumen (el David, errades reals:
         // x − 2·(3x + 6) = 3x + 7  →  x − 5x − 12 = 3x + 7). Només amb un coeficient a dins.
         op: 'exp',
-        pes: 1,
         fes(l, r) {
             const tots = [...l.L.map((t, i) => ['L', i, t]), ...l.R.map((t, i) => ['R', i, t])].filter(
                 ([, , t]) => t.k === 'p' && t.m >= 2 && Math.abs(t.c) >= 2 && Math.abs(t.c) !== t.m // 4·(4x…): no se sap què ha sumat
@@ -522,7 +520,6 @@ export const REGLES = {
     },
     SIGNE_TRANSPOSAR: {
         op: 'tra',
-        pes: 4,
         fes(l, r) {
             const movN = l.L.filter(t => esN(t) && !t.v.zero),
                 movX = l.R.filter(esX);
@@ -547,7 +544,6 @@ export const REGLES = {
         // Un terme que en aquest pas només s'havia de copiar surt amb el signe canviat
         // (el David, lot 1, B05 i B15): 9x + 7 = 3x − 23  →  9x − 3x = 23 − 7.
         op: ['exp', 'red1', 'tra'],
-        pes: 2,
         fes(l, r, op) {
             const bo = aplica(op, l);
             if (!bo) return null;
@@ -568,7 +564,6 @@ export const REGLES = {
     },
     TERMES_NO_SEMBLANTS: {
         op: ['tra', 'red1'],
-        pes: 5,
         fes(l, r, op = 'tra') {
             if (op === 'red1') {
                 // 2x + 3 + 4x = 18  →  9x = 18 (el David, lot 1, B16): ho suma tot com si fossin x
@@ -607,7 +602,6 @@ export const REGLES = {
     COEFICIENT_U: {
         // La x sola no es compta (el David, errades reals: 3x + x + 6x = 4 − 2x  →  9x = 4 − 2x).
         op: ['red1', 'red2'],
-        pes: 2,
         fes(l, r, op) {
             const bo = aplica(op, l);
             if (!bo) return null;
@@ -636,7 +630,6 @@ export const REGLES = {
         // mateix signe); amb −3 − 15, escriu +18 (signe) o −12 (els resta). Només
         // sumes de dos termes on n'hi ha algun de negatiu.
         op: ['red1', 'red2'],
-        pes: 4,
         fes(l, r, op) {
             const bo = aplica(op, l);
             if (!bo) return null;
@@ -695,7 +688,6 @@ export const REGLES = {
     OPERACIO_INVERSA: {
         // Erbaş et al. (2009): x = N − M o M − N (YK06), x = M·N (YK03), x = M + N (YK05)
         op: 'div',
-        pes: 4,
         fes(l, r) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -716,7 +708,6 @@ export const REGLES = {
     COEFICIENT_OBLIDAT: {
         // Erbaş et al. (2009), YK01: 3x = 12 → x = 12 (51 observacions)
         op: 'div',
-        pes: 3,
         fes(l) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -730,7 +721,6 @@ export const REGLES = {
     },
     DIVISIO_SIGNE: {
         op: 'div',
-        pes: 1,
         fes(l) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -745,7 +735,6 @@ export const REGLES = {
     },
     QUOCIENT_INVERTIT: {
         op: 'div',
-        pes: 1,
         fes(l) {
             if (!aplica('div', l)) return null;
             const A = l.L[0].c.n,
@@ -1057,8 +1046,10 @@ function injecta(linies, ops, c) {
  * @param {object} [o.e0]        (eines del banc) un enunciat fix, fet amb T.linia(...)
  * @param {function} [o.filtre]  (eines del banc) quines injeccions s'accepten: c => bool,
  *                               amb c = { j, id, op, res: { linia, dades } }
+ * @param {string} [o.tipus]     el tipus de la primera errada (la baralla de la sessió, auditoria 2 P2); si en la
+ *                               meitat dels intents no se'n troba cap enunciat, qualsevol
  */
-export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }) {
+export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null, tipus = null, prefereix = [] }) {
     const r = creaAtzar(llavor);
     // amb un enunciat fix (eines del banc i del banc d'errades), el nombre de línies és el que surti
     const [mn, mx] = fix ? [2, 20] : LIMITS[nivell] || LIMITS[1];
@@ -1071,10 +1062,13 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
         if (!linies.every(dinsMarge)) continue;
         const marques = [];
         let ok = true;
+        // tipus: la primera errada ha de ser d'aquest tipus (la meitat dels intents); prefereix: per a les altres, els tipus
+        // preferits, en ordre (les cartes que vénen de la baralla de la sessió)
+        const vol = k => c => !tipus || k > 0 || intent >= 200 || c.id === tipus;
         if (compensades && errades === 2) {
             const parells = [];
             const passa = c => !filtre || filtre(c);
-            for (const c1 of candidates(r, linies, ops).filter(passa)) {
+            for (const c1 of candidates(r, linies, ops).filter(passa).filter(vol(0))) {
                 const p1 = injecta(linies, ops, c1);
                 for (const c2 of candidates(r, p1.linies, p1.ops, c1.j + 1).filter(passa)) {
                     const p2 = injecta(p1.linies, p1.ops, c2);
@@ -1090,6 +1084,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
                 const des = marques.length ? marques[marques.length - 1].j + 1 : 1;
                 let cs = candidates(r, linies, ops, des);
                 if (filtre) cs = cs.filter(filtre);
+                cs = cs.filter(vol(k));
                 if (k === errades - 1)
                     cs = cs.filter(c => {
                         const n = injecta(linies, ops, c).linies.length;
@@ -1099,7 +1094,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
                     ok = false;
                     break;
                 }
-                const c = triaPonderada(r, cs, c => REGLES[c.id].pes);
+                const c = triaPerTipus(r, cs, prefereix);
                 marques.push(c);
                 ({ linies, ops } = injecta(linies, ops, c));
             }

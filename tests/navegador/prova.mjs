@@ -84,7 +84,13 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const posicions = async () => pg.evaluate(() => [...document.querySelectorAll('#llibreta .fila')].map(f => Math.round(f.getBoundingClientRect().top + scrollY)));
     // fase del terme (a tots els nivells): després de trobar la línia i, toca el terme equivocat
     // (si la línia només té un terme possible, com «x = 5/35», la fase se salta: auditoria P6)
-    const tocaTerme = async (ex, i) => (termeUnic(ex, i) ? null : clica(`#llibreta [data-tm="${ex.errades[i].terme}"]`));
+    // es toca al centre del terme, com un dit: si la zona tàctil d'un terme veí s'hi encavalca, mana el terme de sota
+    const tocaAl = async sel => {
+        await pg.waitForTimeout(330);
+        const q = await pg.locator(sel).boundingBox();
+        await (tactil ? pg.touchscreen.tap(q.x + q.width / 2, q.y + q.height / 2) : pg.mouse.click(q.x + q.width / 2, q.y + q.height / 2));
+    };
+    const tocaTerme = async (ex, i) => (termeUnic(ex, i) ? null : tocaAl(`#llibreta [data-tm="${ex.errades[i].terme}"]`));
     const lateral = async () => pg.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
     // Índex: fins que no es tria l'activitat, els paràmetres són amagats

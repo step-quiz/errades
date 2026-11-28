@@ -33,7 +33,7 @@ Authority: the code, then this file and `README.md` (how it works, file table, r
 
 ## Error rules
 
-Active rules and weights are in the README tables. **Deactivated** after the department survey (`DESACTIVADES` in
+Active rules are in the README tables (no weights since audit 2, P2: README «Audit 2»). **Deactivated** after the department survey (`DESACTIVADES` in
 each generator; `docs/enquesta-banc-errors.md`): equations `DIST_SUMA`, `CANVI_SIGNE_PARCIAL` and the `5x − 4`
 variant of `SUMA_ABANS_PRODUCTE`; order of operations `PARENTESI_IGNORAT`. Their code, taxonomy entries and editor
 situations (hidden) are kept; removing an entry from the list brings the rule back. Statement form K was made for
@@ -128,7 +128,10 @@ the bank batches 1–3, «Errades documentades a la recerca» and «Versemblanç
    (David). Next, each delivered and tested before the following one:
    - Stage 2 done (README «Audit 2»): C1, C2 + P12 («sense dir-ho», David 28/11/2026), C3, C4, C7, C6. The CI
      workflow change is in `docs/workflows/tests.yml`; David pastes it into `.github/workflows/tests.yml` on GitHub.
-   - Stage 3: P1, P2 (equal weights for the error types), P3, P4 (editor marks OI/QI/DS), P5, P7.
+   - Stage 3a done (README «Audit 2»): P1, P2, P5 and `tests/estadistica.test.js`.
+   - Stage 3b: P3 (order-of-operations sentences in the editor, distractors with the line's numbers; editor warning when
+     the true sentence is much longer), P4 (mark OI, QI, DS in the editor for David to rewrite without the value), P7
+     (correct-line texts that say the operation, for David to review). All texts are David's: propose, never apply.
    - Stage 4: W2 («Repassa les que t'han costat»), W1 (verification code stage 3, exercise code `LE`).
 
 ## Known limits

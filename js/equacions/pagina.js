@@ -52,7 +52,7 @@ function delBancSessio(i, base, delBanc) {
 function exempleBrut(i, { base, nivell, noerrors, banc }) {
     const delBanc = banc.filter(b => encaixaBanc(b, nivell, noerrors));
     if (delBanc.length && atzarExercici(base, i)() < PROPORCIO_BANC) return delBancSessio(i, base, delBanc);
-    return exempleGenerat(generador, nivell, noerrors, llavorExercici(base, i));
+    return exempleGenerat(generador, nivell, noerrors, base, i);
 }
 
 engega({

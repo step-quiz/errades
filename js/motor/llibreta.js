@@ -585,7 +585,16 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         }
         if (d.tm !== undefined) {
             tsel = null;
-            triaTerme(S, ex, cfg, +d.tm);
+            // les zones tàctils (44 px) de dos termes estrets es poden encavalcar: mana el terme que hi ha sota el dit
+            let tm = +d.tm;
+            if (ev.detail > 0) {
+                const sota = [...(b.closest('.fila') || b.parentElement).querySelectorAll('.tb')].find(t => {
+                    const q = t.getBoundingClientRect();
+                    return ev.clientX >= q.left && ev.clientX <= q.right && ev.clientY >= q.top && ev.clientY <= q.bottom;
+                });
+                if (sota) tm = +sota.dataset.tm;
+            }
+            triaTerme(S, ex, cfg, tm);
         } else if (d.l !== undefined) {
             // tornar a tocar la línia triada també és «Comprova» (auditoria C10)
             if (S.sel === +d.l && S.fase === 'busca') comprova(S, ex, cfg);

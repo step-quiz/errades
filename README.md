@@ -165,7 +165,23 @@ label table in `js/motor/nivells.js`, «sense dir-ho» everywhere (David); P12 h
 generator scaffolding in `js/motor/exemple.js`; C4 `js/motor/util.js`, dead parameters removed (`generaExemple`'s
 `TIPUS`, `ensenya`'s text), the longest template lines split; C7 security headers; C6 the browser test in CI. The
 same seeds give the same examples as before (checked with a fingerprint of 9 600 examples, both activities, all
-levels, with and without `noerrors`). Stages 3–4: `docs/STATE.md` «Open work».
+levels, with and without `noerrors`). 
+Stage 3a (code and statistics): **P2** no rule weights (`pes` removed): the generator picks a type first, all
+applicable types equal (`triaPerTipus` in `js/motor/exemple.js`), then the line, then the injection. Within a session
+the types come like cards from a deck shuffled with the session seed (`tipusSessio`; one card per error, counting the
+errors of the previous exercises): the first error of each exercise is forced to its card during the first half of the
+attempts (`generaExemple({ …, tipus, prefereix })`), the second one prefers the next cards. `TIPUS_PER_FORMA` in each
+generator lists the types that fit each statement form. **P1** the left-to-right correct step (order of operations,
+above) and the uniform choice of the line. **P5** misconception-based «Corregeix-la» options (above). Statistics in
+`tests/estadistica.test.js` (fails): no single line holds more than 45 % of the first errors (order of operations,
+level 1: 60 %, structurally only lines 1–2; level 4: 55 %); every listed type appears and none outside the list; at most
+10 % of sessions repeat a first-error type 3 times (30 % at levels 4–5); at most 55 % (order of operations) / 35 %
+(equations) of the shown false «Corregeix-la» options are retouched (`DIAGNOSI_CORREGEIX`). It also prints warnings
+(no failure) for P3 (true sentence the only one with digits > 30 %, the longest > 45 %) and P4 (true sentence gives a
+value only the right «Corregeix-la» option has > 10 %), until David's new sentences are in. Before → after, 200
+sessions: order of operations level 1, error on line 1: 87 % → 56 %; level-1 sessions with a type 3 times: 96 % → 0 %;
+retouched order-of-operations options: 87 % → 43 %. Taps on overlapping 44 px term zones now pick the term under the
+finger (`clic` in `llibreta.js`). Stage 3b (texts for David: P3, P4, P7) and stage 4: `docs/STATE.md` «Open work».
 
 ## Order of operations (`js/prioritat/generador.js`)
 
@@ -189,8 +205,13 @@ differs from the line above. Level 1: naturals, `+ − · :`, ≤ 5 numbers, no 
 | `RESTA_GIRADA` | `3 − 8 · 5 → 40 − 3` (product done right, moved to the front, subtraction reversed; only when the product is larger than the first number and is the only product of the step) | David's pupil, 27/11/2026 |
 | `SIGNE_PRODUCTE` | `(−8) · 8 → 64` | parallels the sign errors in Gasa and Erbaş et al. |
 
-Weights `pes`, in table order: 5, 3, 2, 3, 4, 3, 2, 3, 2. «Corregeix-la» distractors: other rules' lines for the same step, then
-`retoca()` (one result of the correct step computed with another operation, never 0 or invented negatives).
+No weights (audit 2, P2): see «Audit 2», stage 3. «Corregeix-la» distractors (P5): first the wrong line with only one
+operation of its step done right (`passosSolts`: `21 · 2 − 25 : 5 → 21 · 2 − 5` or `42 − 25 : 5`; for a one-operation
+step, the pupil's next line if it still has an operation) and other rules' lines for the same step, then `retoca()` (one
+result of the correct step computed with another operation, never 0 or invented negatives). The fictitious pupil
+sometimes reads left to right (P1, `PROPORCIO_ESQUERRA` = 0.6, `pasEsquerra`): `20 − 3 + 4 · 5 → 17 + 4 · 5` is a correct
+line (the value does not change; its text: «ha restat primer $20 − 3$, i el valor no canvia»), so the left-to-right
+error can fall on the next line (`17 + 4 · 5 → 21 · 5`).
 
 Points per example (both activities, `punts()` in `js/motor/estat.js`): 10, minus 2 per failed attempt (a correct
 line marked as wrong, a correct term chosen, «No hi ha cap més errada» too early; `puntsAmbErrors` of the shared

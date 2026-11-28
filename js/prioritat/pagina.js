@@ -13,10 +13,10 @@
  * ============================================================================
  */
 import * as generador from './generador.js';
-import { engega, exempleGenerat, llavorExercici } from '../motor/activitat.js';
+import { engega, exempleGenerat } from '../motor/activitat.js';
 
 /** L'exemple i-èsim d'una sessió (pur, per a les proves). */
-export const exempleSessio = (i, { base, nivell, noerrors }) => exempleGenerat(generador, nivell, noerrors, llavorExercici(base, i));
+export const exempleSessio = (i, { base, nivell, noerrors }) => exempleGenerat(generador, nivell, noerrors, base, i);
 
 engega({
     activitat: 'prioritat',

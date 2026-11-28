@@ -27,7 +27,7 @@
  * ============================================================================
  */
 import { creaAtzar, enter, tria, barreja } from '../motor/atzar.js';
-import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPonderada, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
+import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPerTipus, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
 import { menys } from '../motor/util.js';
 
 export { perPagina };
@@ -162,6 +162,61 @@ export function pas(E, h = {}) {
     const p = pasLlista(E, h);
     return p && { E: p.L, fets: p.fets, etapa: et };
 }
+/**
+ * Un pas correcte d'un alumne que llegeix d'esquerra a dreta (auditoria 2, P1): la primera suma o resta, quan encara
+ * no toca però el valor no canvia (20 − 3 + 4 · 5 → 17 + 4 · 5: després de 3 ve una suma, no un producte). Així
+ * l'errada d'esquerra a dreta pot caure a la línia següent (17 + 4 · 5 → 21 · 5) i no sempre a la primera.
+ * Torna { E, fets, etapa: 'esq' } o null.
+ */
+export function pasEsquerra(E) {
+    if (etapa(E) !== 'md' || E.length < 3) return null;
+    const [a, b, c] = E;
+    if (a.x.k !== 'n' || b.x.k !== 'n' || !ADD.includes(b.o) || !ADD.includes(c.o)) return null;
+    const r = opera(a.x.v, b.o, b.x.v);
+    return { E: [it(a.o, N(r)), ...E.slice(2)], fets: [{ a: a.x.v, o: b.o, b: b.x.v, r }], etapa: 'esq' };
+}
+/** Els passos de l'alumne fictici: com resol(), però, si es pot, a vegades (q) fa abans un pas d'esquerra a dreta. */
+function resolAlumne(E, r, q) {
+    const passos = [];
+    let cur = E;
+    for (let k = 0; k < 20 && etapa(cur); k++) {
+        const e = pasEsquerra(cur);
+        const p = e && r() < q ? e : pas(cur);
+        if (!p) return null;
+        passos.push(p);
+        cur = p.E;
+    }
+    return etapa(cur) ? null : passos;
+}
+/**
+ * La línia amb només una de les operacions del seu pas feta, una per a cada operació (auditoria 2, P5). Aplicat a
+ * la línia equivocada, dona opcions de «Corregeix-la» que mantenen la concepció errònia i fan bé l'altra part:
+ * 21 · 2 − 25 : 5 → 21 · 2 − 5 o 42 − 25 : 5.
+ */
+export function passosSolts(E) {
+    const et = etapa(E);
+    const ks = tipus => E.map((t, k) => (t.x.k === tipus ? k : -1)).filter(k => k >= 0);
+    const canvia = (k, t) => E.map((u, m) => (m === k ? t : u));
+    // si el pas té més d'una operació, cadascuna sola
+    if (et === 'par' && ks('p').length > 1)
+        return ks('p')
+            .map(k => {
+                const p = pasLlista(E[k].x.e);
+                return p && desfa(canvia(k, it(E[k].o, Pa(p.L))));
+            })
+            .filter(Boolean);
+    if (et === 'pot' && ks('w').length > 1) return ks('w').map(k => canvia(k, it(E[k].o, N(E[k].x.b ** E[k].x.e))));
+    if (et === 'md' && cadenes(E).length > 1)
+        return cadenes(E)
+            .map(s => {
+                const v = opera(E[s].x.v, E[s + 1].o, E[s + 1].x.v);
+                return v === null ? null : [...E.slice(0, s), it(E[s].o, N(v)), ...E.slice(s + 2)];
+            })
+            .filter(Boolean);
+    // un pas d'una sola operació: la línia següent de l'alumne, si encara li queda alguna operació (no un nombre sol)
+    const p = et && pas(E);
+    return p && etapa(p.E) ? [p.E] : [];
+}
 /** Tots els passos fins a un sol nombre (null si alguna divisió no és exacta o massa passos). */
 export function resol(E) {
     const passos = [];
@@ -214,9 +269,15 @@ const opTxt = (a, o, b) => `${a < 0 && MUL.includes(o) ? '(' + menys(a) + ')' : 
  * d'aquesta llista.
  */
 export const DESACTIVADES = ['PARENTESI_IGNORAT'];
+/** Quantes vegades l'alumne fictici fa primer una suma o resta que encara no tocava, si el valor no canvia (P1). */
+export const PROPORCIO_ESQUERRA = 1;
+/** Els tipus que poden sortir amb cada forma d'enunciat (la baralla de la sessió, auditoria 2 P2; tests/estadistica.test.js ho comprova). */
+export const TIPUS_PER_FORMA = {
+    1: ['ESQUERRA_DRETA', 'SUMA_ABANS_RESTA', 'PRODUCTE_ABANS_DIVISIO'],
+    2: ['ESQUERRA_DRETA', 'SUMA_ABANS_RESTA', 'PRODUCTE_ABANS_DIVISIO', 'POTENCIA_PER_EXPONENT', 'POTENCIA_DESPRES', 'RESTA_NEGATIVA', 'RESTA_GIRADA', 'SIGNE_PRODUCTE'],
+};
 export const REGLES = {
     ESQUERRA_DRETA: {
-        pes: 5,
         fes(E, r) {
             return aLlista(E, r, L => {
                 if (L.length < 3 || !ADD.includes(L[1].o) || !MUL.includes(L[2].o) || L[0].x.k !== 'n' || L[1].x.k !== 'n') return null;
@@ -227,7 +288,6 @@ export const REGLES = {
         expl: d => `Les multiplicacions i les divisions van abans que les sumes i les restes: $${opTxt(d.a, d.o, d.b)}$ no es podia fer encara.`,
     },
     SUMA_ABANS_RESTA: {
-        pes: 3,
         fes(E, r) {
             return aLlista(E, r, L => {
                 if (L.some(t => MUL.includes(t.o))) return null;
@@ -242,7 +302,6 @@ export const REGLES = {
         expl: () => `Les sumes i les restes es fan d'esquerra a dreta, en l'ordre en què surten: la suma no va abans que la resta.`,
     },
     PRODUCTE_ABANS_DIVISIO: {
-        pes: 2,
         fes(E, r) {
             return aLlista(E, r, L => {
                 for (let i = 1; i + 1 < L.length; i++)
@@ -256,7 +315,6 @@ export const REGLES = {
         expl: () => `Les multiplicacions i les divisions es fan d'esquerra a dreta, en l'ordre en què surten: la multiplicació no va abans que la divisió.`,
     },
     PARENTESI_IGNORAT: {
-        pes: 3,
         fes(E) {
             if (etapa(E) !== 'par') return null;
             for (let i = 1; i < E.length; i++) {
@@ -280,7 +338,6 @@ export const REGLES = {
     POTENCIA_PER_EXPONENT: {
         // Qui creu que 3² = 3·2 ho aplica a TOTES les potències del pas (el David, 26/11/2026): una de ben feta i una
         // altra com a base·exponent, en el mateix pas, no és versemblant. Les 2^2 (2·2 = 2²) surten igual.
-        pes: 4,
         fes(E) {
             if (etapa(E) !== 'pot') return null;
             const ws = E.filter(t => t.x.k === 'w' && t.x.b * t.x.e !== t.x.b ** t.x.e).map(t => ({ b: t.x.b, e: t.x.e }));
@@ -294,7 +351,6 @@ export const REGLES = {
                 : `$${d.b}^${d.e}$ no vol dir multiplicar la base per l'exponent.`,
     },
     POTENCIA_DESPRES: {
-        pes: 3,
         fes(E) {
             if (etapa(E) !== 'pot') return null;
             for (let i = 1; i < E.length; i++)
@@ -310,7 +366,6 @@ export const REGLES = {
         expl: d => `La potència va abans que la multiplicació: l'exponent només és del $${d.b}$.`,
     },
     RESTA_NEGATIVA: {
-        pes: 2,
         fes(E) {
             let d = null;
             const p = pas(E, {
@@ -327,7 +382,6 @@ export const REGLES = {
     },
     RESTA_GIRADA: {
         // 3 − 8 · 5 → 40 − 3: fa bé el producte, però el posa davant i gira la resta (alumne real del David, 27/11/2026)
-        pes: 3,
         fes(E, r) {
             return aLlista(E, r, L => {
                 if (L.length < 3 || L[1].o !== '−' || !MUL.includes(L[2].o) || L.slice(0, 3).some(t => t.x.k !== 'n')) return null;
@@ -341,7 +395,6 @@ export const REGLES = {
         expl: d => `Després de fer $${opTxt(d.b, d.m, d.c)} = ${d.p}$, havia de quedar $${d.a} − ${d.p}$: el $${d.p}$ és el que es resta, i no es pot posar davant.`,
     },
     SIGNE_PRODUCTE: {
-        pes: 2,
         fes(E) {
             let d = null;
             const p = pas(E, {
@@ -434,8 +487,14 @@ const PERQUE = {
 };
 
 // ---------- Per què una línia bona és bona (F1) ----------
-function perQueBona(fets) {
-    return frasaCorrecta(fets.map(f => `$${menys(f.r)}$`));
+function perQueBona(abans, despres) {
+    const e = pasEsquerra(abans);
+    // el pas d'esquerra a dreta que no canvia el valor (P1; el text, de la proposta aprovada pel David)
+    if (e && textLinia(e.E) === textLinia(despres) && textLinia(pas(abans).E) !== textLinia(despres)) {
+        const f = e.fets[0];
+        return `Aquesta línia és correcta: ha ${f.o === '+' ? 'sumat' : 'restat'} primer $${opTxt(f.a, f.o, f.b)}$, i el valor no canvia.`;
+    }
+    return frasaCorrecta(pas(abans).fets.map(f => `$${menys(f.r)}$`));
 }
 
 // ---------- Enunciats ----------
@@ -571,9 +630,10 @@ const injecta = (linies, c) => [...linies.slice(0, c.j), c.res.E, ...c.pass.map(
 
 /**
  * Un exemple nou (pur i determinista).
- * @param {object} o { llavor, nivell (forma 1 o 2), errades (0–2), compensades, e0?, filtre? }
+ * @param {object} o { llavor, nivell (forma 1 o 2), errades (0–2), compensades, e0?, filtre?, tipus? }; tipus: el de la
+ *   primera errada (la baralla de la sessió, auditoria 2 P2); si en la meitat dels intents no hi ha cap enunciat, qualsevol
  */
-export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }) {
+export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null, tipus = null, prefereix = [] }) {
     const r = creaAtzar(llavor);
     const forma = nivell === 2 ? 2 : 1;
     // amb un enunciat fix (eines del banc i del banc d'errades), el nombre de línies és el que surti
@@ -584,15 +644,18 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
         if (!fix && forma === 2 && (!teForma2(e0) || especials(e0) > 2 || nombres(e0) > 6)) continue;
         if (!fix && forma === 1 && nombres(e0) > 5) continue;
         if (!fix && !variat(e0)) continue;
-        const pass = resol(e0);
+        const pass = fix ? resol(e0) : resolAlumne(e0, r, PROPORCIO_ESQUERRA);
         if (!pass || !dinsMarge(e0, forma) || !pass.every(p => dinsMarge(p.E, forma))) continue;
         let linies = [e0, ...pass.map(p => p.E)];
         const marques = [];
         let ok = true;
         const passa = c => !filtre || filtre(c);
+        // tipus: la primera errada ha de ser d'aquest tipus (la meitat dels intents); prefereix: per a les altres, els tipus
+        // preferits, en ordre (les cartes que vénen de la baralla de la sessió)
+        const vol = k => c => !tipus || k > 0 || intent >= 750 || c.id === tipus;
         if (compensades && errades === 2) {
             const parells = [];
-            for (const c1 of candidates(r, linies, 1, forma).filter(passa)) {
+            for (const c1 of candidates(r, linies, 1, forma).filter(passa).filter(vol(0))) {
                 const l1 = injecta(linies, c1);
                 for (const c2 of candidates(r, l1, c1.j + 1, forma).filter(passa)) {
                     const l2 = injecta(l1, c2);
@@ -607,12 +670,13 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
             for (let k = 0; k < errades; k++) {
                 const des = marques.length ? marques[marques.length - 1].j + 1 : 1;
                 let cs = candidates(r, linies, des, forma).filter(passa);
+                cs = cs.filter(vol(k));
                 if (k === errades - 1) cs = cs.filter(c => injecta(linies, c).length >= mn && injecta(linies, c).length <= mx);
                 if (!cs.length) {
                     ok = false;
                     break;
                 }
-                const c = triaPonderada(r, cs, c => REGLES[c.id].pes);
+                const c = triaPerTipus(r, cs, prefereix);
                 marques.push(c);
                 linies = injecta(linies, c);
             }
@@ -671,9 +735,13 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
             mala: linies[c.j],
             text: textLinia,
             admet: E => valor(E) !== null && valor(E) !== valor(abans),
-            alternatives: Object.entries(REGLES)
-                .filter(([id]) => id !== c.id && !DESACTIVADES.includes(id))
-                .map(([, rg]) => () => rg.fes(abans, r)?.E),
+            // la mateixa concepció errònia amb una altra part del pas feta (P5) i les altres regles a la mateixa línia
+            alternatives: [
+                ...passosSolts(linies[c.j]).map(E => () => E),
+                ...Object.entries(REGLES)
+                    .filter(([id]) => id !== c.id && !DESACTIVADES.includes(id))
+                    .map(([, rg]) => () => rg.fes(abans, r)?.E),
+            ],
             retoca: () => retoca(r, abans),
         });
         ex.errades[c.j] = {
@@ -687,7 +755,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
             opcions,
         };
     }
-    for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(pas(linies[i - 1]).fets);
+    for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(linies[i - 1], linies[i]);
     ex.compensades = !!compensades;
     if (compensades) ex.nota = notaCompensades(ex.solucio, { art: 'el resultat', adj: 'correcte' }, { art: 'el càlcul', adj: 'incorrecte' });
     return ex;

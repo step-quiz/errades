@@ -7,9 +7,11 @@
  *      capçalera i engegar la sessió. Cada pàgina només diu com és el seu exemple.
  * ARQUITECTURA:
  * - llavorExercici(base, i) = base + i·7919: la llavor de l'exercici i d'una sessió.
- * - exempleGenerat(generador, nivell, noerrors, llavor): un exemple del generador per a aquest
- *   nivell (js/motor/nivells.js); si no se'n pot fer cap amb errades compensades (molt
- *   improbable), sense compensar. Pur.
+ * - exempleGenerat(generador, nivell, noerrors, base, i): l'exemple i-èsim del generador per a aquest
+ *   nivell (js/motor/nivells.js), amb llavor llavorExercici(base, i). La primera errada és de la carta
+ *   que toca de la baralla de la sessió (una carta per errada), i la segona, si n'hi ha, de les cartes
+ *   que vénen després, si es pot (tipusSessio, js/motor/exemple.js; auditoria 2 P2). Si no se'n pot
+ *   fer cap amb errades compensades (molt improbable), sense compensar. Pur.
  * - engega({ activitat, taxonomia, dades, exemple }): taxonomia és el JSON dels tipus d'errada
  *   (els noms de l'informe final); dades, altres JSON opcionals ({ banc: 'data/banc.json' }).
  *   Tot s'espera abans de començar (abans, la prioritat no esperava la taxonomia i l'informe
@@ -23,15 +25,27 @@ import { iniciaSessio, clauSessio, llegeixDesat } from './sessio.js';
 import { CONFIG_PER_DEFECTE } from './estat.js';
 import { llegeixParametres, encerclaDe, esTactil, llavorNova } from './parametres.js';
 import { parametres, capcalera } from './nivells.js';
+import { tipusSessio } from './exemple.js';
 
 export const llavorExercici = (base, i) => (base + i * 7919) >>> 0;
 
-export function exempleGenerat({ generaExemple, perPagina }, nivell, noerrors, llavor) {
+export function exempleGenerat({ generaExemple, perPagina, TIPUS_PER_FORMA }, nivell, noerrors, base, i) {
+    const llavor = llavorExercici(base, i);
     const p = parametres(nivell, noerrors, llavor);
-    try {
-        return perPagina(generaExemple({ llavor, nivell: p.forma, errades: p.errades, compensades: p.compensades }));
-    } catch (e) {
-        return perPagina(generaExemple({ llavor, nivell: p.forma, errades: Math.max(1, p.errades) }));
+    // la carta de cada errada: les errades dels exercicis d'abans ja n'han fet servir
+    let k = 0;
+    for (let j = 0; j < i; j++) k += parametres(nivell, noerrors, llavorExercici(base, j)).errades;
+    const llista = (TIPUS_PER_FORMA && TIPUS_PER_FORMA[p.forma]) || [];
+    const tipus = tipusSessio(base, k, llista);
+    const prefereix = llista.slice(1).map((t, d) => tipusSessio(base, k + 1 + d, llista));
+    // si no surt (molt improbable): sense la carta, i després sense compensar
+    const proves = [{ compensades: p.compensades, tipus, prefereix }, { compensades: p.compensades }, { errades: Math.max(1, p.errades) }];
+    for (const [n, o] of proves.entries()) {
+        try {
+            return perPagina(generaExemple({ llavor, nivell: p.forma, errades: p.errades, ...o }));
+        } catch (e) {
+            if (n === proves.length - 1) throw e;
+        }
     }
 }
 
