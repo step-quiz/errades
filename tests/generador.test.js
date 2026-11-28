@@ -25,7 +25,7 @@ for (const nivell of [1, 2]) {
         for (let s = 1; s <= n; s++) {
             let ex;
             try {
-                ex = generaExemple({ llavor: s, nivell, errades }, TIPUS);
+                ex = generaExemple({ llavor: s, nivell, errades });
             } catch (e) {
                 ok(false, `nivell ${nivell}, ${errades} errades, llavor ${s}: ${e.message}`);
                 continue;
@@ -37,7 +37,7 @@ for (const nivell of [1, 2]) {
             ok(Object.keys(ex.errades).length === errades, `nivell ${nivell}, llavor ${s}: hauria de tenir ${errades} errades`);
             ok(!/[+−] 0(?![\d|])/.test(ex.linies[0].join(' ')), `nivell ${nivell}, llavor ${s}: l'enunciat té un «+ 0»: ${ex.linies[0].join(' ')}`);
             for (const e of Object.values(ex.errades)) vistos[e.tipus] = (vistos[e.tipus] || 0) + 1;
-            if (s <= 50) igual(perPagina(generaExemple({ llavor: s, nivell, errades }, TIPUS)), perPagina(ex), `llavor ${s}: la mateixa llavor ha de donar el mateix exemple`);
+            if (s <= 50) igual(perPagina(generaExemple({ llavor: s, nivell, errades })), perPagina(ex), `llavor ${s}: la mateixa llavor ha de donar el mateix exemple`);
         }
         if (errades) {
             const esperats = nivell === 1
@@ -52,26 +52,26 @@ for (const nivell of [1, 2]) {
 }
 // Varietat: llavors diferents → enunciats diferents
 const enunciats = new Set();
-for (let s = 1; s <= 200; s++) enunciats.add(generaExemple({ llavor: s, nivell: 1 }, TIPUS).linies[0].join(' '));
+for (let s = 1; s <= 200; s++) enunciats.add(generaExemple({ llavor: s, nivell: 1 }).linies[0].join(' '));
 ok(enunciats.size > 180, `poca varietat d'enunciats: ${enunciats.size} de 200`);
 
 // Etapa 2 (el generador ja ho sap fer): dues errades i errades compensades
 for (let s = 1; s <= 150; s++) {
-    const ex = generaExemple({ llavor: s, nivell: 2, errades: 2 }, TIPUS);
+    const ex = generaExemple({ llavor: s, nivell: 2, errades: 2 });
     ok(valida(ex).length === 0 && Object.keys(ex.errades).length === 2, `dues errades, llavor ${s}`);
-    const c = generaExemple({ llavor: s, nivell: 2, errades: 2, compensades: true }, TIPUS);
+    const c = generaExemple({ llavor: s, nivell: 2, errades: 2, compensades: true });
     const ls = c._linies;
     ok(valida(c).length === 0 && solucio(ls[ls.length - 1]).igual(solucio(ls[0])) && c.nota, `compensades, llavor ${s}`);
     ok(!equivalents(ls[0], ls[1]) || !c.errades[1], 'una errada no es dedueix de l\'anterior');
 }
 
 // Coherència dels textos: cada línia bona té el seu «per què»; les errades, tots els textos
-const ex = generaExemple({ llavor: 42, nivell: 2 }, TIPUS);
+const ex = generaExemple({ llavor: 42, nivell: 2 });
 for (let i = 1; i < ex.linies.length; i++) ok(ex.errades[i] || /^Aquesta línia és correcta, perquè és correcte haver escrit \$/.test(ex.correctes[i]), `text de la línia ${i}: ${ex.correctes[i]}`);
 // «Per què?»: 3 frases concretes (la bona i 2 distractors; el David, 28/11/2026), cap de genèrica repetida de data/errors.json, i cap explicació amb la resposta
 for (let s = 1; s <= 300; s++)
     for (const nivell of [1, 2]) {
-        const e = generaExemple({ llavor: s, nivell }, TIPUS);
+        const e = generaExemple({ llavor: s, nivell });
         for (const v of Object.values(e.errades)) {
             ok(v.perque.length === DISTRACTORS_PERQUE + 1 && v.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb la bona i ${DISTRACTORS_PERQUE} distractors`);
             // (una frase pot començar amb una fórmula: «$+3$ i $−12$ tenen…»)
@@ -118,7 +118,7 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
     let fet = null;
     for (let s = 1; s <= 200 && !fet; s++)
         try {
-            fet = generaExemple({ llavor: s, nivell: 1, e0: tL([tX(8), tN(-15)], [tX(-4), tN(-3)]), filtre: c => c.id === 'CALCUL' && text(c.res.linia) === '12x = −18' }, TIPUS);
+            fet = generaExemple({ llavor: s, nivell: 1, e0: tL([tX(8), tN(-15)], [tX(-4), tN(-3)]), filtre: c => c.id === 'CALCUL' && text(c.res.linia) === '12x = −18' });
         } catch (e) {
             /* una altra llavor */
         }
@@ -135,7 +135,7 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
             for (let s = 1; s <= 300; s++) {
                 let ex;
                 try {
-                    ex = generaExemple({ llavor: s, nivell, errades: err }, TIPUS);
+                    ex = generaExemple({ llavor: s, nivell, errades: err });
                 } catch (e) {
                     continue;
                 }

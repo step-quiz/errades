@@ -126,8 +126,8 @@ the bank batches 1–3, «Errades documentades a la recerca» and «Versemblanç
 8. Audit 2 (artifact «Auditoria · Localitza l'errada», slug `01cf84b6-1c0f-4a64-bb8a-f2eeb8e7bd24`, db `respostes` =
    David, `rep` = Claude; README «Audit 2»). Stage 1 done (E1, E2, E3, P6, P9, P10, P11, C5). P8 and W3: no
    (David). Next, each delivered and tested before the following one:
-   - Stage 2: C1, C2 + P12 (header text with `noerrors`; David chose «sense dir-ho», 28/11/2026), C3, C4,
-     C7 (CSP headers in `_headers`), C6 (CI workflow running `node tests/run-all.js`).
+   - Stage 2 done (README «Audit 2»): C1, C2 + P12 («sense dir-ho», David 28/11/2026), C3, C4, C7, C6. The CI
+     workflow change is in `docs/workflows/tests.yml`; David pastes it into `.github/workflows/tests.yml` on GitHub.
    - Stage 3: P1, P2 (equal weights for the error types), P3, P4 (editor marks OI/QI/DS), P5, P7.
    - Stage 4: W2 («Repassa les que t'han costat»), W1 (verification code stage 3, exercise code `LE`).
 
@@ -136,5 +136,4 @@ the bank batches 1–3, «Errades documentades a la recerca» and «Versemblanç
 - Generated examples can have large numbers (`5·(x − 5) = −x − 55`); the bank and ranges limit it.
 - Situations with |A| = |B| (OI, CO, DS) can run out of distractors; `valida()` rejects such examples and the
   generator picks another error.
-- The browser test (`tests/navegador/prova.mjs`) is not in CI (it needs Playwright and a browser).
 - A ZIP upload cannot delete files: deletions are done by David with `git rm` (see `HANDOUT.md`).

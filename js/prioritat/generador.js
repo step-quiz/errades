@@ -27,7 +27,10 @@
  * ============================================================================
  */
 import { creaAtzar, enter, tria, barreja } from '../motor/atzar.js';
-import { DISTRACTORS_PERQUE, opcionsPerque } from '../motor/exemple.js';
+import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPonderada, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
+import { menys } from '../motor/util.js';
+
+export { perPagina };
 
 export { creaAtzar };
 
@@ -39,7 +42,6 @@ const it = (o, x) => ({ o, x });
 export const T = { N, Pa, W, it };
 const ADD = ['+', '−'],
     MUL = ['·', ':'];
-const menys = n => (n < 0 ? '−' + Math.abs(n) : String(n));
 const copia = E => JSON.parse(JSON.stringify(E));
 
 function xTxt(x, primer) {
@@ -433,9 +435,7 @@ const PERQUE = {
 
 // ---------- Per què una línia bona és bona (F1) ----------
 function perQueBona(fets) {
-    const parts = fets.map((f, k) => (k === 0 ? `és correcte haver escrit $${menys(f.r)}$` : `també és correcte haver escrit $${menys(f.r)}$`));
-    const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `Aquesta línia és correcta, perquè ${llista}.`;
+    return frasaCorrecta(fets.map(f => `$${menys(f.r)}$`));
 }
 
 // ---------- Enunciats ----------
@@ -515,7 +515,6 @@ export function enunciat(r, forma) {
 }
 const LIMITS = { 1: [4, 6], 2: [5, 8] };
 // Noms dels alumnes ficticis: paritaris i diversos, com a les aules (auditoria P11, 28/11/2026)
-const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol', 'la Fàtima', 'en Youssef', 'la Lucía', 'en Wei', "l'Ilyas", "l'Andrea", 'la Nerea', 'en Bilal'];
 /** Nombres raonables a totes les línies; a la forma 1, cap nombre negatiu. */
 function dinsMarge(E, forma) {
     const max = forma === 1 ? 120 : 200;
@@ -568,15 +567,6 @@ function candidates(r, linies, des, forma) {
     }
     return out;
 }
-function triaPonderada(r, l) {
-    const tot = l.reduce((s, c) => s + REGLES[c.id].pes, 0);
-    let x = r() * tot;
-    for (const c of l) {
-        x -= REGLES[c.id].pes;
-        if (x < 0) return c;
-    }
-    return l[l.length - 1];
-}
 const injecta = (linies, c) => [...linies.slice(0, c.j), c.res.E, ...c.pass.map(p => p.E)];
 
 /**
@@ -622,7 +612,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
                     ok = false;
                     break;
                 }
-                const c = triaPonderada(r, cs);
+                const c = triaPonderada(r, cs, c => REGLES[c.id].pes);
                 marques.push(c);
                 linies = injecta(linies, c);
             }
@@ -673,29 +663,19 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
         const bona = pas(abans).E;
         const bonaF = fitxes(bona),
             malF = fitxes(linies[c.j]);
-        let terme = malF.findIndex((t, i) => t !== '=' && t !== bonaF[i]);
-        if (terme < 0) terme = malF.findIndex(t => t !== '=');
-        const termes = bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
+        const { terme, termes } = termesEquivocats(malF, bonaF);
         const fr = PERQUE[c.id](c.res.dades);
         const perque = opcionsPerque(r, fr.bona, fr.dolentes);
-        const vistes = new Set([textLinia(bona), textLinia(linies[c.j])]);
-        const dolentes = [];
-        for (const [id, rg] of Object.entries(REGLES)) {
-            if (id === c.id || DESACTIVADES.includes(id)) continue;
-            const res = rg.fes(abans, r);
-            if (res && valor(res.E) !== null && valor(res.E) !== valor(abans) && !vistes.has(textLinia(res.E))) {
-                vistes.add(textLinia(res.E));
-                dolentes.push(textLinia(res.E));
-            }
-        }
-        for (let i = 0; dolentes.length < 2 && i < 40; i++) {
-            const t = retoca(r, abans);
-            if (t && valor(t) !== null && valor(t) !== valor(abans) && !vistes.has(textLinia(t))) {
-                vistes.add(textLinia(t));
-                dolentes.push(textLinia(t));
-            }
-        }
-        const opcions = barreja(r, [[textLinia(bona), true], ...barreja(r, dolentes).slice(0, 2).map(t => [t, false])]);
+        const opcions = opcionsCorregeix(r, {
+            bona,
+            mala: linies[c.j],
+            text: textLinia,
+            admet: E => valor(E) !== null && valor(E) !== valor(abans),
+            alternatives: Object.entries(REGLES)
+                .filter(([id]) => id !== c.id && !DESACTIVADES.includes(id))
+                .map(([, rg]) => () => rg.fes(abans, r)?.E),
+            retoca: () => retoca(r, abans),
+        });
         ex.errades[c.j] = {
             tipus: c.id,
             terme,
@@ -709,8 +689,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
     }
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(pas(linies[i - 1]).fets);
     ex.compensades = !!compensades;
-    if (compensades)
-        ex.nota = `El resultat $${ex.solucio}$ és correcte, però durant el càlcul s'han comès dues errades que es compensen. Per tant, el càlcul és incorrecte, encara que doni el resultat correcte per casualitat.`;
+    if (compensades) ex.nota = notaCompensades(ex.solucio, { art: 'el resultat', adj: 'correcte' }, { art: 'el càlcul', adj: 'incorrecte' });
     return ex;
 }
 
@@ -732,11 +711,7 @@ export function valida(ex) {
     }
     if (etapa(ls[ls.length - 1]) !== null) p.push("l'última línia no és un sol nombre");
     for (const [j, e] of Object.entries(ex.errades)) {
-        if (e.perque.length !== DISTRACTORS_PERQUE + 1 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir ${DISTRACTORS_PERQUE + 1} opcions i una de bona`);
-        if (new Set(e.perque.map(o => o[0])).size !== DISTRACTORS_PERQUE + 1) p.push(`errada ${j}: opcions de «Per què?» repetides`);
-        if (e.opcions.length !== 3 || e.opcions.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Corregeix-la» ha de tenir 3 opcions i una de bona`);
-        if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
-        if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);
+        p.push(...problemesErrada(j, e));
         if (e.expl.includes(e.bona) || e.expl.includes('$' + e.bona.slice(2) + '$')) p.push(`errada ${j}: l'explicació ja diu com havia de quedar la línia`);
         if (!(e.terme >= 1 && e.terme < ex.linies[j].length)) p.push(`errada ${j}: terme equivocat fora de lloc`);
     }
@@ -745,7 +720,3 @@ export function valida(ex) {
     return p;
 }
 
-export const perPagina = ex => {
-    const { _linies, ...resta } = ex;
-    return resta;
-};

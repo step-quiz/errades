@@ -46,7 +46,10 @@ export const arrossega = (ex, i) => (ex.compensades ? (errades(ex).filter(k => k
 
 export function nouEstat() {
     // ltermes / traca: els termes encerclats i el traç (R3), mentre la línia encerclada espera «Comprova»
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fallades: 0, respostes: {}, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
+    return {
+        sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fallades: 0, respostes: {}, fase: 'busca', actual: null,
+        corregides: {}, termes: {}, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null,
+    };
 }
 
 /** Una resposta equivocada a «Per què?» o a «Corregeix-la» treu aquests punts (auditoria C5-A). */
@@ -108,7 +111,7 @@ function direccio(S, ex, i) {
     return '';
 }
 
-function ensenya(S, ex, cfg, k, text) {
+function ensenya(S, ex, cfg, k) {
     S.msg = { tipus: 'noEncert', text: `L'errada era a la línia ${k}. ${ex.errades[k].expl}` };
     S.msgLinia = k;
     S.ajuda.push(k);
@@ -169,7 +172,7 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
     S.errors++;
     const p = pendents(S, ex);
     if (S.errors >= cfg.maxIntents) {
-        if (p.length) return ensenya(S, ex, cfg, p[0], 'Tampoc és aquí.');
+        if (p.length) return ensenya(S, ex, cfg, p[0]);
         S.msg = { tipus: 'noEncert', text: 'En aquest exercici totes les línies eren correctes i no hi havia cap errada.' };
         S.msgLinia = null;
         S.ajuda.push(-1);
@@ -306,7 +309,7 @@ export function capMes(S, ex, cfg = CONFIG_PER_DEFECTE) {
         return acaba(S);
     }
     S.errors++;
-    if (S.errors >= cfg.maxIntents) return ensenya(S, ex, cfg, p[0], "N'hi ha alguna.");
+    if (S.errors >= cfg.maxIntents) return ensenya(S, ex, cfg, p[0]);
     S.msg = {
         tipus: 'noEncert',
         text: S.trobades.length ? "Encara n'hi ha alguna més. Torna-ho a repassar." : "N'hi ha alguna. Torna-ho a mirar línia per línia.",

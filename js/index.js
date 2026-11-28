@@ -12,36 +12,23 @@
  *   no s'escriu), membre (només equacions: membre, costat, banda o part), nota (0 = sense
  *   nota ni trofeu a la pantalla final; auditoria P10). Els valors
  *   per defecte no s'escriuen, perquè l'enllaç quedi curt.
- * - Les etiquetes dels nivells són curtes; només el 2 canvia amb l'activitat.
+ * - Les etiquetes dels nivells (curtes; només el 2 canvia amb l'activitat) són a js/motor/nivells.js.
  * - Fins que no es tria l'activitat, els paràmetres i l'enllaç són amagats.
  * - «Repartiment» (selector) substitueix el camp de la llavor: «Iguals per a
  *   tothom» genera una llavor (llavorNova) i la deixa només a l'enllaç.
- * DEPENDÈNCIES: js/motor/parametres.js (llavorNova).
+ * DEPENDÈNCIES: js/motor/parametres.js (llavorNova), js/motor/nivells.js (NIVELLS).
  * ============================================================================
  */
 import { llavorNova, PARAULES_MEMBRE } from './motor/parametres.js';
+import { NIVELLS } from './motor/nivells.js';
 
 export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '', membre: 'membre', nota: '1' };
 const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], encercla: [0, 1], totaloperations: [1, 20], maxintents: [1, 5], llavor: [0, 4294967295], nota: [0, 1] };
 export const PAGINES = { equacions: 'equacions.html', prioritat: 'prioritat.html' };
 export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
 
-export const NIVELLS = {
-    equacions: {
-        1: 'Una errada',
-        2: 'Una errada. Equacions més llargues',
-        3: 'Una errada, sense advertir-ho',
-        4: 'Dues errades',
-        5: 'Una o dues errades, i sense advertir-ho',
-    },
-    prioritat: {
-        1: 'Una errada',
-        2: 'Una errada. Operació amb parèntesis o potències',
-        3: 'Una errada, sense advertir-ho',
-        4: 'Dues errades',
-        5: 'Una o dues errades, i sense advertir-ho',
-    },
-};
+// les etiquetes dels nivells: una sola taula per a l'índex i les pàgines (js/motor/nivells.js, auditoria 2 C2)
+export { NIVELLS };
 
 export function enllac(base, valors) {
     const p = new URLSearchParams();
@@ -84,7 +71,7 @@ if (typeof document !== 'undefined') {
             ...[1, 2, 3, 4, 5].map(n => {
                 const o = document.createElement('option');
                 o.value = String(n);
-                o.textContent = n + ' · ' + NIVELLS[act][n];
+                o.textContent = n + ' · ' + NIVELLS[act][n].index;
                 return o;
             })
         );

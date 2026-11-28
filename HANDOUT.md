@@ -58,5 +58,5 @@ rows, tests. Only rules David asked for or real pupils' errors.
 
 See `docs/STATE.md` «Open work». In short: David tests the site with pupils; the new editor has four situations
 (SAP, IX, DEN1, DEN2) with sentences written by Claude that David has not reviewed yet; a few open questions are
-listed there for the dialog. Audit 2 (28/11/2026) is in progress: stage 1 delivered, stages 2–4 in STATE item 8;
+listed there for the dialog. Audit 2 (28/11/2026) is in progress: stages 1–2 delivered, stages 3–4 in STATE item 8;
 on «Revisa artifact» for slug `01cf84b6-…`, read db `respostes`, reply in `rep/<id>` (`{ text }`), do what David approved.

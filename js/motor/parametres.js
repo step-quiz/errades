@@ -43,8 +43,8 @@ export function llegeixParametres(cerca) {
 
 export const encerclaDe = (par, tactil) => (par.encercla === -1 ? !!tactil : par.encercla === 1);
 
-// any-pointer: un Chromebook tàctil en mode portàtil també ho és (el ratolí tàctil és el punter principal; auditoria T4)
-export const esTactil = () => typeof matchMedia === 'function' && matchMedia('(any-pointer: coarse)').matches;
+// esTactil (any-pointer: coarse, auditoria T4) és a util.js; es reexporta per a les pàgines
+export { esTactil } from './util.js';
 
 export const llavorNova = () => {
     try {

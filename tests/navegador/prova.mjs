@@ -32,6 +32,8 @@ try {
 
 const ARREL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TIPUS = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2' };
+// La Content-Security-Policy de les pàgines (_headers, bloc «/*»), perquè la prova vegi el que farà Cloudflare (auditoria 2, C7)
+const CSP = (fs.readFileSync(path.join(ARREL, '_headers'), 'utf8').split(/\n\/\*\n/)[1] || '').match(/Content-Security-Policy: (.*)/)[1];
 const servidor = http.createServer((req, res) => {
     const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     const f = path.join(ARREL, u === '/' ? 'index.html' : u);
@@ -39,7 +41,7 @@ const servidor = http.createServer((req, res) => {
         res.writeHead(404);
         return res.end();
     }
-    res.writeHead(200, { 'Content-Type': TIPUS[path.extname(f)] || 'application/octet-stream' });
+    res.writeHead(200, { 'Content-Type': TIPUS[path.extname(f)] || 'application/octet-stream', 'Content-Security-Policy': CSP });
     fs.createReadStream(f).pipe(res);
 });
 await new Promise(r => servidor.listen(0, r));
@@ -50,7 +52,7 @@ const PAG = await import('../../js/equacions/pagina.js');
 const { termeUnic } = await import('../../js/motor/estat.js');
 const ERRORS = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'errors.json'), 'utf8'));
 const BANC = JSON.parse(fs.readFileSync(path.join(ARREL, 'data', 'banc.json'), 'utf8')).exemples;
-const sessio = (base, i = 0, nivell = 1, noerrors = false) => PAG.exempleSessio(i, { base, nivell, noerrors, tipus: ERRORS, banc: BANC });
+const sessio = (base, i = 0, nivell = 1, noerrors = false) => PAG.exempleSessio(i, { base, nivell, noerrors, banc: BANC });
 const primera = ex => Object.keys(ex.errades).map(Number).sort((a, b) => a - b)[0];
 const [LT_LLAVOR, LT] = (() => {
     for (let s = 1; ; s++) {
@@ -70,6 +72,9 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     const pg = await ctx.newPage();
     const fallades = [];
     pg.on('pageerror', e => fallades.push(String(e)));
+    pg.on('console', m => {
+        if (/Content Security Policy|Refused to/.test(m.text())) fallades.push('CSP: ' + m.text());
+    });
     pg.on('request', r => {
         if (!r.url().startsWith(BASE)) fallades.push('petició externa: ' + r.url());
     });
@@ -436,6 +441,16 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         }
         if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `prioritat-${mida.width}.png`), fullPage: true });
     }
+
+    // C2 i P12: la capçalera, de la taula única; amb noerrors no es diu quantes errades hi ha
+    await pg.goto(BASE + 'equacions.html?nivell=1&noerrors=1&llavor=3');
+    await pg.waitForSelector('#llibreta .ln');
+    ok((await pg.textContent('#nivell')) === 'Nivell 1 · sense parèntesis · pot ser que no hi hagi cap errada', `P12: capçalera amb noerrors (${await pg.textContent('#nivell')})`);
+    await pg.goto(BASE + 'prioritat.html?nivell=5&llavor=3');
+    await pg.waitForSelector('#llibreta .ln');
+    ok((await pg.textContent('#nivell')) === 'Nivell 5 · una o dues errades, sense dir-ho', 'C2: capçalera de la prioritat');
+    await pg.goto(BASE + 'index.html');
+    ok(!(await pg.content()).includes('advertir'), "C2: l'índex ja no diu «sense advertir-ho»");
 
     ok(fallades.length === 0, 'errors o peticions externes: ' + fallades.join(' | '));
     await ctx.close();

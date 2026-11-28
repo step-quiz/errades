@@ -33,4 +33,12 @@ for (const b of ['No hi ha cap errada', 'No hi ha cap més errada', 'Per què?',
 }
 ok(!/«No n'hi ha cap més»/.test(readme + spec), "README/SPEC encara diuen «No n'hi ha cap més»");
 ok(!/Pupil: Kalam/.test(spec), 'SPEC R2 encara diu Kalam per a l\'alumne');
+// C7: les capçaleres fan complir «cap petició a tercers», i el JavaScript no escriu cap atribut style (la CSP no els deixa)
+const capc = llegeix('_headers');
+ok(/\/\*\n[^/]*Content-Security-Policy: default-src 'self';/.test(capc), "_headers: Content-Security-Policy amb default-src 'self' per a totes les pàgines");
+ok(/Referrer-Policy: no-referrer/.test(capc) && /X-Content-Type-Options: nosniff/.test(capc) && /Permissions-Policy: camera=\(\), microphone=\(\), geolocation=\(\)/.test(capc), '_headers: Referrer-Policy, nosniff i Permissions-Policy');
+for (const f of fs.readdirSync(new URL('../js/', import.meta.url), { recursive: true }).filter(f => f.endsWith('.js'))) ok(!/style="/.test(llegeix('js/' + f)), `js/${f} escriu un atribut style (la CSP el bloquejaria)`);
+for (const f of ['index.html', 'equacions.html', 'prioritat.html']) ok(!/<script>|<style>|style="|\son[a-z]+="/.test(llegeix(f)), `${f}: cap script, estil ni gestor en línia (CSP)`);
+// C6: la còpia del workflow de proves passa també la prova del navegador
+ok(/tests\/navegador\/prova\.mjs/.test(llegeix('docs/workflows/tests.yml')), 'docs/workflows/tests.yml no passa la prova del navegador');
 informe('docs');

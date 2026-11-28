@@ -43,8 +43,8 @@
  */
 import { nouEstat, selecciona, marcaLlac, llacDubtos, comprova, triaTerme, triaPerque, triaCorreccio, escriuAra, escriuCorreccio, capMes, errades, punts, seleccionable, arrossega, intentsQueden } from './estat.js';
 import { avalua, llargada } from './llac.js';
+import { esc, esTactil, puntPrincipalTactil } from './util.js';
 
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 /** Una expressió: fraccions {a|b} apilades, la x en cursiva i les potències (3^2) amb l'exponent a dalt. */
 export const fm = s =>
     esc(s)
@@ -63,7 +63,13 @@ const partsTxt = s => {
     return k < 0 ? ['', false, s] : [s.slice(0, k), true, s.slice(k + 3)];
 };
 const TEXTOS = {
-    equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que, cadascuna, no es pot deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
+    equacions: {
+        fet: 'ha resolt aquesta equació',
+        on: "que no es pot deduir de l'anterior",
+        ons: 'que, cadascuna, no es pot deduir de la línia anterior',
+        teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'],
+        exemple: '+8',
+    },
     prioritat: { fet: 'ha calculat aquesta expressió', on: "on s'ha equivocat", ons: "on s'ha equivocat", teclat: ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '0'], exemple: '12' },
 };
 /**
@@ -354,7 +360,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         const el = document.createElement('div');
         el.className = 'demo';
         el.setAttribute('aria-hidden', 'true');
-        el.innerHTML = `<svg><ellipse pathLength="1" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" transform="rotate(-4 ${cx.toFixed(1)} ${cy.toFixed(1)})"/></svg><span class="etiqueta" style="left:${Math.max(0, cx - rx).toFixed(0)}px;top:${(cy + ry + 6).toFixed(0)}px">${esc(TEXTOS_ETAPA2.demo)}</span>`;
+        const u = v => v.toFixed(1);
+        const ellipse = `<ellipse pathLength="1" cx="${u(cx)}" cy="${u(cy)}" rx="${u(rx)}" ry="${u(ry)}" transform="rotate(-4 ${u(cx)} ${u(cy)})"/>`;
+        el.innerHTML = `<svg>${ellipse}</svg><span class="etiqueta">${esc(TEXTOS_ETAPA2.demo)}</span>`;
+        // la posició, per CSSOM i no amb un atribut style: la Content-Security-Policy no permet estils en línia (auditoria 2, C7)
+        const et = el.querySelector('.etiqueta');
+        et.style.left = Math.max(0, cx - rx).toFixed(0) + 'px';
+        et.style.top = (cy + ry + 6).toFixed(0) + 'px';
         lin.append(el);
         const treu = () => el.remove();
         setTimeout(treu, 4200);
@@ -389,7 +401,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         if (escriuAra(S, ex, cfg))
             return `<div class="fase escriu"><h3>Com hauria de ser el terme encerclat per ser correcte?</h3>${avis}
 <form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme correcte</label>
-<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(any-pointer: coarse)').matches ? 'none' : 'text'}" placeholder="per exemple, ${T.exemple}">
+<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${esTactil() ? 'none' : 'text'}" placeholder="per exemple, ${T.exemple}">
 <button type="submit" class="b pri">Comprova</button></form>
 <div class="teclat${T.teclat.length === 12 ? ' t12' : ''}" aria-label="Teclat">${T.teclat
                 .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
@@ -423,10 +435,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         let h = `<div class="cap-ex"><div class="fila-ins"><p class="ins">${esc(f1)}</p><div class="chips">`;
         // un sol xip per a les errades (pantalla més neta, el David 28/11/2026): «Trobades: 0 de 1», o «Trobades: 0»
         const q = intentsQueden(S, cfg);
-        h += `<span class="chip">${esc(TEXTOS_ETAPA2.trobades(S.trobades.length, cfg.anuncia ? n : null))}</span><span class="chip intents" aria-label="${esc(TEXTOS_ETAPA2.intentsAria(q, cfg.maxIntents))}">${esc(TEXTOS_ETAPA2.intents)}: <span class="punts-i">${'●'.repeat(q)}${'○'.repeat(cfg.maxIntents - q)}</span></span></div></div>`;
+        const boles = '●'.repeat(q) + '○'.repeat(cfg.maxIntents - q);
+        h += `<span class="chip">${esc(TEXTOS_ETAPA2.trobades(S.trobades.length, cfg.anuncia ? n : null))}</span>`;
+        h += `<span class="chip intents" aria-label="${esc(TEXTOS_ETAPA2.intentsAria(q, cfg.maxIntents))}">${esc(TEXTOS_ETAPA2.intents)}: <span class="punts-i">${boles}</span></span></div></div>`;
         // La consigna de la fase d'ara (C1); la del David hi és sempre, amagada a les fases, perquè l'alçada no canviï
         const cf = consignaFase();
-        h += `${pasHTML()}<div class="ins-pila"><p class="ins${cf ? ' amagat' : ''}">${esc(f2)}</p>${cf ? `<p class="ins">${esc(cf)}</p>` : ''}</div></div><div class="linies${llacActiu() ? ' llac' : ''}${cfg.encercla ? ' encercla' : ''}">`;
+        h += `${pasHTML()}<div class="ins-pila"><p class="ins${cf ? ' amagat' : ''}">${esc(f2)}</p>${cf ? `<p class="ins">${esc(cf)}</p>` : ''}</div></div>`;
+        h += `<div class="linies${llacActiu() ? ' llac' : ''}${cfg.encercla ? ' encercla' : ''}">`;
         const arr = inicArrossega();
         const mb = msgBusca();
         filaMsg = mb && AMPLE.matches ? (S.msgLinia ?? 1) : null;
@@ -455,7 +470,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba, onCanvi, estat } = 
         const escrit = contenidor.querySelector('#escrit');
         if (escrit) {
             escrit.value = valorEscrit;
-            if (!matchMedia('(pointer: coarse)').matches) escrit.focus({ preventScroll: true });
+            if (!puntPrincipalTactil()) escrit.focus({ preventScroll: true });
         } else if (teniaFocus && !S.fi) {
             const b = contenidor.querySelector('.fase .b');
             (b || contenidor).focus({ preventScroll: true });

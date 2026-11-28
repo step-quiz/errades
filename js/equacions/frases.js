@@ -33,6 +33,7 @@
  * ============================================================================
  */
 import { FRASES } from './frases-dades.js';
+import { menys, llista } from '../motor/util.js';
 
 // ---------- La paraula «membre» (el David, 27/11/2026) ----------
 export const PARAULES = {
@@ -189,7 +190,6 @@ export function render(plantilla, valors = {}) {
 }
 
 // ---------- Les situacions de cada regla ----------
-const menys = n => (n < 0 ? '−' + Math.abs(n) : String(n));
 const entreP = n => (n < 0 ? '(' + menys(n) + ')' : String(n));
 /** Les fitxes d'una línia («+ 26», «− 7x») → els termes amb el signe enganxat («+26», «−7x»). */
 const terme = f => String(f).replace(/^([+−]) /, '$1');
@@ -282,10 +282,10 @@ export function situacio(id, d, ctx) {
         }
         case 'TERMES_NO_SEMBLANTS': {
             const xs = d.xs && d.xs.map(t => `$${T.pTx(t)}$`);
-            const llista = xs && (xs.length > 1 ? xs.slice(0, -1).join(', ') + ' i ' + xs[xs.length - 1] : xs[0]);
+            const llist = xs && llista(xs);
             if (d.tres) {
-                if (d.ns.length === 1) return { sid: 'TNS2', conds, valors: { terme: T.ambSigne(d.ns[0]), 'termes en x': llista } };
-                return { sid: 'TNS3', conds, valors: { 'termes en x': llista } };
+                if (d.ns.length === 1) return { sid: 'TNS2', conds, valors: { terme: T.ambSigne(d.ns[0]), 'termes en x': llist } };
+                return { sid: 'TNS3', conds, valors: { 'termes en x': llist } };
             }
             const c = d.x.c.n,
                 b = d.n.v.n;

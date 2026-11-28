@@ -44,7 +44,7 @@ for (const nivell of [1, 2, 3, 4, 5])
         }
 
 // El banc: si n'hi ha exemples que encaixen, en surt més o menys 1 de cada 3
-const delBanc = perPagina(generaExemple({ llavor: 99, nivell: 1, errades: 1 }, TIPUS));
+const delBanc = perPagina(generaExemple({ llavor: 99, nivell: 1, errades: 1 }));
 let delBancN = 0;
 const mateix = (a, b) => JSON.stringify(a.linies) === JSON.stringify(b.linies);
 for (let i = 0; i < 600; i++) if (mateix(exempleSessio(i, { base: 5, nivell: 1, noerrors: false, tipus: TIPUS, banc: [delBanc] }), delBanc)) delBancN++;

@@ -2,9 +2,9 @@
  * ============================================================================
  * PROJECTE: Localitza l'errada (step-quiz/errades)
  * FITXER: js/equacions/nivells.js
- * ROL: El que els nivells tenen de propi a les equacions: l'etiqueta de cada
- *      nivell (la capçalera de equacions.html) i quins exemples del banc
- *      (data/banc.json) encaixen amb un nivell (encaixaBanc). Pur.
+ * ROL: El que els nivells tenen de propi a les equacions: quins exemples del
+ *      banc (data/banc.json) encaixen amb un nivell (encaixaBanc). Pur. Les
+ *      etiquetes dels nivells són a js/motor/nivells.js (auditoria 2, C2).
  * ARQUITECTURA:
  * - Què vol dir cada nivell (forma, errades, si s'anuncia) és comú a les dues
  *   activitats: js/motor/nivells.js (parametres).
@@ -16,14 +16,6 @@
  * ============================================================================
  */
 import { DESACTIVADES } from './generador.js';
-
-export const NIVELLS = {
-    1: 'una errada, sense parèntesis',
-    2: 'una errada, equacions més llargues', // la forma K no porta parèntesis (auditoria B2, 28/11/2026)
-    3: 'una errada, sense dir-ho',
-    4: 'dues errades',
-    5: 'una o dues errades, sense dir-ho',
-};
 
 /**
  * Es pot fer servir aquest exemple del banc (data/banc.json) en aquest nivell?

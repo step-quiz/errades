@@ -16,8 +16,12 @@
  *   5: una o dues, sense dir-ho (a vegades es compensen)
  *   Amb noerrors=1 (R5): a tots els nivells, més o menys 1 exemple de cada 5
  *   no té cap errada, i la consigna no diu mai quantes n'hi ha.
- * - Les etiquetes dels nivells i el banc són de cada activitat
- *   (js/equacions/nivells.js, js/index.js).
+ * - NIVELLS (auditoria 2, C2): l'única taula de les etiquetes, per activitat; index és el
+ *   text del desplegable de l'índex, errades i detall fan la capçalera de la pàgina.
+ *   capcalera(activitat, nivell, noerrors): «Nivell 1 · una errada, sense parèntesis»; amb
+ *   noerrors=1 no es diu quantes errades hi ha (P12, el David, 28/11/2026): «Nivell 1 ·
+ *   sense parèntesis · pot ser que no hi hagi cap errada».
+ * - El banc és només de les equacions (js/equacions/nivells.js).
  * DEPENDÈNCIES: js/motor/atzar.js.
  * ============================================================================
  */
@@ -39,4 +43,23 @@ export function parametres(nivell, noerrors, llavor) {
         compensades = false;
     }
     return { forma, errades, compensades, anuncia: !noerrors && nivell !== 3 && nivell !== 5 };
+}
+
+const COMUNS = {
+    1: { index: 'Una errada', errades: 'una errada', detall: 'sense parèntesis' },
+    3: { index: 'Una errada, sense dir-ho', errades: 'una errada', detall: 'sense dir-ho' },
+    4: { index: 'Dues errades', errades: 'dues errades', detall: '' },
+    5: { index: 'Una o dues errades, i sense dir-ho', errades: 'una o dues errades', detall: 'sense dir-ho' },
+};
+export const NIVELLS = {
+    // la forma 2 de les equacions no porta parèntesis (auditoria B2, 28/11/2026)
+    equacions: { ...COMUNS, 2: { index: 'Una errada. Equacions més llargues', errades: 'una errada', detall: 'equacions més llargues' } },
+    prioritat: { ...COMUNS, 2: { index: 'Una errada. Operació amb parèntesis o potències', errades: 'una errada', detall: 'amb parèntesis o potències' } },
+};
+
+/** El text de la capçalera de la pàgina d'una activitat. */
+export function capcalera(activitat, nivell, noerrors) {
+    const n = NIVELLS[activitat][nivell];
+    const parts = noerrors ? [n.detall, 'pot ser que no hi hagi cap errada'] : [[n.errades, n.detall].filter(Boolean).join(', ')];
+    return ['Nivell ' + nivell, ...parts.filter(Boolean)].join(' · ');
 }

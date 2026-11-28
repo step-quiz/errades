@@ -25,7 +25,7 @@ const TIPUS = JSON.parse(fs.readFileSync(new URL('../data/errors.json', import.m
 const vistos = {};
 for (let s = 1; s <= 800; s++)
     for (const nivell of [1, 2]) {
-        const ex = generaExemple({ llavor: s, nivell }, TIPUS);
+        const ex = generaExemple({ llavor: s, nivell });
         for (const [j, e] of Object.entries(ex.errades)) {
             const pot = escrivible(e, ex.linies[j]);
             vistos[e.tipus] = vistos[e.tipus] || { si: 0, no: 0 };

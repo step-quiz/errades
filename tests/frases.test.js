@@ -38,7 +38,7 @@ for (const [sid, s] of Object.entries(FRASES.situacions))
 
 // ---- Molts exemples: cada «Per què?» té frases diferents i cap marcador sense resoldre ----
 DIAGNOSI.actiu = true;
-for (const nivell of [1, 2, 3, 4, 5]) for (const errades of [1, 2]) for (let s = 1; s <= 150; s++) generaExemple({ llavor: s, nivell, errades }, TIPUS);
+for (const nivell of [1, 2, 3, 4, 5]) for (const errades of [1, 2]) for (let s = 1; s <= 150; s++) generaExemple({ llavor: s, nivell, errades });
 const vistes = {};
 for (const v of DIAGNOSI.vistes) {
     vistes[v.sid] = (vistes[v.sid] || 0) + 1;

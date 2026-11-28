@@ -26,15 +26,17 @@
  * - valida(exemple) comprova totes les condicions de docs/SPEC.md §5.3; el
  *   generador només torna exemples que la passen.
  * - Atzar sembrat (js/motor/atzar.js): la mateixa llavor dona sempre el mateix exemple.
- * DEPENDÈNCIES: frases.js, js/motor/atzar.js, js/motor/exemple.js. Els
- *   textos genèrics de cada tipus d'errada (data/errors.json) arriben com a
- *   paràmetre (TIPUS).
+ * DEPENDÈNCIES: frases.js, js/motor/atzar.js, js/motor/exemple.js (la bastida
+ *   comuna amb la prioritat, auditoria 2 C3), js/motor/util.js.
  * ============================================================================
  */
 
 import { perque as frasesPerque } from './frases.js';
 import { creaAtzar, enter, tria, signe, barreja } from '../motor/atzar.js';
-import { DISTRACTORS_PERQUE, opcionsPerque } from '../motor/exemple.js';
+import { opcionsPerque, opcionsCorregeix, termesEquivocats, NOMS, triaPonderada, frasaCorrecta, notaCompensades, problemesErrada, perPagina } from '../motor/exemple.js';
+import { menys, llista } from '../motor/util.js';
+
+export { perPagina };
 
 // ---------- Atzar sembrat (js/motor/atzar.js) ----------
 export { creaAtzar };
@@ -84,7 +86,6 @@ const D = (s, m, b, den) => ({ k: 'd', s, m, b, den });
 const M = (a, b) => ({ k: 'm', a, b });
 const linia = (L, R) => ({ L, R });
 
-const menys = n => (n < 0 ? '−' + Math.abs(n) : String(n));
 function nombre(qv) {
     // valor absolut, en el format de la pantalla: 5 o {5|9}
     const a = qv.abs();
@@ -350,7 +351,7 @@ function copiats(op, l, bo) {
 /** «El $+3$ i el $+2x$» (amb majúscula) o «el $+3$ i el $+2x$». */
 const llistaTermes = (ts, maj = false) => {
     const t = ts.map(u => `el $${ambSigne(u)}$`);
-    const txt = t.length > 1 ? t.slice(0, -1).join(', ') + ' i ' + t[t.length - 1] : t[0];
+    const txt = llista(t);
     return maj ? txt[0].toUpperCase() + txt.slice(1) : txt;
 };
 
@@ -810,9 +811,7 @@ function perQueBona(op, abans, despres) {
             escrit = [text(despres)];
             break;
     }
-    const parts = escrit.map((e, k) => (k === 0 ? `és correcte haver escrit $${e}$` : `també és correcte haver escrit $${e}$`));
-    const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `Aquesta línia és correcta, perquè ${llista}.`;
+    return frasaCorrecta(escrit.map(e => `$${e}$`));
 }
 
 // ---------- Enunciats ----------
@@ -951,7 +950,6 @@ function fraccionari(r, A) {
 
 const LIMITS = { 1: [4, 6], 2: [6, 8] };
 // Noms dels alumnes ficticis: paritaris i diversos, com a les aules (auditoria P11, 28/11/2026)
-const NOMS = ['la Marta', 'en Pau', 'la Laia', "l'Arnau", 'la Júlia', 'en Marc', 'la Noa', "l'Èric", 'la Carla', 'en Biel', "l'Aina", 'en Pol', 'la Fàtima', 'en Youssef', 'la Lucía', 'en Wei', "l'Ilyas", "l'Andrea", 'la Nerea', 'en Bilal'];
 const dinsMarge = l => [...l.L, ...l.R].every(t => {
     if (t.k === 'x') return Math.abs(t.c.n) <= 40 && t.c.d === 1;
     if (t.k === 'n') return Math.abs(t.v.n) <= 120 && t.v.d <= 40;
@@ -1039,15 +1037,6 @@ function candidates(r, linies, ops, des = 1) {
     }
     return out;
 }
-function triaPonderada(r, llista) {
-    const total = llista.reduce((s, c) => s + REGLES[c.id].pes, 0);
-    let x = r() * total;
-    for (const c of llista) {
-        x -= REGLES[c.id].pes;
-        if (x < 0) return c;
-    }
-    return llista[llista.length - 1];
-}
 function injecta(linies, ops, c) {
     // les línies fins a j−1, la dolenta, i la resta calculada bé a partir de la dolenta
     const k = OPS.indexOf(c.op);
@@ -1062,15 +1051,14 @@ function injecta(linies, ops, c) {
  * Un exemple nou.
  * @param {object} o
  * @param {number} o.llavor      llavor de l'atzar
- * @param {number} [o.nivell]    1 o 2 (etapa 1)
+ * @param {number} [o.nivell]    la forma de l'enunciat: 1 sense parèntesis, 2 amb (js/motor/nivells.js)
  * @param {number} [o.errades]   0, 1 o 2
  * @param {boolean} [o.compensades] amb 2 errades: la solució final és la bona (N4)
  * @param {object} [o.e0]        (eines del banc) un enunciat fix, fet amb T.linia(...)
  * @param {function} [o.filtre]  (eines del banc) quines injeccions s'accepten: c => bool,
  *                               amb c = { j, id, op, res: { linia, dades } }
- * @param {object} TIPUS         data/errors.json (textos genèrics de «Per què?»)
  */
-export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }, TIPUS) {
+export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = false, e0: fix = null, filtre = null }) {
     const r = creaAtzar(llavor);
     // amb un enunciat fix (eines del banc i del banc d'errades), el nombre de línies és el que surti
     const [mn, mx] = fix ? [2, 20] : LIMITS[nivell] || LIMITS[1];
@@ -1111,7 +1099,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
                     ok = false;
                     break;
                 }
-                const c = triaPonderada(r, cs);
+                const c = triaPonderada(r, cs, c => REGLES[c.id].pes);
                 marques.push(c);
                 ({ linies, ops } = injecta(linies, ops, c));
             }
@@ -1119,7 +1107,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
         // (amb un enunciat fix, triat a mà, no es miren els marges: 30/x = 5 → x = 150)
         if (!ok || linies.length < mn || linies.length > mx || (!fix && !linies.every(dinsMarge))) continue;
         if (!compensades && errades === 2 && solucio(linies[linies.length - 1]).igual(solucio(e0))) continue;
-        const ex = construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TIPUS);
+        const ex = construeix(r, llavor, nivell, e0, linies, ops, marques, compensades);
         if (valida(ex).length === 0) return ex;
     }
     throw new Error(`No s'ha pogut generar cap exemple (llavor ${llavor}, nivell ${nivell})`);
@@ -1127,7 +1115,7 @@ export function generaExemple({ llavor, nivell = 1, errades = 1, compensades = f
 /** Per fer enunciats fixos (eines del banc): T.linia([T.X(8), T.N(-15)], [T.X(-4), T.N(-3)]). */
 export const T = { X, N, P, I, D, linia };
 
-function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TIPUS) {
+function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades) {
     const ex = {
         llavor,
         nivell,
@@ -1145,34 +1133,23 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         const bona = aplica(c.op, abans);
         const bonaF = fitxes(bona),
             malF = fitxes(linies[c.j]);
-        let terme = malF.findIndex((t, i) => t !== '=' && t !== bonaF[i]);
-        const marca = c.res.dades && c.res.dades.marca; // la regla ja diu quins termes s'han d'encerclar
-        if (terme < 0) terme = malF.findIndex(t => t !== '=');
-        // dos termes equivocats (SIGNE_TRANSPOSAR o SIGNE_COPIAT amb dos termes): a la fase del terme valen tots dos
-        if (marca) terme = marca[0];
-        const termes = marca ? marca : bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
+        // la regla pot dir quins termes s'han d'encerclar (marca); amb dos termes equivocats (SIGNE_TRANSPOSAR o
+        // SIGNE_COPIAT amb dos termes), a la fase del terme valen tots dos
+        const { terme, termes } = termesEquivocats(malF, bonaF, c.res.dades && c.res.dades.marca);
         // «Per què?»: la frase certa i DISTRACTORS_PERQUE de falses, triades a l'atzar, concretes d'aquesta línia
         const fr = frasesErrada(c.id, c.res.dades, { op: c.op, abans, malF, bonaF, terme });
         const perque = opcionsPerque(r, fr.bona, fr.dolentes);
         // «Corregeix-la»: la línia bona i dues de dolentes (d'altres regles o retocades)
-        const vistes = new Set([text(bona), text(linies[c.j])]);
-        const dolentes = [];
-        for (const [id, rg] of Object.entries(REGLES)) {
-            if (id === c.id || !opsDe(rg).includes(c.op) || DESACTIVADES.includes(id)) continue;
-            const res = rg.fes(abans, r, c.op);
-            if (res && !equivalents(abans, res.linia) && !vistes.has(text(res.linia))) {
-                vistes.add(text(res.linia));
-                dolentes.push(text(res.linia));
-            }
-        }
-        for (let i = 0; dolentes.length < 2 && i < 40; i++) {
-            const t = retoca(r, bona);
-            if (t && !vistes.has(text(t)) && !equivalents(abans, t)) {
-                vistes.add(text(t));
-                dolentes.push(text(t));
-            }
-        }
-        const opcions = barreja(r, [[text(bona), true], ...barreja(r, dolentes).slice(0, 2).map(t => [t, false])]);
+        const opcions = opcionsCorregeix(r, {
+            bona,
+            mala: linies[c.j],
+            text,
+            admet: l => !equivalents(abans, l),
+            alternatives: Object.entries(REGLES)
+                .filter(([id, rg]) => id !== c.id && opsDe(rg).includes(c.op) && !DESACTIVADES.includes(id))
+                .map(([, rg]) => () => rg.fes(abans, r, c.op)?.linia),
+            retoca: () => retoca(r, bona),
+        });
         ex.errades[c.j] = {
             tipus: c.id,
             terme,
@@ -1186,8 +1163,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
     }
     for (let i = 1; i < linies.length; i++) if (!ex.errades[i]) ex.correctes[i] = perQueBona(ops[i], linies[i - 1], linies[i]);
     ex.compensades = !!compensades;
-    if (compensades)
-        ex.nota = `La solució $${ex.solucio}$ és correcta, però durant la resolució s'han comès dues errades que es compensen. Per tant, la resolució és incorrecta, encara que doni la solució correcta per casualitat.`;
+    if (compensades) ex.nota = notaCompensades(ex.solucio, { art: 'la solució', adj: 'correcta' }, { art: 'la resolució', adj: 'incorrecta' });
     return ex;
 }
 function retoca(r, l) {
@@ -1234,11 +1210,7 @@ export function valida(ex) {
     if (!(ult.L.length === 1 && esX(ult.L[0]) && ult.L[0].c.n === 1 && ult.L[0].c.d === 1 && ult.R.length === 1 && valorFinal(ult.R[0])))
         p.push("l'última línia no és «x = valor»");
     for (const [j, e] of Object.entries(ex.errades)) {
-        if (e.perque.length !== DISTRACTORS_PERQUE + 1 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir ${DISTRACTORS_PERQUE + 1} opcions i una de bona`);
-        if (new Set(e.perque.map(o => o[0])).size !== DISTRACTORS_PERQUE + 1) p.push(`errada ${j}: opcions de «Per què?» repetides`);
-        if (e.opcions.length !== 3 || e.opcions.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Corregeix-la» ha de tenir 3 opcions i una de bona`);
-        if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
-        if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);
+        p.push(...problemesErrada(j, e));
         if (e.bona === ex.linies[j].join(' ')) p.push(`errada ${j}: la línia bona és igual que la dolenta`);
         if (e.expl.includes(e.bona) || e.expl.includes('$' + e.bona.split(' = ')[1] + '$')) p.push(`errada ${j}: l'explicació ja diu com havia de quedar la línia`);
         if (!(e.terme >= 0 && e.terme < ex.linies[j].length) || ex.linies[j][e.terme] === '=') p.push(`errada ${j}: terme equivocat fora de lloc`);
@@ -1248,8 +1220,3 @@ export function valida(ex) {
     return p;
 }
 
-/** L'exemple sense les dades internes (_linies), tal com el fa servir la pàgina. */
-export const perPagina = ex => {
-    const { _linies, ...resta } = ex;
-    return resta;
-};

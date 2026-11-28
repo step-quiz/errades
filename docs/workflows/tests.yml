@@ -1,6 +1,9 @@
-# Proves de Localitza l'errada (node tests/run-all.js), a cada canvi.
-# Sense dependències: el generador, la màquina d'estats, l'índex i que la
-# documentació digui el mateix que el codi.
+# Proves de Localitza l'errada, a cada canvi.
+# 1) node tests/run-all.js, sense dependències: el generador, la màquina d'estats, l'índex i que
+#    la documentació digui el mateix que el codi.
+# 2) La prova del navegador (tests/navegador/prova.mjs, auditoria 2 C6): les dues activitats a
+#    l'ordinador i al mòbil, amb la Content-Security-Policy de _headers. Els runners ubuntu de
+#    GitHub ja porten Google Chrome; només cal playwright-core (sense desar-lo al repositori).
 name: Tests
 
 on:
@@ -14,7 +17,7 @@ permissions:
 jobs:
   proves:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
@@ -23,7 +26,12 @@ jobs:
           node-version: 22
 
       - name: Sintaxi
-        run: for f in $(git ls-files 'js/*.js' 'js/**/*.js' 'tests/*.js'); do node --check "$f" || exit 1; done
+        run: for f in $(git ls-files 'js/*.js' 'js/**/*.js' 'tests/*.js' 'tests/**/*.mjs'); do node --check "$f" || exit 1; done
 
       - name: Proves
         run: node tests/run-all.js
+
+      - name: Prova del navegador
+        run: |
+          npm install --no-save --no-package-lock playwright-core
+          CHROME=/usr/bin/google-chrome node tests/navegador/prova.mjs

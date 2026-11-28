@@ -5,11 +5,30 @@
 # enviar res; si han canviat, rep la versió nova. Així ningú no queda amb una barreja de fitxers
 # vells i nous després d'una publicació (la mateixa regla que operacions).
 #
+# Seguretat (auditoria 2, C7): el navegador fa complir la regla «cap petició a tercers» (són
+# menors). Content-Security-Policy: tot (scripts, estils, lletres, imatges, fetch) només del
+# mateix lloc; cap estil ni script en línia; cap marc ni formulari cap a fora. La resta: no
+# s'envia mai l'adreça d'origen, no s'endevinen tipus de fitxer, i ni càmera, ni micròfon, ni
+# ubicació. tests/docs.test.js comprova que les pàgines no necessiten res més.
+#
 # Les lletres de vendor/fonts no canvien mai: es poden guardar un any sense preguntar.
 
 /*
   Cache-Control: no-cache
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 
 /vendor/*
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+# La pàgina de revisió del banc porta l'estil, el JavaScript i les lletres a dins (un sol fitxer)
+/banc-errors.html
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'
+
+# Les fonts de les eines (l'editor de frases és la font d'un artifact de claude.ai, no una pàgina per a l'alumnat)
+/eines/*
+  ! Content-Security-Policy

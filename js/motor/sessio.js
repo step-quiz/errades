@@ -34,6 +34,7 @@
  * ============================================================================
  */
 import { creaLlibreta, fm } from './llibreta.js';
+import { esc } from './util.js';
 import { mostraSeguent, amagaSeguent, textPunts } from '../comu/seguent.js';
 import { PUNTS_MAX } from '../comu/punts.js';
 
@@ -124,7 +125,6 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         }
     }
 
-    const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
     const lin = L => (Array.isArray(L) ? L.join(' ') : String(L));
 
     /** «Tornar a jugar», com a operacions: amb confirmació (la sessió desada s'esborra). */
