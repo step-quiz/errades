@@ -16,7 +16,8 @@
  */
 import { generaExemple, perPagina, creaAtzar } from './generador.js';
 import { exempleAmbParaula } from './frases.js';
-import { parametres, encaixaBanc, NIVELLS, PROPORCIO_BANC } from './nivells.js';
+import { encaixaBanc, NIVELLS, PROPORCIO_BANC } from './nivells.js';
+import { parametres } from '../motor/nivells.js';
 import { iniciaSessio } from '../motor/sessio.js';
 import { CONFIG_PER_DEFECTE } from '../motor/estat.js';
 import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/parametres.js';

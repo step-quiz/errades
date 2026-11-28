@@ -42,7 +42,7 @@ export const arrossega = (ex, i) => (ex.compensades ? (errades(ex).filter(k => k
 
 export function nouEstat() {
     // ltermes / traca: els termes encerclats i el traç (R3), mentre la línia encerclada espera «Comprova»
-    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsTerme: 0, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
+    return { sel: null, trobades: [], ajuda: [], revisades: [], errors: 0, fase: 'busca', actual: null, corregides: {}, termes: {}, intentsEscriu: 0, fi: false, msg: null, msgLinia: null, ltermes: null, traca: null };
 }
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
@@ -126,7 +126,6 @@ export function comprova(S, ex, cfg = CONFIG_PER_DEFECTE) {
         S.actual = i;
         S.msgLinia = i;
         S.fase = 'terme';
-        S.intentsTerme = 0;
         // Amb el traç (R3): si ha encerclat el terme equivocat, ja no cal la fase del terme;
         // si n'ha encerclat un de bo, és un intent fallat i ha de tocar el terme equivocat.
         if (lt.length) {
@@ -197,7 +196,6 @@ function termeFallat(S, ex, cfg, text) {
     const i = S.actual,
         bons = ex.errades[i].termes || [ex.errades[i].terme];
     S.errors++;
-    S.intentsTerme++;
     if (S.errors >= cfg.maxIntents) {
         S.termes[i] = true;
         if (!S.ajuda.includes(i)) S.ajuda.push(i);

@@ -27,14 +27,16 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `index.html`, `js/index.js`, `css/index.css` | Index and link generator for teachers: one narrow panel of «label | select» rows (like `operacions`). Activity (`pagina()`; the other rows stay hidden until one is chosen), level (short labels, `NIVELLS`; only level 2 depends on the activity), examples (1–10), attempts (1–5), «Repartiment» (different per pupil / same for everyone → `llavorNova()` seed), gesture, `noerrors`, `escriu`, «Paraula» (`membre`, equations only). `enllac()` is pure (tested; the test also reads the link back with `llegeixParametres`). |
 | `css/peu.css`, `vendor/img/cc-by-nc-sa.svg`, `icon.png` | Index only: floating footer pill (author, school, licences; same look as `operacions`), self-hosted CC badge (a redraw: no third-party requests), and the sneaker logo that links to `https://step-quiz.net/`. |
 | `js/motor/parametres.js` | URL parameters shared by both activities (`llegeixParametres`, `encerclaDe`, `esTactil`, `llavorNova`). |
-| `prioritat.html`, `js/prioritat/pagina.js` | The order-of-operations activity (no bank). `exempleSessio()` is pure (tested). Levels reuse `js/equacions/nivells.js` (`forma` 1 = level 1, 2 = levels 2–5). |
-| `js/prioritat/generador.js` | **Pure, seeded generator** of order-of-operations examples (expression lists, the pupil's procedure, mal-rules, texts, `valida()`). |
+| `prioritat.html`, `js/prioritat/pagina.js` | The order-of-operations activity (no bank). `exempleSessio()` is pure (tested). Levels: `js/motor/nivells.js` (`forma` 1 = level 1, 2 = levels 2–5). |
+| `js/prioritat/generador.js` | **Pure, seeded generator** of order-of-operations examples (expression lists, the pupil's procedure, mal-rules, all texts including the «Per què?» sentences in `PERQUE`, `valida()`). |
 | `data/errors-prioritat.json` | Order-of-operations taxonomy. Keys = its `REGLES`. |
 | `js/motor/llac.js` | Pure lasso geometry (R3): `avalua(points, lines)` → `{ linia, termes }` or `{ torna }`. |
 | `equacions.html`, `js/equacions/pagina.js` | The first-degree equations activity (reads the URL, loads `data/errors.json` and `data/banc.json`, starts a session). `exempleSessio()` is pure (tested). |
-| `js/equacions/nivells.js` | What each level means (`parametres`: statement type, number of errors, compensating pairs, announced or not, term phase) and which bank examples fit a level (`encaixaBanc`). Pure. |
+| `js/motor/nivells.js` | What each level means in both activities (`parametres`: statement form, number of errors, compensating pairs, announced or not). Pure. |
+| `js/motor/atzar.js`, `js/motor/exemple.js` | Shared by both generators: the seeded randomness (`creaAtzar`, `enter`, `tria`, `barreja`, `signe`) and the «Per què?» options (`DISTRACTORS_PERQUE` = 2, `opcionsPerque`). Pure. |
+| `js/equacions/nivells.js` | Equations only: level labels (`NIVELLS`), which bank examples fit a level (`encaixaBanc`, skips deactivated rules), `PROPORCIO_BANC`. Pure. |
 | `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format, each with `banc: "lot1-B05"` (batch and card id of the review artifact); about 1 example in 3 comes from here when one fits the level. `tests/banc.test.js` checks their structure. |
-| `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, all texts, `valida()`). |
+| `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, explanations and correct-line texts, `valida()`). The «Per què?» sentences come from `frases.js` (`frasesErrada`). |
 | `js/equacions/frases.js` | Pure: the «Per què?» sentences of David's sentence editor. Template renderer (`render`: markers, `$…$`, fractions, `\bold`, `\oposite`, `\signe`, `\nosign`, position references, `[mal]`/`[bo]`, a negative value after an operator in brackets), the situation and marker values of each rule (`situacio`), sentence choice with conditions and reserves (`perque`), and the «membre» word (`posaParaula`, `exempleAmbParaula`). |
 | `js/equacions/frases-dades.js` | **Generated** by `node eines/frases-editor/exporta.mjs` (never edit by hand): sentence templates and, per situation, the true sentence, the distractors (optional `cond`) and reserves. |
 | `data/errors.json` | Error taxonomy: name and description of each type. Keys = `REGLES`. |
@@ -45,12 +47,12 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `css/tokens.css` | Colours with meaning (two layers, R1) and the self-hosted fonts. |
 | `css/pagina.css`, `css/llibreta.css` | Page structure and buttons; the notebook. |
 | `js/comu/punts.js`, `js/comu/seguent.js`, `css/seguent.css`, `LICENSE`, `LLICENCIA.md` | **Shared files** from `step-quiz/step-quiz-commons` (`comuns.json`, web `errades`). Never edit here. |
-| `HANDOUT.md` | Cold-start brief for the next AI session: what was done in the 2026-11-26 session and the open work. |
-| `eines/frases-editor/` | Sources of the sentence editor. **Current artifact (28/11/2026, this account):** «Frases de «Per què és una errada?» · Equacions (editor nou)», https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys, slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, capabilities `{db:{}, user:{}}`. `dades.json` (catalogue v2, made once by `cataleg-2.mjs` from the sentences of 28/11: the source of truth; deactivated situations carry `desactivada: true` and are hidden; `reserva` lists reserve sentences), `plantilla.html` + `dades.json` → `index.html` (replace `/*DADES*/`, escape `</`); `prova*.mjs` (Playwright, mocked `window.claude`). `exporta.mjs`: `dades.json` + `editor-db.json` (the artifact's db collections `frases` and `situacions`, written by Claude) → `js/equacions/frases-dades.js`; `banc.mjs` rewrites the «Per què?» sentences of `data/banc.json`. History: the old editor (slug `1f8b92d4-…`, other account, unreadable from here) was exported by hand as `editor-2026-11-28.txt`; `cataleg.mjs`/`dades.mjs` are stale and throw. Not part of the site. |
-| `banc-errors.html`, `eines/banc-errors.mjs`, `eines/banc-errors.plantilla.html` | **Teachers' review page** (for David's department): one example per error type of both activities, numbered 1…N (equations first, in `data/errors.json` order, then order of operations), each with the error circled, the correct line and the explanation; buttons «M'agrada molt / M'agrada / No m'agrada» and an optional comment, kept in `localStorage` (`banc-errors-v1`). The fixed top bar's «Copia codi amb les preferències» copies a plain-text code (`BANC-ERRORS v1`, a legend line, one line per example `n MM|M|N|- [ \| comment]`, `FI`) that teachers email to David. No name field (removed by David). After a successful copy the button turns green and reads «Codi copiat» for 5 s. Self-contained (data, CSS, JS and the two fonts in base64). **Generated, never edit by hand:** `node eines/banc-errors.mjs` (equations: the shortest single-error bank example of each type, else the generator; order of operations: the generator). Bump `VERSIO` in the script whenever the set of examples changes, so codes say which version they answer. |
+| `HANDOUT.md` | Cold-start brief for the next AI session: how to work with David and the recurring procedures (sentence editor rounds, deletions). |
+| `eines/frases-editor/` | Sources of the sentence editor, artifact «Frases de «Per què és una errada?» · Equacions (editor nou)», https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, capabilities `{db:{}, user:{}}`). `dades.json`: the catalogue (v2; situations with their markers, sample and sentences; `desactivada: true` hides one; `reserva` lists reserve sentences). `plantilla.html` + `dades.json` → `index.html` (replace `/*DADES*/`, escape `</`). `prova.mjs`, `prova-focus.mjs`: Playwright tests with a mocked `window.claude`. `exporta.mjs`: `dades.json` + `editor-db.json` (what David wrote, read from the artifact's db by Claude) → `js/equacions/frases-dades.js`. `banc.mjs`: rewrites the «Per què?» sentences of `data/banc.json`. Not part of the site. |
+| `banc-errors.html`, `eines/banc-errors.mjs`, `eines/banc-errors.plantilla.html` | **Teachers' review page** (the department survey, closed on 28/11; keep v3 unchanged as its record): one example per error type of both activities, numbered 1…28 (equations first, in `data/errors.json` order, then order of operations), each with the error circled, the correct line and the explanation; buttons «M'agrada molt / M'agrada / No m'agrada» and an optional comment, kept in `localStorage` (`banc-errors-v3`). «Copia codi amb les preferències» copies a plain-text code (`BANC-ERRORS v3`, a legend line, one line per example `n MM\|M\|N\|- [ \| comment]`, `FI`). `banc-errors.html#resultats` reads the codes back (pasted text or the .docx of the e-mails) and computes the tally with David's weights (MM +3, M +2, not rated 0, N −4), ranking, quartiles and comments, all in the browser. Self-contained (data, CSS, JS and the two fonts in base64). **Generated, never edit by hand:** `node eines/banc-errors.mjs`; bump `VERSIO` in the script whenever the set of examples changes. |
 | `vendor/fonts/` | Kalam (OFL 1.1) and Permanent Marker (Apache 2.0), latin subsets, with their licences. |
 | `tests/` | Node tests (`run-all.js`) and a Playwright smoke test (`navegador/prova.mjs`). |
-| `docs/SPEC.md`, `docs/STATE.md` | Specification and living state. `docs/workflows/` holds copies of the GitHub workflows. |
+| `docs/STATE.md`, `docs/SPEC.md`, `docs/HISTORY.md`, `docs/enquesta-banc-errors.md` | Current state (authoritative after the code), original specification with David's decision IDs, the 25–28/11 log (historical only), the department survey (tally, comments, decision). `docs/workflows/` holds copies of the GitHub workflows. |
 | `_headers` | Cloudflare Pages cache headers. |
 | `package.json` | Only `"type": "module"` so that Node reads `js/` as ES modules in the tests. No dependencies. |
 
@@ -76,10 +78,11 @@ remembered; terms of several lines, too small, or no clear line → «Has de tor
 An open stroke (underline) or a closed one with no term inside picks the line it covers vertically. The stroke stays
 drawn (dashed, black) until «Comprova». While the finger is still down (class `.dibuixant` on the notebook) no line
 looks selected or hovered and «Comprova» is hidden: the line is marked only when the finger lifts. With touch or pen
-(class `.toc`) the hover grey of a line is not shown (it would stick to the touched line). On a hit (`comprova`): if a remembered term is a wrong term, «I has encerclat
-«Molt bé, has localitzat la línia i el terme…» and the term phase is skipped; if only correct terms were enclosed, the line counts as
-found but it is a failed attempt and the term phase runs («Has localitzat la línia correctament, però no el
-terme…»). With no enclosed term (or a tap / mouse click) the term phase runs without losing points.
+(class `.toc`) the hover grey of a line is not shown (it would stick to the touched line). On a hit (`comprova`):
+if a remembered term is a wrong term, the message is «Molt bé, has localitzat la línia i el terme…» and the term
+phase is skipped; if only correct terms were enclosed, the line counts as found but it is a failed attempt and the
+term phase runs («Has localitzat la línia correctament, però no el terme…»). With no enclosed term (or a tap /
+mouse click) the term phase runs without losing points.
 
 **Term phase (every level, David 26/11/2026).** After the line is found, its terms become buttons in place; the
 student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
@@ -101,14 +104,14 @@ differs from the line above. Level 1: naturals, `+ − · :`, ≤ 5 numbers, no 
 | `ESQUERRA_DRETA` | `6 + 5 · 2 → 11 · 2` (a `+`/`−` done before a `·`/`:` because it comes first; also inside brackets) | Tabak (2019): ≈80 % of 240 pupils; Bye et al. (2024) |
 | `SUMA_ABANS_RESTA` | `10 − 3 + 2 → 10 − 5` | the «literal» reading of the acronym (University of Portsmouth study) |
 | `PRODUCTE_ABANS_DIVISIO` | `24 : 2 · 3 → 24 : 6` | same |
-| `PARENTESI_IGNORAT` | `2 · (11 − 1) → 22 − 1` | classic; no source read **Deactivated** (survey 28/11, `DESACTIVADES`). |
+| `PARENTESI_IGNORAT` | `2 · (11 − 1) → 22 − 1`. **Deactivated** (survey 28/11, `DESACTIVADES`). | classic; no source read |
 | `POTENCIA_PER_EXPONENT` | `3^2 → 6` (every power of the step: `2·3^2 + 5^2 → 2·6 + 10`) | classic; no source read |
 | `POTENCIA_DESPRES` | `2 · 3^2 → 6^2` | classic; no source read |
 | `RESTA_NEGATIVA` | `15 − 27 → 12` (two positive numbers, the second larger) | parallels `CALCUL` («signe») of the equations |
 | `RESTA_GIRADA` | `3 − 8 · 5 → 40 − 3` (product done right, moved to the front, subtraction reversed; only when the product is larger than the first number and is the only product of the step) | David's pupil, 27/11/2026 |
 | `SIGNE_PRODUCTE` | `(−8) · 8 → 64` | parallels the sign errors in Gasa and Erbaş et al. |
 
-Weights `pes`: 5, 3, 2, 3, 4, 3, 2, 2. «Corregeix-la» distractors: other rules' lines for the same step, then
+Weights `pes`, in table order: 5, 3, 2, 3, 4, 3, 2, 3, 2. «Corregeix-la» distractors: other rules' lines for the same step, then
 `retoca()` (one result of the correct step computed with another operation, never 0 or invented negatives).
 
 Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if the error had to be shown
@@ -132,13 +135,29 @@ Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if 
    (`[altre terme]`, `[altre càlcul]`, `[terme d'abans]`) is skipped; with fewer than 2 left, the situation's
    `reserva` fills in (an example that still has fewer is discarded by `valida()`). Bold is written `**…**` and
    drawn by `txt()` in `llibreta.js`. The «membre» markers stay in the example and the page resolves them
-   (`exempleAmbParaula`, URL `membre`). The rules not yet in the editor (`SUMA_ABANS_PRODUCTE`, `INVERS_X`,
-   `CANVI_SIGNE_PARCIAL`, `DENOMINADORS`) keep their sentences in `PERQUE`. 3 «Corregeix-la» options (the
+   (`exempleAmbParaula`, URL `membre`). Every rule has a situation (deactivated ones too, hidden in the editor);
+   a rule without one makes `frasesErrada` throw. 3 «Corregeix-la» options (the
    correct line and two wrong ones), and, for each correct line, «Aquesta línia és correcta, perquè és
    correcte haver escrit …» listing what was newly written in it.
 5. `valida()` checks every condition (each unmarked line is equivalent to the one above, each marked one is
    not, last line is `x = value`, numbers in range, options well formed, no `undefined`/`NaN`); the generator
    only returns examples that pass.
+
+Template language of the «Per què?» sentences (`render()` in `js/equacions/frases.js`; the editor's
+`plantilla.html` renders the same):
+
+- `[marker]`: a value of the example (each situation lists its markers and a sample value); outside `$…$` it is
+  set as a formula, unless the value already contains `$` or is text (`[costat]` = «de l'esquerra» / «de la
+  dreta»). A sentence whose marker has no value in an example is not used.
+- `$…$` a formula, `${a|b}$` a fraction; an ASCII `-` before a digit, `x`, `$`, `[`, `\` or between spaces is
+  a minus `−`. A negative value right after `+`, `−`, `·` (or `:` inside a formula) is put in brackets.
+- `\bold{…}` bold (output `**…**`, never across a `$`), `\oposite{…}` the opposite with its sign (−1 → +1,
+  x → −x), `\signe{…}` the value with its sign (3 → +3), `\nosign{…}` without sign (−23 → 23).
+- `[mal]` / `[bo]`: the wrongly written term and what it should have been; `[abans|alumne|bona].[esq|dre].n`:
+  term n (from 1) of a side of the line above, the pupil's line or the correct line.
+- «Membre» markers `[membre] [membres] [el membre] [al membre] [Al membre] [del membre] [l'altre membre]
+  [el seu membre] [al seu membre] [els dos membres]` stay in the example; the page replaces them with the word of
+  the URL parameter `membre`, with gender and plural (`posaParaula`).
 
 Deactivated rules: `DESACTIVADES` (in each generator) lists rules, or `RULE:variant`, that the generator never
 uses (neither as the error nor as a «Corregeix-la» option) and whose bank examples `encaixaBanc` skips. Filled after

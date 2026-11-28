@@ -1,14 +1,15 @@
-# step-quiz/errades — specification (v0.2, 2026-11-25)
+# step-quiz/errades — specification (v0.3, updated 2026-11-28)
 
 > **Audience:** a cold-start Claude that will build the repository `step-quiz/errades`.
 > Talk to the user (David, maths teacher, Catalonia) in **Catalan**; everything the student sees is
 > **Catalan**; this file is English. Read the common rules block of any `step-quiz` `CLAUDE.md`
 > (ZIP delivery to `_uploads/`, Cloudflare Pages, never `[skip ci]`, docs follow code, tests before delivery).
 >
-> **Source of truth for decisions:** the review artifact «Localitza l'errada»
-> (https://claude.ai/artifact/8xYMeyJDW3owvTfJgeygSE). Point IDs below (G1, E3, R2…) refer to it.
-> Both rounds are answered (33 + 8 points). Living state and later decisions: [`STATE.md`](STATE.md),
-> which wins over this file.
+> **Origin of the decisions:** the review artifact «Localitza l'errada»
+> (https://claude.ai/artifact/8xYMeyJDW3owvTfJgeygSE, on another account: not readable from the current one).
+> Point IDs below (G1, E3, R2…) refer to it; both rounds were answered (33 + 8 points). This file keeps those
+> decisions and was brought up to date on 2026-11-28 where later decisions changed them. Current state:
+> [`STATE.md`](STATE.md), which wins over this file; how it works: `README.md`; history: [`HISTORY.md`](HISTORY.md).
 
 ---
 
@@ -24,12 +25,12 @@ squared-paper notebook and must locate the line(s) where the pupil went wrong. C
 
 Consequences: lines that correctly follow from a wrong line are **not** errors (the classic
 `2(x+4) = 13 − 7x → 2x + 4 = 13 − 7x → 2x + 7x = 13 − 4 …`: only line 2 is an error). An example with
-two errors has exactly two non-deducible transitions. Line 1 is the statement and can never be an error.
+two errors has exactly two non-deducible transitions. Line 0 is the statement and can never be an error (G8).
 
-Student-facing instruction (David's wording, G2 comment):
-«Toca la primera línia que no es pot deduir de l'anterior.» (two errors: «Toca les dues línies que no es
-poden deduir de la línia anterior»; no count announced: «Si hi ha alguna línia que no es pot deduir de
-l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
+Student-facing instruction (David's wording, rewritten by him on 2026-11-27; «Toca» or «Encercla» depending on
+the gesture): «Encercla la primera línia que no es pot deduir de l'anterior.»; two errors: «… les dues línies que,
+cadascuna, no es pot deduir de la línia anterior»; no count announced: «Si hi ha alguna línia que no es pot deduir
+de l'anterior, encercla-la; si no n'hi ha cap, indica-ho.» (`js/motor/llibreta.js`).
 
 ---
 
@@ -51,11 +52,11 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
 | G8 | Lines are numbered **0, 1, 2…**; line 0 is the statement: no circle, not-allowed cursor, cannot be selected. A circled number = still a candidate; checked lines lose the circle (2026-11-25). |
 | F1 | Wrong tap on a correct line → «Aquesta línia és correcta, perquè» (wording since 2026-11-27, see STATE) + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |
-| F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «N'hi ha una més amunt i una altra més avall»); 3rd miss = show the (next) error, marked «amb ajuda», example worth 0. `maxintents` default **3** here (operacions default is 4). |
+| F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «Hi ha dues errades: una més amunt i l'altra més avall»); at `maxintents` = show the (next) error («L'errada era a la línia k.»), example worth 0 (the «amb ajuda» mark was removed on 2026-11-27). `maxintents` default **3** here (operacions default is 4); wrong terms in the term phase count too. |
 | F4, F5 | **No** hints (per-line solution; substitution). |
 | N2 | Error-free examples only when the teacher enables them → R5 (`noerrors=1`). |
 | N3 | Two errors, announced as «Errades trobades: k de 2». |
-| N4 | Two compensating errors (right answer, wrong procedure), high levels / Batxillerat. Final note: «Una solució bona no vol dir un procediment bo.» |
+| N4 | Two compensating errors (right answer, wrong procedure), levels 4–5. Final note (2026-11-27): «La solució … és correcta, però durant la resolució s'han comès dues errades que es compensen. Per tant, la resolució és incorrecta, encara que doni la solució correcta per casualitat.» |
 | N5 | Five levels (see §6), adjusted by R5. |
 | P1 | **Always the notebook** (squared paper, pupil's blue handwriting, rotating names). The teacher's correction in a completely different typeface → R2. |
 | P2 | Line numbers in the margin, always. |
@@ -75,7 +76,7 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 |---|---|
 | R1 | Two colour layers. **Notebook:** E (error) = teacher's red pen (ellipse around the wrong term, ✗ in the margin, correction text); C (correct line) = grey pencil ✓. **Student:** right = **lilac**, wrong = **grey** (David's choice); never red/green; always with text. Selection before «Comprova» is neutral (black dashed). Code names: `errada`/`correcta` vs `encert`/`noEncert`. |
 | R2 | Pupil: Kalam (blue ink). Teacher's correction: **Permanent Marker**. Both self-hosted. |
-| R3 | Lasso approved (closed stroke → term centres inside the polygon; one line → select it and remember 1–2 terms; ≥ 2 lines, too small or unclear → «Torna a marcar-ho, si us plau»; open underline accepted over one line; then «Comprova»). Default gesture on touch devices; tap for mouse/keyboard. **Stage 5.** |
+| R3 | Lasso approved (closed stroke → term centres inside the polygon; one line → select it and remember 1–2 terms; ≥ 2 lines, too small or unclear → «Has de tornar a marcar-ho, perquè …»; open underline accepted over one line; then «Comprova»). Default gesture on touch devices; tap for mouse/keyboard. **Stage 5.** |
 | R4 | All lines aligned at «=» (grid `1fr auto 1fr`), always. Term phase (no zoom, previous line shaded «compara-la amb aquesta»): at every level since 26/11/2026 (STATE, «Term phase at every level»). |
 | R5 | `noerrors=1`: absent → every example has ≥ 1 error and the count is announced; present → ≈ 1 in 5 error-free, count not announced, button «No hi ha cap errada». Checkbox in the link generator. Stage 2. |
 | R6 | Curated bank: Claude proposes candidate batches in a review artifact, David approves/edits and adds real errors; approved items go to `data/banc.json`. Stage 2. |
@@ -86,7 +87,7 @@ The working prototype (single HTML page) is the artifact above; reuse its logic,
 
 ---
 
-## 4. Repository layout (stage 1; see README for the file table)
+## 4. Repository layout (as planned in stage 1; the README has the current file table)
 
 ```
 errades/
@@ -107,11 +108,10 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 
 ## 5. Data model and generator
 
-### 5.1 Example (rendered unit)
+### 5.1 Example (rendered unit; the full format is `perPagina()` of the generators)
 
 ```json
 {
-  "id": "eq-3f9a",
   "alumne": "la Marta",
   "linies": [["2·(x + 4)", "=", "13", "− 7x"], ["2x", "+ 4", "=", "13", "− 7x"], "..."],
   "errades": {
@@ -121,14 +121,15 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
            "bona": "2x + 8 = 13 − 7x",
            "opcions": [["2x + 6 = 13 − 7x", false], ["x + 8 = 13 − 7x", false], ["2x + 8 = 13 − 7x", true]] }
   },
-  "correctes": { "2": "Aquesta línia és correcta respecte de l'anterior: …" },
+  "correctes": { "2": "Aquesta línia és correcta, perquè\nés correcte haver escrit $−9x$ …" },
   "nota": null
 }
 ```
 
 - A line is a list of **terms**; exactly one `"="`. Terms are the tap/lasso units (G3/R3) and carry the red ellipse.
 - `correctes[i]` (F1 text) is required for **every** non-error line ≥ 2.
-- `perque` options come from the taxonomy (one right, two plausible distractors of other types).
+- `perque`: the true sentence and two distractors, written by David in the sentence editor and filled with the
+  line's own values (README «How the generator works»).
 - Fractions inside a term: `{num|den}`, drawn as stacked HTML (no KaTeX), so that the handwriting font is kept.
 
 ### 5.2 Mal-rules for first-degree equations (initial set; ids map to `errors.json`)
@@ -161,7 +162,8 @@ and a number into one x-term (`2x + 3 + 4x = 18 → 9x = 18`, David's comment on
 
 ### 5.3 Generation algorithm (pure, seeded — fixed sessions must be reproducible)
 
-1. Generate a statement for the level and the pupil's correct procedure (`resol`: exp, red1, tra, red2, div, simp).
+1. Generate a statement for the level and the pupil's correct procedure (`resol`: den, exp, neg, red1, tra, red2,
+   inv, div, simp; each only when it changes something).
    The `operacions` engine was not reused: its steps (move and simplify in one go) are not the lines a pupil writes.
 2. Choose `k` transitions (k = 1 or 2 by level; 0 only with `noerrors=1`) and a mal-rule applicable to each.
 3. Apply the mal-rule to that transition; **recompute every later line correctly from the wrong line**.
@@ -195,23 +197,24 @@ the README has examples and sources):
 
 | nivell | Content (R5 applied) |
 |---|---|
-| 1 | one error, announced, 4–6 lines, no brackets (forms A, B, G) |
-| 2 | one error, announced, 6–8 lines, brackets (stage 1) |
+| 1 | one error, announced, 4–6 lines, no brackets (forms A, B, G, I) |
+| 2 | one error, announced, 6–8 lines, brackets (forms C, D, E, F, H, K, L) |
 | 3 | one error, not announced (with `noerrors=1`: zero or one) |
 | 4 | two errors, announced |
 | 5 | one or two, not announced (with `noerrors=1`: zero to two); compensating pairs allowed |
 
 Parameters (`js/motor/parametres.js`, both activities; the index sets every one): `nivell`, `noerrors` (R5),
 `escriu`, `encercla` (R3; absent = circle on touch screens, tap with a mouse), `totaloperations`, `maxintents`
-(default 3), `llavor` (same examples for everyone). Not yet: `totalsessions`, `fixed`, verification code (stage 3).
+(default 3), `llavor` (same examples for everyone), `membre` (equations only: membre, costat, banda or part, the
+word used in the «Per què?» sentences). Not yet: `totalsessions`, `fixed`, verification code (stage 3).
 
 ## 7. Interaction (as prototyped)
 
 - States per example: `busca` → (hit) `terme` → `perque` → `corregeix` → `busca` (if errors remain) → `fi`.
   The `terme` phase runs at every level (David 26/11/2026); each correct term chosen there, or enclosed with the
   line, is a failed attempt; at `maxintents` the term is shown and the example is worth 0.
-- Hit with a lasso that enclosed exactly the wrong term: «Molt bé, has localitzat la línia i el terme on hi ha l'errada.» (all texts: STATE «Interface texts»)
-- After the last error (announced count): band «Molt bé! +N punts» / «0 punts» + «Següent» (Enter).
+- Hit with a lasso that enclosed exactly the wrong term: «Molt bé, has localitzat la línia i el terme on hi ha l'errada.» (all fixed texts were rewritten by David on 2026-11-27; they live in the code)
+- After the last error (announced count): band «Molt bé!» or «T'he ensenyat l'errada» with the points, and «Següent» (Enter).
   With unannounced count the student must press «No n'hi ha cap més» / «No hi ha cap errada».
 - Messages: second person singular, Catalan, short, with TeX for maths (David's caption rules in
   `pau/procediments/INSIGHTS.md` §3).
@@ -229,7 +232,7 @@ Parameters (`js/motor/parametres.js`, both activities; the index sets every one)
 
 1. **DONE 2026-11-25.** Repo skeleton, `errors.json`, equation generator + mal-rules + tests, page with notebook, tap +
    «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» (choice), points.
-2. **DONE 2026-11-25 except the typed correction.** Five levels, two errors, compensating pairs, `noerrors`,
+2. **DONE 2026-11-25.** Five levels, two errors, compensating pairs, `noerrors`,
    term phase (R4), curated bank mechanism + first batch for review (R6), typed correction (`escriu=1`, chosen by
    the teacher; the student types only the circled term, corrected — David, 2026-11-25).
 3. Verification code `LE` + analyser support in `operacions`.

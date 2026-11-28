@@ -79,6 +79,10 @@ export const FRASES = {
   "F82": "S'ha equivocat en calcular el mínim comú múltiple dels denominadors.",
   "F83": "Havia de dividir per $[M]$, i no multiplicar.",
   "F85": "El $−$ de davant d'una fracció havia de canviar el signe de tot el numerador.",
+  "F86": "Ha canviat el signe de tots els termes menys el del $[terme]$.",
+  "F87": "Només s'havien de canviar els signes [del membre] de l'esquerra.",
+  "F88": "Els termes en $x$ no havien de canviar de signe.",
+  "F89": "Ha passat un terme a [l'altre membre] sense canviar-li el signe.",
   "C01": "$[a]$ i $[b]$ tenen \\bold{signes diferents}: per tant, s'han de restar els seus valors.",
   "Nmwyqnmvt9f": "Hauria d'haver sumat en primer lloc $[terme]$ i $[altre terme]$.",
   "Nmwyqe64223t": "Havia de \\bold{sumar} $[c]$ amb $[b]$.",
@@ -485,6 +489,20 @@ export const FRASES = {
     },
     {
      "id": "F83"
+    }
+   ]
+  },
+  "CSP": {
+   "bona": "F86",
+   "dolentes": [
+    {
+     "id": "F87"
+    },
+    {
+     "id": "F88"
+    },
+    {
+     "id": "F89"
     }
    ]
   }

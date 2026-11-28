@@ -1,0 +1,738 @@
+# Localitza l'errada — history (2026-11-25 → 2026-11-28)
+
+**Historical record, never authoritative.** This is the session log that `docs/STATE.md` used to be, kept verbatim
+so the reasons behind decisions can be traced. Many statements here were superseded later in the same file (for
+example «Per què?» had 4 options until 28/11, the «amb ajuda» mark was removed on 27/11, line numbering starts at 0).
+The current truth is `docs/STATE.md` (state), `README.md` (how it works) and the code.
+
+## Part 1 — the former `docs/STATE.md`, sections in the order they were written
+
+
+### Status (2026-11-25)
+
+| Stage (SPEC §9) | Status |
+|---|---|
+| 1 Skeleton, taxonomy, generator + tests, notebook page (tap + «Comprova», keyboard, F1/F3, «Per què?», «Corregeix-la» by choice, points) | **DONE** — tested and accepted by David after six rounds of corrections |
+| 2 Five levels, two errors, compensating pairs, `noerrors`, typed correction, curated bank (R6), term phase (R4) | **DONE** (ZIP «etapa2»); bank: batch 1 → 20 (ZIP «banc1»), batch 2 → 11 (ZIP «banc2»), batch 3 → 8 (ZIP «banc3»): 39 examples |
+| 3 Verification code `LE` + analyser in `operacions` | PENDING |
+| 4 Projector mode | PENDING |
+| 5 Lasso (R3) | **DONE** (ZIP «llac-prioritat»), before 3 and 4 at David's request |
+| 6 «Caça l'errada del solucionari» in `step-quiz/sol` | PENDING |
+| 7 Fractions, then order of operations | Order of operations **DONE** (ZIP «llac-prioritat»); fractions PENDING |
+
+### Decisions taken while building stage 1 (agent; tell David if any matters)
+
+- **Own pupil procedure, not the `operacions` engine.** `operacions/js/equacions/math-engine.js` moves a term
+  and simplifies in the same step (`group_x`), so it never writes the line where the classic sign error lives
+  (`3x − x = 4 − 6`). `generador.js` writes one line per operation, like a pupil: exp, red1, tra, red2, div
+  (`x = 15/3`), simp (`x = 5`).
+- **Shared files through `step-quiz-commons`**, as David suggested in R7: commons got `fitxers/esm/punts.js`,
+  `fitxers/esm/seguent.js` (ES modules, with `fitxers/esm/package.json` `"type": "module"` so Node can import
+  them in commons' tests) and `fitxers/seguent.css`, plus the `errades` entry in `comuns.json` (ZIP for
+  commons delivered together with ZIP 1). Commons' «Sintaxi» CI step only checks `fitxers/*.js`, so the
+  modules in `fitxers/esm/` are checked by `tests/prova.mjs` instead.
+- **Operacions keeps its own copies** of those three files for now. David (2026-11-25): make operacions
+  receive them from commons **later**, once stage 1 of errades works. Until then, a change to one of them must
+  be made in both places (commons and operacions).
+- **Colours for the shared «Següent» band:** `css/tokens.css` maps `--success` → lilac (right) and `--danger` →
+  grey (wrong), so the common band follows R1 without touching the shared CSS. Its title is «Molt bé!» or
+  «T'he ensenyat l'errada» (0 points).
+- **Fonts self-hosted** (latin subsets from @fontsource 5.3.0): Kalam 400/700 (OFL 1.1), Permanent Marker 400
+  (Apache 2.0); both cover Catalan letters and U+2212 (−). ✓ and ✗ fall back to a system font.
+- **Seeds:** `llavor` in the URL makes a session reproducible (example i uses `llavor + 7919·i`). Fixed
+  sessions (`?fixed=`) are not implemented yet.
+- **Level 1 has no brackets**, so `DISTRIBUTIVA` and `DIST_SIGNE` only appear at level 2. `DIVISIO_SIGNE` is
+  rare at level 1 (it needs a negative coefficient after reducing). Rule weights: `pes` in `REGLES`.
+- **«Per què?»: 4 sentences about that very line** (`PERQUE` in `generador.js`), one true and three plausible
+  false ones, all built from the line's numbers (David's model, 2026-11-25; it replaced the first, generic
+  options). Every false sentence is false for any example of its rule (checked by hand when written); CALCUL's
+  «only the sign is wrong» is offered only when it is false.
+- `package.json` exists only for `"type": "module"` (Node tests). Cloudflare Pages must have no build command.
+
+### Corrections after David's first test (2026-11-25, ZIP 2)
+
+1. **No explanation gives the answer away.** `expl` of every mal-rule says *why* it is wrong, never the correct
+   line or value (it is shown before «Corregeix-la»). `valida()` rejects an `expl` that contains `bona` or its
+   right-hand side.
+2. **The wrong line is crossed out diagonally**, one stroke per member: a horizontal line-through hid the «−» signs.
+3. **The teacher's correction is aligned at «=»**: it is a `.corr.ex` in the same grid column as the lines.
+4. **Lines that come from a corrected error** (after it, once no error is pending) are faded to 40 % inside a big
+   red parenthesis labelled «Ve d'una errada: no té sentit». This **replaces E4 = No** (David asked for it).
+5. **The statement (line 1) can no longer be selected** (`seleccionable` needs i ≥ 1).
+6. **The message goes before the phase question** («Sí! L'errada és aquí.» then «Per què és una errada?»), and the
+   page scrolls so both are visible.
+
+### Second round of corrections (2026-11-25, ZIP 3)
+
+1. The instruction sentence is in print font (UI font), not handwriting.
+2. Lines numbered 0, 1, 2…; line 0 = statement: no circle, `cursor: not-allowed`, keyboard 0 ignored.
+3. Checked lines (and the found error) lose the circle around their number: circled = still a candidate.
+4. F1 text: «En aquesta línia no s'ha comès cap errada:» + line break + «és correcte haver escrit X i també és
+   correcte haver escrit Y.» (X, Y = what was newly written, as it appears in the line). David wrote «+8» in his
+   example for `2x + 8 = −7x − 37 → 2x + 7x = −37 − 8`; the line shows «−8», so the text says «−8».
+   No «No és aquí.» any more; the direction hint (2nd miss) goes on a new line.
+5. Selecting another line clears the previous message.
+6. «Per què?» = 4 specific sentences (see above).
+
+### Third round of corrections (2026-11-25, ZIP 4)
+
+1. No «Comprova» button until a line is selected; then it appears **just left of that line** (a 7.5rem gutter
+   column in every `.fila`; below 560 px the button goes under the selected line).
+2. Messages go **right under the line they talk about** (`S.msgLinia`); in a phase, the question follows the
+   message there. So the previous line, the wrong line, the message and the 4 options are one block, and
+   `fesVisible()` scrolls so the whole block is on screen (if it cannot fit, its top). All the other lines are
+   faded while a phase is open.
+3. Fading is **25 %** (David asked to change it from 40 %), for the phase and for the lines that come from a
+   corrected error.
+4. Those lines sit between **two big black parentheses** «(» «)»; no text label any more.
+
+5. Only the **side that is wrong** is crossed out (`.ratlla`, set by comparing each side with the correct line);
+   a side that was right stays as it is (David: «per quin motiu tatxes −9x + 10? aquesta part estava bé!»).
+
+### Fourth round (2026-11-25, ZIP 5)
+
+1. Instruction in two rows: «La Noa ha resolt aquesta equació i ha comès una errada.» + chips «Errades: 1»
+   «Localitzades: 0» on the right; second row «Toca la primera línia…». Without an announced count, only
+   «Localitzades».
+2. No «Punts» chip in the notebook (the session total stays in the top bar) and no «enunciat» tag.
+3. Softer blue: top bar and index header `--blau-suau` (#e3e9fb) with dark text; `.b.pri` (Comprova and the
+   other main buttons) = blue border, white background, blue text; focus ring #8fa3e8. The shared «Següent»
+   button keeps the shared CSS, now with `--primary` = `--blau` (#2f45b8).
+
+### Fifth round (2026-11-25, ZIP 6)
+
+1. Hover rule now uses an **inset** shadow: the outer one was clipped on the left of «Comprova» (the `.linies`
+   container scrolls horizontally, so it clips anything outside it).
+2. At the end of an example, every correct line before the first error gets the pencil ✓.
+3. The statement (line 0) is in print (serif, black): the pupil did not write it. Same grid, so «=» stays aligned.
+
+### Stage 2 (2026-11-25)
+
+- **Levels** (`js/equacions/nivells.js`, pure, tested): 1 one error no brackets; 2 one error brackets; 3 one error,
+  not announced; 4 two errors announced (≈30 % compensating) + term phase; 5 one or two, not announced (≈30 % of
+  the two-error ones compensating) + term phase. `noerrors=1`: ≈1 in 5 error-free at every level and the count is
+  never announced (R5). Statements: level 1 uses the simple forms, 2–5 the bracket forms.
+- **Term phase** (R4; levels 4–5 at first, every level since 26/11/2026 — see «Term phase at every level» below):
+  after the line is found, its terms become buttons in place (no zoom), the line above is lightly shaded; the wrong
+  term → «Per què?»; a correct term → message (originally no points lost and the second miss revealed it). Keyboard: ←/→ and Enter. The red circle only appears once the term is found.
+- **Two errors**: after the first is corrected, «Encara en queda una»; nothing is faded until all are found. At the
+  end the bracketed group starts after the first error; a second error inside it stays at full opacity.
+- **Bracketed group** has no padding of its own (padding made its lines narrower and broke the «=» alignment); the
+  parentheses sit in the notebook's margin. On phones the teacher's correction is 17 px so that a member does not
+  exceed half the width (else «=» would shift).
+- **Bank (R6)**: `data/banc.json` (`{"exemples": [...]}`, `perPagina()` format). `exempleSessio()` takes ≈1 in 3
+  from the bank when an example fits the level (`encaixaBanc`: error count and brackets). Batch 1 (21 candidates,
+  small numbers, two per error type + two-error + compensating + error-free) is in the review artifact
+  «Banc d'errades, lot 1» (https://claude.ai/artifact/KUf6CzSQsc95SgjKsMJzSn, slug
+  95a10d23-a842-4bb3-b7f2-d0882ea62883; decisions in db collection `banc`, David's real errors in `reals/notes`,
+  Claude's replies in `rep`). Approved ones go to `data/banc.json` after «Revisa artifact».
+- **Typed correction** (E3; David chose: type only the circled term; the teacher decides with `escriu=1`, checkbox in
+  the index): `js/motor/escriure.js` (pure). Only when the wrong and correct lines differ in exactly the circled term
+  (`fitxesBona` from the generator); otherwise the 3 options. Same value accepted (5 = 10/2 = 15/3; 9/−3 = −3). First
+  wrong attempt: «Torna-ho a provar»; second: the term and the line are shown. No points. Own keypad (digits, x, +,
+  −, /, ⌫), not `operacions/js/teclat.js` (it has no x, + or /); on touch devices the input has `inputmode="none"`.
+  The bank batch was regenerated with `fitxesBona` (same 21 examples, deterministic).
+- `pagina.js` only starts a session on `equacions.html` and only once (`window.__erradesEngegat`), so the browser
+  test can import it to compute the same examples.
+
+### Bank batch 1 reviewed (2026-11-25, ZIP «banc1»)
+
+- **20 of 21 approved** → `data/banc.json` with `banc: "lot1-Bxx"` (B07 not approved). `tests/banc.test.js` checks
+  every bank example (one «=» per line, texts for every correct line, 4/3 options, typed term readable, `expl` does
+  not contain the correct line, fits some level). Replies to every card are in the batch-1 artifact (`rep/Bxx`).
+- **David's comments turned into generator changes:**
+  - B07 (`−3 + 15 → 10` is not a pupil error; −12 or −18 are): `CALCUL` rewritten. Only two-term sums with at least
+    one negative term; wrong value = −S («signe») or, with opposite signs, sign(v1)·(|v1|+|v2|) («suma»), with equal
+    signs sign(v1)·||v1|−|v2|| («resta»). Never S or 0. One specific true sentence per kind. B08 (`15 − 11 → 6`)
+    was approved anyway and stays in the bank; the generator would now write −4 or 26.
+  - B05, B15 (signs miscopied): new rule `SIGNE_COPIAT` (exp, red1, tra; pes 2). `copiats(op, l, bo)` lists the terms
+    of the correct line that are only copied in that step; one of them changes sign. Never the leading positive term
+    (its sign is not written). One sign per error (David's B15 example flips two; that would give the term phase two
+    right answers — asked in the reply, not done).
+  - B16 (`2x + 3 + 4x = 18 → 9x = 18`): `TERMES_NO_SEMBLANTS` also at red1 (a side with ≥ 2 x-terms and ≥ 1 number,
+    numbers |n| ≤ 15, merged into one x-term; data `tres: true`). New level-1 statement form G `ax + b + cx = e`
+    (`tria(['A','A','B','G'])`), so level 1 is now 4–6 lines (`LIMITS[1] = [4, 6]`).
+  - B09 (`x = 2/10`): already `QUOCIENT_INVERTIT`, and it is one of the wrong options of that very card. No change.
+- `valida()` now rejects an `expl` containing `$<right side of bona>$` (a whole formula); the old substring test
+  wrongly matched `$−12$` against `12$`.
+- **Bank tooling:** `generaExemple` accepts `e0` (fixed statement built with the exported `T.linia/X/N/P`) and
+  `filtre(c)`; batch 2 was built with it (script kept outside the repo; the README shows the pattern).
+- **«=» alignment on narrow screens:** `alinea()` in `llibreta.js` sets `--ma`/`--mb` on `.linies` to the widest left
+  and right member (re-run after every `pinta()`, on resize and on `document.fonts.ready`); the «=» column is a fixed
+  1.6rem with the «=» centred and the gap is in rem, so the print, pupil and teacher fonts (different «=» widths and
+  sizes) share one vertical. Found by the browser test at 360 px once a longer level-4 example came up.
+- The browser test now computes the examples with `exempleSessio()` and the real bank (it used to assume the
+  generator), and checks the «=» of the corrections too.
+- **Batch 2** «Banc d'errades, lot 2» (https://claude.ai/artifact/KgzZM2mQo9bho8g5h4FizT, slug
+  9759f95d-eda9-44f9-85e1-f767c3ec13a8; same db layout): C01/C02 = B07 rebuilt with −12/−18, C03–C04 new `CALCUL`,
+  C05 = David's B05 line, C06 = B15 statement with one miscopied sign, C07–C08 `SIGNE_COPIAT` at exp/tra, C09 = David's
+  B16 line, C10–C11 three-term `TERMES_NO_SEMBLANTS` (levels 1 and 2), C12 a form-G statement with an older error.
+  Approved ones go to `data/banc.json` as `lot2-Cxx`.
+
+### Bank batch 2 reviewed (2026-11-25, ZIP «banc2»)
+
+- **11 of 12 approved** → `data/banc.json` as `lot2-Cxx` (31 examples in all). C11 not approved: David disliked
+  «4 and −4» in the statement and proposed `3x − 5 + 4x = 16 → 2x = 16` (batch 3, D01). Batch-3 generated
+  candidates reject statements that repeat a number (`variat()` in the batch script; the generator itself does not
+  filter this yet).
+- **David's two real errors (`reals/notes`) became rules:**
+  - `COEFICIENT_U` (red1, red2; pes 3): in a group of ≥ 2 x-terms with a lone ±x, the ±x is not counted
+    (`3x + x + 6x = 4 − 2x → 9x = 4 − 2x`; `5x − x → 5x`). Level-1 forms B and G now draw a lone x 30 % of the time
+    so that it appears at level 1.
+  - `DIST_SUMA` (exp; pes 2): `c·(mx + b)` → x-coefficient sign(c)·(|c| + m), number multiplied correctly
+    (`x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7`). Needs m ≥ 2, |c| ≥ 2, |c| ≠ m.
+  - Bracket terms are now `P(c, b, m = 1)` = c·(mx + b) (`cos`, `lineal`, `expandeix(…, malX)`, `perQueBona`,
+    `dinsMarge` m ≤ 5; `DISTRIBUTIVA`/`DIST_SIGNE` texts say «per $3x$» when m ≠ 1). New level-2 form H
+    `ax + c·(mx + b) = dx + e` (forms C, D, E, F, H equally likely).
+- `valida()`: the last line may also be an irreducible fraction with positive denominator (`x = 4/11` has no simp
+  step); before, such examples were silently rejected, so a solution like 4/11 could only appear via simp.
+- `generaExemple` rejects statements with a superfluous `+ 0` (`zeroSobrer`; form H could write `−x + 0`).
+- The batch pages show Claude's reply to the real-errors note (`rep/reals`, `#rep-reals`).
+- **Batch 3** «Banc d'errades, lot 3» (https://claude.ai/artifact/K6iU7eSiHW9z5TabkADQeH, slug
+  9290c51d-6c23-40f6-9b83-9b1fe0a9acfe): D01 = David's C11 proposal, D02 and D06 = his two real errors exactly,
+  D03–D05 `COEFICIENT_U`, D07–D08 `DIST_SUMA`, D09 a form-H statement with `DIST_SIGNE`.
+
+### Research review (2026-11-25, answered; implemented in ZIP «banc3»)
+
+David sent a list of papers on real pupils' errors. Review artifact «Errades documentades a la recerca»
+(https://claude.ai/artifact/AkeL6uQEjqyVFAib5k1SEh, slug 4efa3c2d-cac4-46f1-bf2b-d0898c2c9bce; db collection
+`respostes` {decisio: si|no|despres|parlem, comentari}, `general/notes`, replies in `rep/<id>` and `rep/general`).
+Main source: Erbaş, Çetinkaya & Ersoy (2009, Education and Science 34(152)), 217 pupils, 32 coded mal-rules with
+counts (YK13 «Mx ± N → (M ± N)x» 437 = our `TERMES_NO_SEMBLANTS`; YK26 188 ≈ `SIGNE_TRANSPOSAR` with both moved terms;
+YK06 157 = `OPERACIO_INVERSA`; YK18 62 = `DISTRIBUTIVA`; YK19 7 = `DIST_SUMA`; YK04 6 = `QUOCIENT_INVERTIT`).
+Proposals A1–A9 (new rules: number-only distribution YK20, forgotten coefficient YK01, product of unlike terms YK11,
+more inverse operations YK03/YK05/YK06, factor applied after the bracket (Gasa), pair-only unlike terms (Gasa),
+two terms moved without sign change YK26 with a multi-answer term phase, factor subtracted (Vale et al.), divide
+before transposing (Mathematics in School 1984)), B1–B3 (out of scope: equation as expression, redistribution,
+trial and error), C1–C2 (weights from the counts; more arithmetic at levels 4–5).
+
+**David's answers:** yes A2, A4, A7, B1–B3 (keep out), C1; no A1, A3, A5, A6; later A8, A9, C2.
+- A2 → `COEFICIENT_OBLIDAT` (div, pes 3): `3x = 12 → x = 12`.
+- A4 → `OPERACIO_INVERSA` (pes 4) variants `resta` B − A, `inversa` A − B (double weight when |A| > |B|), `producte`
+  A·B, `suma` A + B (data `v`, `W`; per-variant `expl` and «Per què?»). Bank examples made before keep the old
+  texts (no `v`: treated as `resta`).
+- A7 → `SIGNE_TRANSPOSAR` all moved terms keep their sign (35 % when ≥ 2 move; data `tots`) and `SIGNE_COPIAT` two
+  signs (30 % when ≥ 2 copied terms; data `ts`, `mals`) — David's B15. `construeix` stores `termes: [i, j]` when more
+  than one token differs; `triaTerme` accepts any of them and `llibreta.js` circles all of them. Such errors are
+  never typeable (`escrivible` needs exactly one different token).
+- C1 → `pes`: TNS 5; SIGNE_TRANSPOSAR, OPERACIO_INVERSA, CALCUL 4; DISTRIBUTIVA, DIST_SIGNE, COEFICIENT_OBLIDAT 3;
+  COEFICIENT_U, SIGNE_COPIAT 2; DIST_SUMA, QUOCIENT_INVERTIT, DIVISIO_SIGNE 1. `DIVISIO_SIGNE` is now very rare at
+  level 1 (≈ 1 in 600 seeds); the coverage test still passes but is close to its limit.
+- **Later (not done):** A8 factor subtracted `3(x − 2) = 5x → x − 2 = 5x − 3`; A9 divide before transposing
+  `3 + 2x = 9 → x = 9/2 − 3`; C2 more arithmetic errors at levels 4–5.
+
+**Bank batch 3:** 8 of 9 approved (D03 not) → `lot3-Dxx`; 39 examples in all.
+
+### Lasso, order of operations and the new index (2026-11-25, ZIP «llac-prioritat»)
+
+David asked, in this order: circle the error with the finger, the order-of-operations activity, and an index
+that chooses the activity and every parameter; then he tests both activities with real pupils.
+- **Lasso (R3):** `js/motor/llac.js` (pure geometry, `tests/llac.test.js`), `marcaLlac`/`llacDubtos` in `estat.js`
+  (state `ltermes`, `traca`), stroke handling in `llibreta.js` (pointer events on `.linies`; a stroke counts only
+  after 8 px, so taps still work; capture after that; the click that follows a stroke is ignored). `encercla`
+  URL parameter; default = circle on `pointer: coarse`. Consigna says «Encercla…» when active. If the circled
+  terms include a wrong term, the term phase is skipped («I has encerclat just el terme equivocat»).
+- **Order of operations:** `js/prioritat/generador.js`, `prioritat.html`, `data/errors-prioritat.json`,
+  `tests/prioritat.test.js`. Engine changes: `cfg.activitat` (texts and keypad), `parts()` for lines without «=»
+  or starting with «=», `^n` exponents in `fm()`, `escrivible` also requires a typeable correct term
+  (`valorFitxa` ≠ null: «· 7», «(−3)», «3^2» are never typed). Decisions taken: one level per line; level 1
+  without negatives, brackets or powers; no repeated numbers in a statement (David's C11 comment); `RESTA_NEGATIVA`
+  only with two positive numbers (`−24 − 5 → 29` was not realistic); `PARENTESI_IGNORAT` and `POTENCIA_DESPRES`
+  advance the other brackets/powers correctly in the same line. Two errors only at form 2 (levels 4–5), with one
+  more line allowed. No bank for this activity yet.
+- **Shared parameters:** `js/motor/parametres.js` (both pages).
+- **Index:** one form: activity, level (descriptions per activity), gesture (auto / circle / tap), `noerrors`,
+  `escriu`, examples, attempts, seed. `tests/index.test.js` checks that the activity reads back every parameter.
+- Browser test: lasso on desktop (mouse drag) and on the phone profile (auto mode, where all the earlier taps keep
+  working), the index, and a full order-of-operations example with the «=» check.
+
+### «Per què?» sentence editor (2026-11-26, waiting for David)
+
+Artifact «Frases de "Per què és una errada?" · Equacions» (https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, slug
+1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335). 21 situations (rule + variant), 70 unique sentence templates (18 used in more
+than one situation), markers `[name]` for per-example values, `$…$` maths, `${a|b}$` fractions. db: `frases/<id>`
+{text, nova}, `situacions/<id>` {bona, dolentes:[{id, cond?}], comentari}, `grups/G1…G7` (G1–G3 «unify?»
+decisions), `general/notes`, replies `rep/<id>`. The catalogue was checked against the generator's real output
+(every sentence of thousands of examples matches a template of its situation). Plan once David answers: move the
+sentences to `data/frases-equacions.json` (same structure), make `PERQUE` render templates from it, and rewrite the
+bank examples' stored sentences by matching the old templates (3 lot-1 examples keep the old `CALCUL` texts).
+
+### Pedagogy fixes from David's classroom test (2026-11-26, ZIP «ordre-versemblanca», then «versemblanca2»)
+
+- **Errors are located top-down** (`js/motor/estat.js`, `comprova`). If the student checks an error line `i` while an
+  earlier error `k < i` is still pending, the line is NOT accepted: message (`tipus: 'info'`) «Abans de mirar aquesta
+  línia, revisa les de sobre: hi ha una errada més amunt.»; no attempt is counted, nothing is added to
+  `trobades`/`revisades`, and the line stays selectable. Applies to every two-error example (compensating or not).
+  Reason: in a compensating pair the second error is correct w.r.t. the original equation (6x+6 = 3x−18 → 18 − 6):
+  confirming it first, asking «Per què?» and making the student "correct" it to −18 − 6 is nonsense.
+- **Compensating pairs**: generators set `ex.compensades = true` (both activities). `arrossega(ex, i)` returns the earlier
+  error `k`; `faseHTML` (`js/motor/llibreta.js`) then shows a `.pista` in the term, «Per què?» and correction phases:
+  «Compara-la amb la línia i−1 tal com està escrita, encara que arrossegui l'errada de la línia k.»
+- **Plausibility of TERMES_NO_SEMBLANTS** (`jaDistingeix(linies, j)` in `js/equacions/generador.js`, used by
+  `candidates`): if an earlier step correctly reduced a side that mixed x-terms and numbers and the result still mixes
+  them (15 − 4x + 8 → 23 − 4x), the student evidently knows they are unlike terms, so the rule is not injected at `j`
+  (23 − 4x → 19x is no longer generated). Tested over 1200 generated examples. The curated bank was not re-checked
+  by this rule (its examples were reviewed by David one by one).
+- **Plausibility extended** (David's answers in the review artifact «Versemblança de les errades», slug
+  `04afb545-41cf-4464-bb8b-efca1be7b5b3`, 26/11/2026). Rule: an error is not injected at line `j` if an earlier
+  CORRECT step already showed the student can do exactly that.
+  - Equations, `versemblant(id, linies, ops, j, res)` in `js/equacions/generador.js`, called by `candidates`:
+    TERMES_NO_SEMBLANTS (`jaDistingeix`; NOT extended to the other side of the same line: A1 rejected);
+    COEFICIENT_U (A2: an earlier correct red1/red2 step reduced x-terms of a side containing a lone ±x);
+    CALCUL (A3: only when the same two-term calculation, same values and signs, unordered, was done correctly before;
+    `dades.clau` = `clauCalcul(k, [v1, v2])`). All other rules unfiltered (B1–B5 accepted as "leave as is").
+  - Order of operations, `versemblant(id, linies, j)` in `js/prioritat/generador.js`: for `FILTRADES` =
+    ESQUERRA_DRETA, SUMA_ABANS_RESTA, PRODUCTE_ABANS_DIVISIO, POTENCIA_PER_EXPONENT, POTENCIA_DESPRES (C1–C5), the rule
+    is skipped at `j` if for some earlier step `i < j` with the same value as its previous line, `REGLES[id].fes(linies[i−1])`
+    applies (the trap was there and the student avoided it). Probed with `creaAtzar(i)`, so the main RNG is untouched.
+    PARENTESI_IGNORAT (C6 rejected), RESTA_NEGATIVA and SIGNE_PRODUCTE (D1, D2: real distractions) unfiltered.
+
+### Teachers' review page `banc-errors.html` (2026-11-26, ZIP «banc-errors»)
+
+- David's request: a stand-alone page to share with his department's maths teachers so they rate whether the error
+  situations are well chosen. Two sections (equations, order of operations), one concrete example per error type,
+  numbered 1–20 continuously (1–12 equations, 13–20 order of operations, so codes are unambiguous). No interaction
+  with the exercise (the error is shown circled, with the correct line and the student-facing explanation; a
+  checkbox hides them for teachers who want to look first). Per example: «M'agrada molt», «M'agrada», «No m'agrada»
+  + optional comment; optional teacher name. Top fixed bar: counter, section links, «Copia codi amb les
+  preferències» (clipboard, fallback: a dialog with the text selected).
+- Code format (David will paste teachers' codes back to an AI): first line `BANC-ERRORS v1`, `Nom: …`, a legend line,
+  then `n VOTE` or `n VOTE | comment` for every example (`VOTE` ∈ MM, M, N, `-`), last line `FI`. Numbers refer to
+  the example list printed by `node eines/banc-errors.mjs` for that version.
+- v1 content: equations 1–12 are bank examples except 10 (COEFICIENT_OBLIDAT, generated); 13–20 generated.
+- Bug found while building it and fixed: POTENCIA_PER_EXPONENT counted the target power inside `ws` (powers with
+  b·e ≠ b^e) but `pas()` counts every power, so with a 2^2 before it the wrong power was spoilt (9 + 3·2² − 4² →
+  9 + 3·8 − 16). Now indexed among all powers; regression test in `tests/prioritat.test.js`.
+- POTENCIA_PER_EXPONENT now spoils EVERY power of the step (David, 26/11/2026: a pupil who believes 3² = 3·2 does it
+  to all of them; one right and one wrong in the same step is not plausible): 9 − 2·3² + 5² → 9 − 2·6 + 10. Powers
+  with b·e = b^e (2²) come out the same. `dades.ws` lists the spoilt powers; `expl` and the «Per què?» sentence name
+  all of them. This also removes the index bug above (the hook no longer picks one power).
+
+- **v1 feedback from David (26/11/2026) → v2 (23 examples; numbering changed, so v1 and v2 codes differ):**
+  item 9 (OPERACIO_INVERSA) now a fixed statement without negatives, 4x + 3 = 23 → … 4x = 20 → x = 16;
+  item 12 (QUOCIENT_INVERTIT) gets a «twin» example 12x = 3 → x = 12/3 = 4 (pupil thinks 3 : 12 is impossible), with
+  its own explanation in the generator when |A| > |B|; item 13 → NEW equation rule `SUMA_ABANS_PRODUCTE`
+  (3 + 2·(x − 4) → 5·(x − 4), or → 5x − 4), two examples with David's statement; item 17 (POTENCIA_PER_EXPONENT) uses
+  David's single-power statement 5² − 6 : 2 + 3 → 10 − 6 : 2 + 3. To make that possible: a fixed statement in the
+  order-of-operations generator skips the line-count limits, and `retoca` offers base + exponent and one exponent
+  more for a power (a single power gave only one wrong option for «Corregeix-la»). Level-2 statement form E now has
+  a + before the bracket 40 % of the time, so `SUMA_ABANS_PRODUCTE` can appear in the game. Example origins on the
+  page: `banc` (reviewed), `fix` (statement chosen by hand), `generador`.
+- **Three new equation error types (David, 26/11/2026) → page v3 (28 examples):** `INVERS_X` (30/x = 5 → x = 30·5),
+  `CANVI_SIGNE_PARCIAL` (−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x / 4x + 5 + 3x = −6 + x), `DENOMINADORS`
+  ((3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x; also «terms without denominator not multiplied»). New term
+  kinds `i` (a/x), `d` (s·(mx + b)/den), `m` (a·b); new ops `den`, `neg`, `inv` (see README); new statement forms
+  I (level 1), K and L (level 2). `encaixaBanc` now takes the statement form from `ex.nivell` (forms K and L have no
+  bracket). Rules can force the circled terms with `dades.marca` (INVERS_X circles only «30·5»). With a fixed
+  statement the generator skips line limits and number margins (x = 150).
+
+### Setup still to do by David (once)
+
+See the numbered steps given in the chat with ZIP 1: create the repository, paste the three workflows from
+`docs/workflows/` into `.github/workflows/` through the GitHub web, upload the ZIP to `_uploads/`, create the
+Cloudflare Pages project (no build command, output directory `/`) and the domain.
+
+### Known limits
+
+- Examples are generated, not curated: some numbers are big (e.g. `5·(x − 5) = −x − 55`). The curated bank
+  (R6) and narrower ranges can fix that in stage 2.
+- The browser test (`tests/navegador/prova.mjs`) is not in CI (it needs Playwright and a browser).
+
+### Simplified index (2026-11-26, review artifact «Simplificar l'índex d'errades»)
+
+David asked to model `index.html` on `operacions/index.html`. Decisions: B1 = no activity preselected («Escull
+una activitat»; every other row and the link stay hidden until one is chosen); B3 = gesture, `noerrors` and
+`escriu` are always visible (no «Més opcions» fold), as one-line selects; all other points followed the proposal.
+
+- **Layout:** one ~420 px panel, rows «label | select», monospace link box, buttons «Copia» and «Obre» (`.b.pri`).
+  No notebook samples, no explanatory paragraphs, no footer. Hover rule and tokens unchanged.
+- **Controls:** level = select with short labels (only level 2 differs: «amb parèntesis» / «amb parèntesis o
+  potències»); examples 1–10 and attempts 1–5 are selects (the URL still accepts up to 20 examples);
+  «Repartiment» replaces the seed field: «Iguals per a tothom» calls `llavorNova()` once and keeps that seed
+  while selected (a free seed can no longer be typed in the index, only edited in the URL).
+- **Untouched:** `enllac()`, `pagina()`, `PER_DEFECTE`, `LIMITS`. `tests/navegador/prova.mjs` rewritten for selects.
+- **Logo and footer (2026-11-26):** the sneaker (`icon.png`, also the favicon) sits above the title and links to
+  `https://step-quiz.net/`; the floating footer pill (`css/peu.css`) is copied from `operacions`. The CC badge is
+  self-hosted as a redrawn SVG (no third-party requests); replace it with the official PNG if wanted.
+  `tests/docs.test.js` now ignores `href="https://…"` links (only requests count).
+
+### Handout (2026-11-26, end of the long session)
+
+`HANDOUT.md` (root) briefs a cold-start AI: rules that bit us (always start from a fresh clone; David edits
+files himself), what this session delivered, and the open work (sentence editor integration first). The editor's
+sources moved into `eines/frases-editor/`.
+
+
+### Term phase at every level (2026-11-26, David)
+
+On touch devices pupils circle; they either circle the whole line (case 1) or the line *and* the wrong term
+(case 2). David's rules (dialog answers: every level, costs an attempt, both gestures):
+
+- Case 1 (whole line circled, or a tap / mouse click): the line is confirmed («Sí! L'errada és en aquesta línia.
+  Ara toca el terme equivocat…») and the term phase always follows, at every level (`cfg.terme` removed from
+  `CONFIG_PER_DEFECTE`, `parametres`, both pages and `llibreta.js`).
+- Case 2 (lasso enclosed terms): a wrong term among them → term phase skipped, as before; only correct terms → the
+  line counts as found, `S.errors++` and the term phase asks again («La línia és aquesta, però el terme que has
+  encerclat està bé…»).
+- In the term phase every correct term chosen is a failed attempt (`termeFallat` in `js/motor/estat.js`), sharing
+  `S.errors` / `maxintents` with wrong lines. When attempts run out: the wrong term(s) are circled, the line goes
+  into `S.ajuda` (points 0, «amb ajuda» mark) and the example continues with «Per què?». The old «second miss
+  reveals it, no points lost» rule is gone (`intentsTerme` is still counted but no longer decides anything).
+- Level labels: level 4 is now «dues errades» in both activities.
+- Tests: `tests/estat.test.js` (helper `troba`), `tests/nivells.test.js`, `tests/navegador/prova.mjs` (helper
+  `tocaTerme`, keyboard ←/→ + Enter).
+
+### Lasso: mark the line only when the finger lifts (2026-11-26, David)
+
+David's screenshot: while circling, the previously selected line kept its grey dashed «selected» look, which
+distracts the pupil. Now `llacMou` adds `.dibuixant` to the notebook once the stroke is active (≥ 8 px) and
+`llacFi` / `llacCancel` remove it; CSS hides `.ln.sel`, `button.ln:hover` and the «Comprova» button under
+`.dibuixant`. `llacInici` toggles `.toc` (pointerType ≠ mouse), which disables the hover grey of lines on touch.
+Browser test: a held stroke shows no marked/hovered line (verified to fail without the fix), and lifting marks it.
+
+### Interface texts (2026-11-27, David, artifact «Textos de Localitza l'errada»)
+
+David rewrote 51 fixed texts in https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn (db `textos/<id>`:
+`{text, original, comentari}`; source and catalogue with file names: `eines/textos-editor/index.html`). All applied
+in `js/motor/{estat,llibreta,llac,sessio}.js`, `js/index.js`, both generators and `data/banc.json` (stored
+correct-line texts and the compensating note). Notable: progress «Activitat i de N»; consigna «… però ha comès una
+errada»; the «amb ajuda» mark is gone (K10/T06/T07 prefixes dropped: reveal messages start with «L'errada era a la
+línia k.» / «El terme equivocat és…»); «Molt bé.» for a right correction; «És cert. / No és cert.» in «Per què?».
+Dialog answers: M01 depends on the lasso («Has marcat la línia i.» / «Has marcat un terme en la línia i.» / «… dos
+termes …»); equations C12 = «que, cadascuna, no es pot deduir de la línia anterior» (order of operations unchanged).
+Claude's fixes: K04 «…però no el terme.» (missing «no»), X03 «Torna-ho a repassar.» (double pronoun); the order of
+operations compensating note was reworded the same way as the equations one. Tests updated to the new texts.
+
+### New order-of-operations rule RESTA_GIRADA (2026-11-27, David's pupil)
+
+`3 − 8 · 5 = 40 − 3 = 37` (photo of a real pupil's work). The product is right, but it is moved to the front and
+the subtraction is reversed (value −37 → 37: N1 error on the line `40 − 3`). Rule `RESTA_GIRADA` in
+`js/prioritat/generador.js` (`pes` 3; md stage; `a − b·c` with a > 0, b·c > a, the only product of the step),
+with `expl`, a `PERQUE` entry, `data/errors-prioritat.json`, README and SPEC rows and two tests. David gave it
+**10 points** in the survey ranking (it was not in the survey; listed with the order-of-operations items).
+Not filtered by `versemblant()`.
+
+### «Per què?» sentences from David's editor (2026-11-28)
+
+David finished the sentence editor (27/11). This session could not open the editor artifact (`4tvuyfdz…`, other
+account), so David pasted its «Copia els canvis» export: `eines/frases-editor/editor-2026-11-28.txt`. Claude
+checked every sentence against its situation's sample and put 16 points to David in a review artifact
+«Revisió de les frases» (https://claude.ai/artifact/7MzsaTfGaw1nUxDKz1Rdtm, slug
+`33855f4c-353c-496d-b944-0b66a4bc00aa`; answers in db `respostes/<id>`, replies `rep/<id>`). All approved except
+Q2 (bold): **do not add or move `\bold` in David's sentences.** Applied (`CANVIS` in `eines/frases-editor/exporta.mjs`):
+- B1 F40 «Els nombres no es poden sumar…»; B2 R44DSIG2 «[operació] fa \oposite{[escrit]}: per tant, …»;
+  B3 F65 «restat [A sense signe] a [B]»; B5 Nmwyqnmvt9f «sumat en primer lloc [terme] i [altre terme]».
+- B4: distractors whose marker may be missing ([altre terme], [altre càlcul], [terme d'abans]) are skipped when
+  the value does not exist (generic rule, no `cond` needed).
+- B6 new marker `[costat]` = «de l'esquerra» / «de la dreta» (ST1: where the term arrives; ST2: where the second
+  term arrives; CU, CAL: the side of the sum); used in F16, R16ST2, F43, F45.
+- B7 new «membre» markers `[Al membre]`, `[del membre]`. B8 SC1 gets `[altre terme]` (a term that passed
+  correctly, only in the `tra` step); F26 «S'ha equivocat amb el \oposite{[altre terme]}».
+- Q1 R01TNS1 «Hauria d'haver restat [n] a [x]»; Q3 F12 «Hauria d'haver aplicat…»; Q4 typography (no space inside
+  bold, no straight quotes, «tal com», final period); Q5 one id per text; Q6 unused sentences not exported.
+- A1 final screen list says «Activitat 1, Activitat 2…»; A2 the integration below.
+Claude's own fixes, **confirmed by David** (dialog, 28/11):
+- F25 (SC1, true sentence) used `\nosign{[terme]}`, wrong for a positive term (+7 copied as −7 said «escriure 7»):
+  now «És una errada escriure $[mal]$, hauria de ser $[terme]$».
+- CAL2's true sentence was F49 («Hauria d'haver operat [a] i \oposite{[b]}…»), false in CAL2: new C01
+  «[a] i [b] tenen \bold{signes diferents}: per tant, s'han de restar els seus valors.»; F49 dropped from CAL2.
+- Reserves when conditions leave < 3 distractors (since the 3-option change: < 2): ST1 F18, F20 (with `[al membre]`); CAL1 F51; DSIG1 F08.
+
+Integration: `js/equacions/frases.js` (renderer, situations, choice), `js/equacions/frases-dades.js` (generated),
+`frasesErrada()` in the generator (falls back to `PERQUE` for SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
+DENOMINADORS), bold `**…**` in `txt()` (`llibreta.js`), URL parameter `membre` (`parametres.js`, index row
+«Paraula», equations only), `exempleAmbParaula` in `pagina.js` (generated and bank examples). `data/banc.json`:
+38 of 42 «Per què?» rewritten by `eines/frases-editor/banc.mjs`; 4 CALCUL errors with a plain wrong value
+(lot1-B08 line 2, B18 line 4, B19 lines 2 and 4) match no editor situation and keep their old sentences.
+Situations with |A| = |B| (OI, CO, DS) can lose distractors (duplicate texts); `valida()` rejects such examples and
+the generator picks another. Tests: `tests/frases.test.js`.
+Not done: the editor artifact itself (new markers `[costat]`, `[Al membre]`, `[del membre]`, SC1 `[altre terme]`)
+is updated only in the repo sources (`dades.json`, `plantilla.html`); republishing needs David's other account.
+
+### Department survey closed: four situations deactivated (2026-11-28, David)
+
+8 answers to `BANC-ERRORS v3` (tally, comments and decision in `docs/enquesta-banc-errors.md`). David's rule: drop
+every situation with two or more «No m'agrada» → items 4, 5, 17, 18, 24 (also the only ones with ≤ 2 points).
+Implemented as **deactivation** (`DESACTIVADES` in both generators; `encaixaBanc` skips bank examples of those
+types): equations `DIST_SUMA` (item 5, −22 points), `CANVI_SIGNE_PARCIAL` (items 17, 18) and the `5x − 4` variant of
+`SUMA_ABANS_PRODUCTE` (item 4; the `5·(x − 4)` variant, item 3, stays); order of operations `PARENTESI_IGNORAT`
+(item 24). Code, `data/errors.json` and the sentence editor's DSUMA situation are kept, so a rule comes back by
+removing it from the list. Tests check that deactivated rules never appear. `banc-errors.html` (v3) is unchanged:
+it is the survey record.
+
+### New sentence editor on the current account (2026-11-28, David)
+
+The old editor (`1f8b92d4-…`) belongs to another account and cannot be read or republished from here. David chose a
+new one: https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, db empty at
+start). Its catalogue (`eines/frases-editor/dades.json`, `versio: 2`, built once by `cataleg-2.mjs`) starts from the
+sentences now on the site (all approved fixes included), so nothing appears «changed» until David writes. Added:
+situations `SAP` (SUMA_ABANS_PRODUCTE, `5·(x − 4)` variant), `IX` (INVERS_X), `DEN1`/`DEN2` (DENOMINADORS signe/sense),
+with the sentences that were in `PERQUE` as starting text; `[costat]` in ST1, ST2, CU, CAL1–3; `[Al membre]`,
+`[del membre]`. `DSUMA` is `desactivada` (hidden). No similar-sentence groups (all decided). `PERQUE` is now used only
+by `CANVI_SIGNE_PARCIAL`, which is deactivated. Renderer: «:» inside a formula is an operator (`30 : (−5)`).
+**When David says «Revisa artifact» on the new editor:** `db_list` collections `frases`, `situacions`, `general`,
+`rep` (and comments); write `frases`/`situacions` as `{ frases: {id: data}, situacions: {id: data} }` to
+`eines/frases-editor/editor-db.json`; answer in `rep/<id>`; run `node eines/frases-editor/exporta.mjs`, then
+`node eines/frases-editor/banc.mjs`, then the tests.
+
+### «Per què?» with 3 options (2026-11-28, David)
+
+Both activities: the true sentence plus **2** distractors chosen at random among all those that apply to the error
+(`DISTRACTORS_PERQUE = 2` in each generator; `valida()` checks 3 options). Reserves fill in only below 2. The bank
+(`data/banc.json`) was rebuilt with `banc.mjs`; the 4 CALCUL errors with old sentences keep the true one and 2 random
+distractors. The editor says «la bona i dos distractors» and warns below 2.
+
+
+## Part 2 — the former `HANDOUT.md` (as of 2026-11-28, before the rewrite)
+
+
+### START HERE (2026-11-28)
+
+**State of the repo.** The last delivery is the ZIP `errades-frases-web.zip` (28/11): David's «Per què?» sentences
+are now on the site. Details: `docs/STATE.md` «"Per què?" sentences from David's editor (2026-11-28)». If
+`git log` does not show an «Auto-extract uploaded zip» commit after 28/11 with `js/equacions/frases.js`, ask David
+whether he uploaded it. **Never** create branches, commits or merges: David works only with ZIPs. Tests:
+`node tests/run-all.js` (green); browser test: `node tests/navegador/prova.mjs` (138 checks; needs Playwright).
+
+**Access problem (28/11).** The claude.ai account used on 28/11 cannot see the two artifacts below (they belong to
+another account or organisation): `get_artifact`/`db_list` answer «not found». David pastes the editor's
+«Copia els canvis» text instead (saved as `eines/frases-editor/editor-2026-11-28.txt`). The review artifact
+«Revisió de les frases» (https://claude.ai/artifact/7MzsaTfGaw1nUxDKz1Rdtm, slug
+`33855f4c-353c-496d-b944-0b66a4bc00aa`, db `respostes/*`, `rep/*`) IS on the current account: closed, all 16
+points answered and replied to.
+
+**How the sentences reach the site now.** `node eines/frases-editor/exporta.mjs` (editor export + `CANVIS`) →
+`js/equacions/frases-dades.js`; `node eines/frases-editor/banc.mjs` → rewrites the «Per què?» of `data/banc.json`.
+After a new editor round: save the new export, point `exporta.mjs` to it, rerun both, run the tests.
+`js/equacions/frases.js` = template renderer + situation/values per rule + choice (conditions, missing markers,
+reserves). **David's rule (Q2, 28/11): never add or move `\bold` in his sentences.**
+
+**The two review artifacts (claude.ai, owned by David, private):**
+
+| Artifact | URL | Source in repo | State |
+|---|---|---|---|
+| «Frases de "Per què és una errada?" · Equacions» | https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4 | `eines/frases-editor/` (`plantilla.html` + `dades.json` → `index.html`) | **David finished reviewing ALL of it on 27/11/2026.** Live version `1795770122-4e9b`, capabilities `{db:{}, user:{}}` |
+| «Textos de Localitza l'errada» (fixed interface texts) | https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn | `eines/textos-editor/index.html` | **Done.** All 51 edits applied in the code on 27/11 (`docs/STATE.md` «Interface texts») |
+
+#### How David resumes the sentence editor with you (no work is lost)
+
+- Everything he types is saved automatically in the artifact's database, not in the page. Republishing the page
+  never erases his work, provided you **keep the database collections and the ids**. He opens the URL and carries on.
+- Database layout (read with `ArtifactData`, url above):
+  - `frases/<id>`: `{text, nova, autor:'david'|'claude', de?, actualitzat}`. Ids `F01`–`F70` come from the
+    catalogue. `N…` ids are copies the editor made when David typed in a shared sentence; `R…` ids are copies Claude
+    made on 27/11 to repair shared sentences. `de` names the sentence a copy came from.
+  - `situacions/<id>`: `{bona, dolentes:[{id, cond?}], comentari}`. **This is the truth about which sentence belongs
+    to which situation.** Situations missing from the collection use the catalogue default in `dades.json`.
+  - `grups/G1..G7` (decisions on similar sentences: done), `general/notes` (David's general comments),
+    `rep/<id>` and `rep/general` (Claude's replies, shown inside the page).
+- When David says «Revisa artifact»:
+  1. Read all collections.
+  2. Learn from his edits.
+  3. Answer each comment in `rep/<situation id>`. Pin every write: pass `if_version` with the version the read
+     listing shows (the files `out_dir` saves do not include it); at most 50 writes per batch.
+  4. Rewrite only sentences with `autor:'claude'`.
+  5. Never overwrite his text, except to swap in a marker when he asks for one.
+- **Style rules learned from David** (apply to every sentence you write; full text in `rep/general` v2):
+  - Name the wrongly written term: «El −x no és correcte…», «És una errada escriure 23, hauria de ser −23».
+  - Say what should have been done with «Hauria d'haver…» / «Caldria haver…».
+  - Link cause and consequence with «: per tant,».
+  - Keep it short, without tails like «d'aquesta línia».
+  - Put `\bold{}` on the key word of every sentence, distractors included.
+  - Keep 3–4 distractors per situation.
+  - No article before numbers after the verb («multiplicar 4 per −1»).
+  - Leave alone F53–F58 (inverse operation): David dictated them.
+- **Template language** (rendered by `render()` in `plantilla.html`; the website must implement the same):
+  - `[marker]` = a value of the example; outside `$…$` it becomes maths automatically.
+  - `$…$` = maths; `${a|b}$` = a fraction; an ASCII `-` before a digit, `x`, `$`, `[` or `\` shows as `−`.
+  - Macros: `\bold{}`; `\oposite{}` (the opposite, with explicit sign: −1 → +1, x → −x); `\signe{}` (explicit
+    sign: 3 → +3); `\nosign{}` (value without sign: −23 → 23).
+  - Two-term situations ST2 and SC2 also have `[primer terme]` and `[segon terme]`.
+  - «Membre» markers: `[membre] [membres] [el membre] [al membre] [l'altre membre] [el seu membre] [al seu membre]
+    [els dos membres]`. They take the word chosen in the index: membre (default) | costat | banda | part; membre and
+    costat are masculine, banda and part feminine. Example: «l'altra banda», «les dues bandes».
+- **Shared sentences:** when David types in a sentence used by several situations, the editor makes a copy for that
+  situation only (`de` = original id); the button «Aplica-la a totes» on the copy makes it common again. David chose
+  this on 27/11 after edits in one situation broke others.
+- **Pitfall that already bit us:** `eines/frases-editor/cataleg.json` is STALE. `dades.json` is the source of truth;
+  `dades.mjs` throws on purpose. To change the page: edit `plantilla.html` and/or `dades.json`, then rebuild
+  `index.html` by replacing `/*DADES*/` with the contents of `dades.json` (escape `</` as `<\/`). Test with a mocked
+  `window.claude` (never name anything `claude` in the page code). Republish the **same file path** with
+  `url: https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4` and **omit `capabilities`**. The tool asks you to Read the
+  live version first.
+- Check at the end of 27/11: every sentence of every situation uses only markers its situation has. To re-check,
+  compare the markers of each `situacions/<id>` sentence with `dades.json` → `situacions[].marcadors`.
+
+#### What is pending, in order
+
+0. **Survey closed (28/11, 8 answers):** situations with ≥ 2 «No m'agrada» are deactivated (`DESACTIVADES`; see
+   `docs/STATE.md` «Department survey closed»). The old item 2 below (survey) is done.
+0b. **New sentence editor on the current account** (David chose it on 28/11):
+   https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`). Readable with
+   `db_list`. It now also has SAP, IX, DEN1, DEN2 (the rules that had no editor sentences). Procedure for «Revisa
+   artifact»: `docs/STATE.md` «New sentence editor on the current account». The old editor `4tvuyfdz…` is history.
+0c. **Confirmed by David (28/11):** F25 with `[mal]`, CAL2's new true sentence C01, reserves ST1 F18+F20, CAL1 F51,
+   DSIG1 F08 (`exporta.mjs`, `CANVIS` and `RESERVA`). David tests the published site next.
+1. **Sentence editor follow-up.** The editor artifact was not republished (no access): the repo sources
+   (`dades.json`, `plantilla.html`, `index.html`) already know `[costat]`, `[Al membre]`, `[del membre]` and SC1
+   `[altre terme]`. Next round: offer to add the 4 newer rules (SUMA_ABANS_PRODUCTE, INVERS_X,
+   CANVI_SIGNE_PARCIAL, DENOMINADORS, still on `PERQUE`) and RESTA_GIRADA / order-of-operations sentences.
+2. **The department's survey (`BANC-ERRORS v3`): 4 of 6 answers received on 27/11, 2 still missing.** The tally,
+   comments and raw codes are in [`docs/enquesta-banc-errors.md`](docs/enquesta-banc-errors.md). Main signals:
+   - Item 5 is rejected (3 N); item 24 too (2 N + a comment that it is ambiguous).
+   - Items 4, 11, 12, 17, 18 and 22 have 1 N each; item 22's comment says adding all positives and then all
+     negatives is valid.
+   - One teacher asks for a distributive case with a term before the bracket: `2x+6(x-3)=-24 → 2x+6x-3=-24`.
+   - Unanimous MM: 2, 7, 13, 19, 20, 21.
+   - **Weighted ranking** (David's weights: MM +3, M +2, not rated 0, N −4; full tables in the docs file), best
+     first, item (points):
+     - Equations: 2 (12), 7 (12), 13 (12), 19 (12), 20 (12), 15 (11), 1 (10), 6 (10), 14 (10), 8 (9), 3 (8), 16 (8), 9 (7), 10 (7), 11 (1), 17 (1), 18 (1), 4 (0), 12 (0), 5 (-10).
+     - Order of operations: 21 (12), 23 (10), 25 (10), 26 (10), 28 (10), 27 (8), 22 (4), 24 (-6).
+     - **New, added by David with 10 points:** rule `RESTA_GIRADA`, `3 − 8 · 5 → 40 − 3` (a real pupil's error,
+       27/11/2026; already implemented, see `docs/STATE.md`). It ranks with 23, 25, 26 and 28. Add it to the
+       sentence editor and to `banc-errors.html` in the next round.
+     Keep the two categories separate. Recompute with the same weights when the 2 missing answers arrive.
+
+   When David pastes the 2 missing codes, add them to that file, redo the tally and propose changes per item. That
+   is ≥ 5 points, so use a review artifact. Decode the item numbers with `node eines/banc-errors.mjs`.
+3. **Open questions** (ask with the multiple-choice dialog):
+   - Approve or drop the `DENOMINADORS` variant `sense`?
+   - Raise the frequency of the newer rules, now ~1 % each?
+   - Allow statements with a single power for POTENCIA_PER_EXPONENT?
+4. **David tests the published site** with pupils (term phase, lasso, new texts); expect feedback rounds.
+
+Sections below are the earlier history, kept for detail. Where they disagree with this section, this section wins.
+
+
+You are taking over `step-quiz/errades` («Localitza l'errada») from a long session that ran out of context.
+Read this file, then `CLAUDE.md` (hard rules), `docs/STATE.md` (what is done, newest decisions at the end),
+`docs/SPEC.md` and `README.md` (files, generator, rules table). When this file and the code disagree, the code
+and `docs/STATE.md` win; fix this file.
+
+### 0. Ground rules that bit us
+
+- **The GitHub repo is the only source of truth.** David edits files himself (latest: `index.html`,
+  `js/index.js`, `css/index.css`, `css/peu.css`, `icon.png`, `vendor/img/`, `tests/navegador/prova.mjs`,
+  `tests/docs.test.js`, README/STATE sections «Simplified index»). **Start every task from a fresh clone**
+  (`git clone https://github.com/step-quiz/errades`), never from an old ZIP or workspace copy, and **never put a
+  file in a delivery ZIP unless you changed it in this clone** — a stale copy overwrites his work.
+- **No git branches, commits or merges from the AI** (David, 26/11/2026): deliver only ZIPs; he uploads them.
+- Delivery = a ZIP whose root is the repo root, uploaded by David to `_uploads/`; `unzip-upload.yml` extracts and
+  commits; Cloudflare Pages publishes. Never write `[skip ci]`, `[ci skip]` or `[cf-pages-skip]` anywhere.
+- Before delivering: `node tests/run-all.js` (all green) and, if UI changed,
+  `CHROME=/usr/bin/google-chrome node tests/navegador/prova.mjs` (Playwright via `npm install --no-save playwright-core`).
+- David's preferences: speak **Catalan** to him; MD documents in **English** for an AI; give upload/commit steps
+  numbered with copy-paste blocks; ask decisions **only with the multiple-choice dialog** (AskUserQuestion, ≤ 4
+  questions, 2–4 options, recommended first with «(Recomanat)»); **≥ 5 decision points → a review artifact**
+  (categories, IDs, buttons «Sí, fes-ho / No / Més endavant / En parlem», comment, autosave in the artifact db,
+  counter, «Sense resposta» filter); when he says **«Revisa artifact»**, read his answers, reply per point inside
+  the artifact (`rep/<id>` docs) and do what he approved. In artifact code never name anything `claude`; test the
+  page with a mocked `window.claude` before publishing.
+- David is a maths teacher: realistic, documented pupil errors only; he reviews every example himself.
+
+### 1. What this session delivered (all uploaded; repo is in sync as of commit a4b37f3)
+
+Engine / pedagogy
+- **Errors are located top-down** (`js/motor/estat.js`): checking an error line while an earlier error is pending
+  → info message «Abans de mirar aquesta línia, revisa les de sobre…», no attempt counted, line stays selectable.
+- **Compensating pairs** (`ex.compensades`): `arrossega(ex, i)`; a `.pista` in the term / «Per què?» / correction
+  phases says «Compara-la amb la línia i−1 tal com està escrita…» (`js/motor/llibreta.js`).
+- **Plausibility filters** («an error is not injected if an earlier correct step already showed the skill»):
+  equations `versemblant()` — TERMES_NO_SEMBLANTS (`jaDistingeix`, between lines only), COEFICIENT_U, CALCUL (same
+  two-term calculation only); order of operations `versemblant()` + `FILTRADES` (ESQUERRA_DRETA, SUMA_ABANS_RESTA,
+  PRODUCTE_ABANS_DIVISIO, POTENCIA_PER_EXPONENT, POTENCIA_DESPRES). Decisions: review artifact «Versemblança de les
+  errades» (slug `04afb545-41cf-4464-bb8b-efca1be7b5b3`, closed; answers in its db `respostes/*`, replies `rep/*`).
+- **POTENCIA_PER_EXPONENT** spoils every power of the step (old index bug fixed); `retoca` offers b + e and b^(e+1).
+
+New equation rules (README rules table has the details)
+- `SUMA_ABANS_PRODUCTE` (op `exp`): 3 + 2·(x − 4) → 5·(x − 4) (65 %) or → 5x − 4. Level-2 form E has a «+» 40 %.
+- `INVERS_X` (op `inv`): 30/x = 5 → x = 30·5. Term kinds `I(a)` = a/x and `M(a, b)` = a·b; level-1 form I.
+- `CANVI_SIGNE_PARCIAL` (op `neg`): −4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x (one term keeps its sign); form K.
+- `DENOMINADORS` (op `den`): (3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x (variant `signe`) or terms
+  without denominator not multiplied (variant `sense`, my addition, **not yet approved by David**). Term kind
+  `D(s, m, b, den)`; form L.
+- `OPS = den, exp, neg, red1, tra, red2, inv, div, simp`. Lines with kinds `i/d/m` accept only the three new rules
+  (`NOVES`). Rules may force circled tokens with `dades.marca`. Fixed statements (`e0`) skip line limits and
+  number margins (both generators). `encaixaBanc` reads the form from `ex.nivell`.
+- `QUOCIENT_INVERTIT`: own explanation for the «twin» case |A| > |B| (12x = 3 → x = 12/3).
+
+Teachers' review page
+- `banc-errors.html` (generated: `node eines/banc-errors.mjs` from `eines/banc-errors.plantilla.html`; never edit
+  the HTML by hand). **v3, 28 examples**: equations 1–20, order of operations 21–28 (the script prints the list
+  with numbers — use it to decode codes). Votes MM/M/N + comment, `localStorage`, fixed bar with «Copia codi amb
+  les preferències» (turns green «Codi copiat» for 5 s). Code format: `BANC-ERRORS v3`, legend line,
+  `n VOTE[ | comment]`, `FI`. David's own v1 feedback is fully applied (items 9, 12, 13, 17).
+
+### 1a. Session 2026-11-26/27 delivered (ZIP «errades-textos-2»)
+
+Term phase at every level, lasso marks the line only when the finger lifts, interface texts rewritten by David.
+All in one ZIP; tests green (`node tests/run-all.js`, browser test 134 checks). No git branches: David uploads ZIPs.
+
+### 1b. Term phase at every level (2026-11-26, after the handout was first written) — DONE, awaiting David's test
+
+Task from David: on touch devices pupils circle either (1) the whole error line, or (2) the line and the wrong
+term. (1) → confirm the line and ask for the term; (2) right term → fine; wrong (correct) term but right line →
+ask again for the term, and it costs one attempt. Dialog answers: at **every level**; a correct term chosen
+**costs an attempt** (shared with wrong lines; at `maxintents` the term is shown and the example is worth 0); the
+same for **mouse clicks** (= case 1). Implemented in `js/motor/estat.js` (`termeFallat`), `cfg.terme` removed
+everywhere; details in `docs/STATE.md` «Term phase at every level». `node tests/run-all.js` and the browser test
+(130 checks) pass. If David reports problems after testing, fix them before item 2.1 below.
+Follow-up (same day): while the finger is still circling, no line looks selected; it is marked when the finger
+lifts (`.dibuixant`, `.toc`; `docs/STATE.md` «Lasso: mark the line only when the finger lifts»).
+
+### 2. Open work, in priority order
+
+0. **Interface texts editor «Textos de Localitza l'errada»** — https://claude.ai/artifact/3gaQsuKu2Dd5T9siGEwnLn,
+   source `eines/textos-editor/index.html`. **DONE 2026-11-27**: David's 51 edits applied (see `docs/STATE.md`
+   «Interface texts»); awaiting his test of the published site. The catalogue inside the page still shows the OLD
+   texts as «original»: if David wants another round, update the catalogue `G` to the current texts first and
+   republish the same file path (keep `capabilities` by omitting it), then delete or ignore the old db docs.
+1. **Sentence editor — round 2 done 2026-11-27.** Claude re-read David's edits (F16–F30), rewrote its 29 remaining
+   sentences in his style (rules in db `rep/general`, v2: name the wrongly written term, «Hauria d'haver… / Caldria…»,
+   cause «: per tant,», short, bold key word in every sentence), left F53–F58 (dictated) untouched, and republished
+   the editor (version `1795763701-dac8`) with: `\nosign{…}` (value without sign), `[primer terme]`/`[segon terme]`
+   (ST2, SC2), and **«membre» markers** `[membre] [membres] [el membre] [al membre] [l'altre membre] [el seu membre]
+   [al seu membre] [els dos membres]` resolved from a word chosen in the index (membre|costat|banda|part, default
+   membre; masc membre/costat, fem banda/part). David's F16/F18/F19/F22/F24 now use them. **Integration must add:**
+   an index parameter for that word (+ README/index tests), the three features in the template renderer, and the
+   generator values for `primer terme`/`segon terme`. Then continue with the rest of this item as below.
+   **Fix (same day, afternoon):** that republish had rebuilt `dades.json` from a STALE `cataleg.json` and dropped markers
+   ([Els termes], [escrit], [càlcul], [operació]…). `dades.json` is now the source of truth (live data of version
+   `1795678340-090d` + [primer terme]/[segon terme]/[altre càlcul]/[termes en x]); `dades.mjs` throws on purpose.
+   Shared sentences David had edited for one situation were split (new db docs `R01TNS1`, `R16SC1`, `R16ST2`,
+   `R44DSIG2`, `R08CAL1`, each with `de: <original id>`). The editor now auto-copies a shared sentence when David types
+   in it (button «Aplica-la a totes» on the copy). Live version `1795768610-68e0`. Integration: sentences are per
+   situation (`situacions/<id>.bona/dolentes`), and copies are new ids, not F01–F70.
+1. **Sentence editor «Frases de "Per què és una errada?" · Equacions»** — artifact slug
+   `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, https://claude.ai/artifact/4tvuyfdzTHayTKBjrFVpQ4, live version
+   `1795678340-090d`, capabilities `{db:{}, user:{}}`. **David is filling it in now.** When he says «Revisa
+   artifact»:
+   - Read db collections `frases` (F01…F70: `{text, nova, autor:'david'|'claude', actualitzat}`), `situacions`,
+     `grups` (G1–G7), `general/notes`, and any comments; reply in `rep/<id>` (db_write needs `ifVersion` on
+     existing docs, ≤ 50 ops per call, 2 s apart). Learn from his edits (style rules are in `rep/general`).
+   - Then integrate: move the sentences to `data/frases-equacions.json`; make `PERQUE` in
+     `js/equacions/generador.js` render from it; implement the template language — markers `[nom]` (auto-maths
+     outside `$…$`; list in `eines/frases-editor/dades.mjs`, e.g. `[x]`, `[escrit]`, `[terme d'abans]`,
+     `[altre membre]`, `[operació]`, `[terme en x]`, `[producte]`, `[valor del producte]`, `[Els termes]`,
+     `[càlcul]`), maths `$…$`, fractions `${a|b}$`, macros `\bold{…}` (only where David put it), `\oposite{…}`
+     (opposite with explicit sign), `\signe{…}` (explicit sign); ASCII `-` before a digit/x/`$`/`[`/`\` renders
+     as `−`. Rewrite the stored sentences of `data/banc.json`. Tests, docs, ZIP.
+   - The editor does **not** yet contain the new rules (SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
+     DENOMINADORS) nor the order-of-operations sentences. Offer to add them afterwards (new F ids; never
+     overwrite his docs).
+   - Editor sources are now in the repo: `eines/frases-editor/` (run from that folder: `node cataleg.mjs`,
+     `node dades.mjs`, then build `index.html` from `plantilla.html` by replacing `/*DADES*/` with `dades.json`
+     (escape `</`); tests `prova.mjs`, `prova-focus.mjs`, `prova-text.mjs` mock `window.claude`;
+     `canvis.json` = texts written by Claude/David in the session). Republish with `publish_files` and the live
+     `base_version`; keep the capabilities.
+2. **Teachers' codes**: David will paste the department's `BANC-ERRORS v3` codes. Tally per example (MM/M/N),
+   list comments, propose changes (≥ 5 points → review artifact).
+3. **Open questions to put to David** (dialog): approve or drop the `DENOMINADORS` variant `sense`; the three new
+   rules appear in ~1 % of generated examples each — raise their frequency?; POTENCIA_PER_EXPONENT in the game
+   always shows two powers (level line limits) — allow single-power statements?
+4. David will test both activities with real pupils; expect feedback rounds.
+
+### 3. Map of the session's workspace (gone in the new session)
+
+Everything that matters is in the repo. The review artifacts and their databases persist on claude.ai and can be
+read with the artifact tools (`db_list`, `read_artifact`) using the slugs above.

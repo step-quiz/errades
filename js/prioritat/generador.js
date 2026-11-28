@@ -23,22 +23,13 @@
  * - El format de l'exemple és el de js/equacions/generador.js (el motor és el
  *   mateix): linies, errades {j: {tipus, terme, termes?, expl, bona, fitxesBona,
  *   perque, opcions}}, correctes, nota, solucio, alumne.
- * DEPENDÈNCIES: js/equacions/generador.js (creaAtzar).
+ * DEPENDÈNCIES: js/motor/atzar.js, js/motor/exemple.js.
  * ============================================================================
  */
-import { creaAtzar } from '../equacions/generador.js';
+import { creaAtzar, enter, tria, barreja } from '../motor/atzar.js';
+import { DISTRACTORS_PERQUE, opcionsPerque } from '../motor/exemple.js';
 
 export { creaAtzar };
-const enter = (r, a, b) => a + Math.floor(r() * (b - a + 1));
-const tria = (r, l) => l[Math.floor(r() * l.length)];
-function barreja(r, l) {
-    const a = l.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(r() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-}
 
 // ---------- Expressions ----------
 const N = v => ({ k: 'n', v });
@@ -215,8 +206,6 @@ function aLlista(E, r, f) {
 }
 const opTxt = (a, o, b) => `${a < 0 && MUL.includes(o) ? '(' + menys(a) + ')' : menys(a)} ${o} ${b < 0 ? '(' + menys(b) + ')' : b}`;
 
-/** «Per què?»: la frase bona i aquests distractors, triats a l'atzar entre els de l'errada (el David, 28/11/2026). */
-export const DISTRACTORS_PERQUE = 2;
 /**
  * Regles que el generador no fa servir: les que el professorat va valorar malament a l'enquesta del banc
  * d'errades (dues «No m'agrada» o més; el David, 28/11/2026). El codi es queda: per recuperar-ne una, treu-la
@@ -687,7 +676,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
         if (terme < 0) terme = malF.findIndex(t => t !== '=');
         const termes = bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
         const fr = PERQUE[c.id](c.res.dades);
-        const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, DISTRACTORS_PERQUE).map(t => [t, false])]);
+        const perque = opcionsPerque(r, fr.bona, fr.dolentes);
         const vistes = new Set([textLinia(bona), textLinia(linies[c.j])]);
         const dolentes = [];
         for (const [id, rg] of Object.entries(REGLES)) {

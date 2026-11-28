@@ -12,7 +12,8 @@
  * - Traç tancat: compten els termes amb el centre a dins del polígon. Si són
  *   d'una sola línia, és aquella; si n'hi ha un o dos (i no tots els de la
  *   línia), es recorden (així es pot saber si ha encerclat just el terme
- *   equivocat). Termes de més d'una línia → «Torna a marcar-ho».
+ *   equivocat). Termes de més d'una línia → { torna } (l'estat diu «Has de tornar
+ *   a marcar-ho, perquè …»).
  * - Traç obert (un subratllat) o tancat sense cap terme a dins: la línia que
  *   el traç cobreix verticalment, si n'hi ha una de clara.
  * - Massa petit, més d'una línia o cap línia clara → { torna }.

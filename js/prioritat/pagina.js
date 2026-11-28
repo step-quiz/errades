@@ -6,15 +6,14 @@
  *      d'exemples de prioritat d'operacions.
  * ARQUITECTURA:
  * - Paràmetres: js/motor/parametres.js (els mateixos que les equacions).
- * - Nivells: els de js/equacions/nivells.js (quantes errades, si es diu quantes
- *   n'hi ha); la forma 1 (nivell 1) és sense parèntesis ni
- *   potències, i la forma 2 (nivells 2–5) en té.
+ * - Nivells: js/motor/nivells.js (comuns a les dues activitats); la forma 1
+ *   (nivell 1) és sense parèntesis ni potències, i la forma 2 (nivells 2–5) en té.
  * - No hi ha banc: tots els exemples surten del generador.
- * DEPENDÈNCIES: generador.js, js/equacions/nivells.js, js/motor/*.
+ * DEPENDÈNCIES: generador.js, js/motor/*.
  * ============================================================================
  */
 import { generaExemple, perPagina } from './generador.js';
-import { parametres } from '../equacions/nivells.js';
+import { parametres } from '../motor/nivells.js';
 import { iniciaSessio } from '../motor/sessio.js';
 import { CONFIG_PER_DEFECTE } from '../motor/estat.js';
 import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/parametres.js';

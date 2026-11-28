@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import { posaParaula } from '../js/equacions/frases.js';
 import { DESACTIVADES } from '../js/equacions/generador.js';
+import { DISTRACTORS_PERQUE } from '../js/motor/exemple.js';
 import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix, versemblant } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
@@ -72,7 +73,7 @@ for (let s = 1; s <= 300; s++)
     for (const nivell of [1, 2]) {
         const e = generaExemple({ llavor: s, nivell }, TIPUS);
         for (const v of Object.values(e.errades)) {
-            ok(v.perque.length === 3 && v.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb 3 frases i una de certa`);
+            ok(v.perque.length === DISTRACTORS_PERQUE + 1 && v.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb la bona i ${DISTRACTORS_PERQUE} distractors`);
             // (una frase pot començar amb una fórmula: «$+3$ i $−12$ tenen…»)
             ok(v.perque.every(o => /^[A-ZÀ-Ú$]/.test(posaParaula(o[0])) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
         }

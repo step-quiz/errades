@@ -202,8 +202,8 @@ function posicions(nom, fitxes, v) {
 const COSTAT = { L: "de l'esquerra", R: 'de la dreta' };
 
 /**
- * La situació i els valors d'una errada: { sid, valors, conds } o null si la regla
- * no té frases a l'editor (aleshores el generador fa servir les seves).
+ * La situació i els valors d'una errada: { sid, valors, conds }, o null si la regla
+ * no té cap situació a l'editor (el generador ho considera un error).
  * d: dades de la regla; ctx: { op, abans (línia), T (eines de text del generador) }.
  */
 export function situacio(id, d, ctx) {
@@ -331,6 +331,8 @@ export function situacio(id, d, ctx) {
         case 'DENOMINADORS':
             if (d.variant === 'signe') return { sid: 'DEN1', conds, valors: { b: menys(d.t.b), M: String(d.M) } };
             return { sid: 'DEN2', conds, valors: { M: String(d.M) } };
+        case 'CANVI_SIGNE_PARCIAL':
+            return { sid: 'CSP', conds, valors: { terme: T.ambSigne(d.t) } };
         case 'QUOCIENT_INVERTIT':
             conds.add('AdiferentB');
             return { sid: 'QI', conds, valors: { A: menys(d.A), B: menys(d.B), 'B menys A': `${menys(d.B)} − ${entreP(d.A)}`, 'B per A': `${menys(d.B)} · ${entreP(d.A)}` } };

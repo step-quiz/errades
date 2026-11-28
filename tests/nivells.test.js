@@ -1,6 +1,7 @@
 // tests/nivells.test.js — què vol dir cada nivell (js/equacions/nivells.js) i el banc a la pàgina.
 import fs from 'node:fs';
-import { parametres, encaixaBanc, PROPORCIO_SENSE_ERRADES } from '../js/equacions/nivells.js';
+import { encaixaBanc } from '../js/equacions/nivells.js';
+import { parametres, PROPORCIO_SENSE_ERRADES } from '../js/motor/nivells.js';
 import { exempleSessio, llegeixParametres } from '../js/equacions/pagina.js';
 import { generaExemple, perPagina, valida } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';

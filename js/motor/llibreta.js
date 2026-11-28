@@ -21,7 +21,8 @@
  *   sent un toc. Mentre es busca, la llibreta no desplaça la pàgina amb el dit.
  * - Dues activitats (cfg.activitat): 'equacions' (cada línia «A = B») i 'prioritat'
  *   (l'enunciat sense «=» i cada línia «= expressió»): parts() separa els membres.
- * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos).
+ * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos;
+ *   **…** = negreta a les frases de «Per què?»).
  *   Tot el que s'escriu passa per esc(): el contingut és nostre, però així no
  *   hi ha cap cami per injectar marques.
  * DEPENDÈNCIES: js/motor/estat.js.

@@ -6,7 +6,9 @@
 // Per a cada errada, busca les dades de la regla tornant a aplicar-la a la línia de sobre
 // fins que dona la línia de l'alumne; si no les troba, l'errada es queda amb les frases d'abans.
 import fs from 'node:fs';
-import { REGLES, Q, T, text, aplica, creaAtzar, frasesErrada, DISTRACTORS_PERQUE } from '../../js/equacions/generador.js';
+import { REGLES, Q, T, text, aplica, frasesErrada } from '../../js/equacions/generador.js';
+import { creaAtzar, barreja } from '../../js/motor/atzar.js';
+import { DISTRACTORS_PERQUE, opcionsPerque } from '../../js/motor/exemple.js';
 const FITXER = new URL('../../data/banc.json', import.meta.url);
 const banc = JSON.parse(fs.readFileSync(FITXER, 'utf8'));
 const { X, N, P, I, D, linia } = T;
@@ -58,25 +60,13 @@ for (const ex of banc.exemples) {
             // les frases d'abans: es queda la bona i DISTRACTORS_PERQUE distractors a l'atzar
             no.push(`${ex.banc} línia ${j} (${e.tipus})`);
             const bona = e.perque.find(o => o[1]),
-                dol = e.perque.filter(o => !o[1]);
-            for (let i = dol.length - 1; i > 0; i--) {
-                const k = Math.floor(r() * (i + 1));
-                [dol[i], dol[k]] = [dol[k], dol[i]];
-            }
+                dol = barreja(r, e.perque.filter(o => !o[1]));
             const tria = [bona, ...dol.slice(0, DISTRACTORS_PERQUE)];
             e.perque = e.perque.filter(o => tria.includes(o));
             continue;
         }
         const fr = frasesErrada(e.tipus, trobat.dades, { op: trobat.op, abans, malF: ex.linies[j], bonaF: e.fitxesBona, terme: e.terme });
-        const barreja = a => {
-            a = a.slice();
-            for (let i = a.length - 1; i > 0; i--) {
-                const k = Math.floor(r() * (i + 1));
-                [a[i], a[k]] = [a[k], a[i]];
-            }
-            return a;
-        };
-        e.perque = barreja([[fr.bona, true], ...barreja(fr.dolentes).slice(0, DISTRACTORS_PERQUE).map(t => [t, false])]);
+        e.perque = opcionsPerque(r, fr.bona, fr.dolentes);
         fets++;
     }
 }

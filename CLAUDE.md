@@ -34,9 +34,11 @@ repositori, si n'hi ha més avall, manen sobre aquestes quan diuen una altra cos
 exercise in a squared-paper notebook and makes one or more errors; the real student finds the line, says why
 it is wrong and what it should have been. Read first:
 
-1. [`docs/STATE.md`](docs/STATE.md) — what is done, what is next, decisions taken (wins over SPEC).
-2. [`docs/SPEC.md`](docs/SPEC.md) — the specification and every decision with its review-artifact ID.
-3. [`README.md`](README.md) — files, URL parameters, how the generator works.
+1. [`HANDOUT.md`](HANDOUT.md) — how to work with David and the recurring procedures.
+2. [`docs/STATE.md`](docs/STATE.md) — what the project is today and what is open (wins over SPEC).
+3. [`README.md`](README.md) — files, URL parameters, how the generators work, template language.
+4. [`docs/SPEC.md`](docs/SPEC.md) — the original specification and every decision with its review-artifact ID
+   (`docs/HISTORY.md` is the 25–28/11 log: history only).
 
 Hard rules (David's, all approved in the review artifact «Localitza l'errada»):
 
@@ -44,7 +46,7 @@ Hard rules (David's, all approved in the review artifact «Localitza l'errada»)
   (equations: different solution set; order of operations: different value). Lines that follow correctly from a
   wrong line are not errors.
 - **Two activities, one engine:** `equacions.html` (`js/equacions/`) and `prioritat.html` (`js/prioritat/`) share
-  `js/motor/*` (state machine, notebook, lasso, URL parameters). A new activity = a generator with the same example
+  `js/motor/*` (state machine, notebook, lasso, session, URL parameters, levels, randomness, «Per què?» options). A new activity = a generator with the same example
   format + a page + `cfg.activitat` texts in `llibreta.js` + an entry in the index (`js/index.js`).
 - **Realistic, documented errors only:** David rejects mal-rules no pupil would make (e.g. `−3 + 15 → 10`) and
   statements that repeat numbers; new rules come from his comments, his pupils' real errors or published studies
@@ -60,6 +62,10 @@ Hard rules (David's, all approved in the review artifact «Localitza l'errada»)
 - **Shared files** (`js/comu/*`, `css/seguent.css`, `LICENSE`, `LLICENCIA.md`) come from
   `step-quiz/step-quiz-commons` (daily workflow «Fitxers comuns»). Never edit them here.
 - Work in stages, human-in-the-loop (R8): say what the stage will do, deliver, let David test, then continue.
+- **A ZIP cannot delete files** (`unzip-upload.yml` only adds and overwrites). To remove a file, give David the
+  `git rm` commands for the Codespace, step by step.
+- **«Per què?» sentences are David's** (sentence editor, `eines/frases-editor/`; `HANDOUT.md` has the procedure).
+  Never add or move `\bold` in them, and never rewrite his text without asking.
 
 Tests (from the repository root):
 

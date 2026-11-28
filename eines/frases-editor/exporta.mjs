@@ -9,7 +9,7 @@
 // - eines/frases-editor/editor-db.json (si hi és): el que el David ha escrit a l'editor, tal com el desa l'artifact
 //   ({ frases: { id: { text, nova, … } }, situacions: { id: { bona, dolentes: [{ id, cond? }] } } }). Claude el fa
 //   llegint les col·leccions «frases» i «situacions» de l'artifact (db_list) quan el David diu «Revisa artifact».
-// Història: l'editor antic (un altre compte) es va passar amb editor-2026-11-28.txt; el que deia ja és a dades.json.
+// Història: el que deia l'editor antic (un altre compte, 27/11/2026) ja és a dades.json (docs/HISTORY.md).
 import fs from 'node:fs';
 const DIR = new URL('./', import.meta.url);
 const ARREL = new URL('../../', import.meta.url);

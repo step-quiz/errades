@@ -99,7 +99,7 @@ ok(S.fase === 'perque' && punts(S) === 0, 'els intents de la línia i del terme 
 // Dues errades, anunciades: després de la primera, se'n continua buscant una altra
 const EX2 = {
     ...EX,
-    errades: { ...EX.errades, 3: { tipus: 'CALCUL', terme: 2, expl: 'e', bona: '9x = 5', perque: [['a', true], ['b', false], ['c', false], ['d', false]], opcions: [['9x = 5', true], ['y', false], ['z', false]] } },
+    errades: { ...EX.errades, 3: { tipus: 'CALCUL', terme: 2, expl: 'e', bona: '9x = 5', perque: [['a', true], ['b', false], ['c', false]], opcions: [['9x = 5', true], ['y', false], ['z', false]] } },
     correctes: { 2: 'ok2', 4: 'ok4' },
 };
 S = nouEstat();

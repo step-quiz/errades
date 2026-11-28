@@ -4,15 +4,20 @@
  * FITXER: js/equacions/generador.js
  * ROL: Generador pur (sense DOM) i sembrat d'exemples erronis d'equacions de
  *      1r grau: l'enunciat, la resolució d'un alumne fictici amb una o més
- *      errades injectades, i tots els textos (explicacions, «Per què?»,
- *      «Corregeix-la», per què cada línia bona és bona).
+ *      errades injectades, i els textos (explicacions, opcions de
+ *      «Corregeix-la», per què cada línia bona és bona). Les frases de «Per què?»
+ *      són les de l'editor del David (frases.js, frasesErrada).
+ * - Regles desactivades (DESACTIVADES) i variants: no surten mai (enquesta del
+ *   professorat, 28/11/2026).
  * ARQUITECTURA:
  * - Racionals exactes (Q). Una línia és { L: [termes], R: [termes] }. Termes:
- *   x (c·x), n (nombre), p (c·(x + b)) i f (fracció escrita tal qual, b/a).
- * - El procediment de l'alumne (OPS): exp (treu parèntesis), red1 (suma
- *   termes semblants de cada membre), tra (x a l'esquerra, nombres a la dreta),
- *   red2 (redueix: ax = b), div (x = b/a, escrit com a fracció), simp
- *   (simplifica). Cada operació només s'aplica si canvia alguna cosa.
+ *   x (c·x), n (nombre), p (c·(mx + b)), f (fracció escrita tal qual, b/a),
+ *   i (a/x), d (s·(mx + b)/den) i m (a·b sense calcular).
+ * - El procediment de l'alumne (OPS): den (treu denominadors), exp (treu
+ *   parèntesis), neg (canvia el signe de tota l'equació), red1 (suma termes
+ *   semblants de cada membre), tra (x a l'esquerra, nombres a la dreta), red2
+ *   (redueix: ax = b), inv (a/x = B → Bx = a), div (x = b/a, escrit com a
+ *   fracció), simp (simplifica). Cada operació només s'aplica si canvia alguna cosa.
  * - Una errada (N1, docs/SPEC.md §1.1) és una línia que no es pot deduir de
  *   l'anterior tal com està escrita: aquí, una línia amb una altra solució que
  *   l'anterior. Les regles errònies (REGLES) en fan una a partir de la línia
@@ -20,37 +25,19 @@
  *   dolenta.
  * - valida(exemple) comprova totes les condicions de docs/SPEC.md §5.3; el
  *   generador només torna exemples que la passen.
- * - Atzar sembrat (mulberry32): la mateixa llavor dona sempre el mateix exemple.
- * DEPENDÈNCIES: frases.js (les frases de «Per què?» de l'editor del David). Els
+ * - Atzar sembrat (js/motor/atzar.js): la mateixa llavor dona sempre el mateix exemple.
+ * DEPENDÈNCIES: frases.js, js/motor/atzar.js, js/motor/exemple.js. Els
  *   textos genèrics de cada tipus d'errada (data/errors.json) arriben com a
  *   paràmetre (TIPUS).
  * ============================================================================
  */
 
 import { perque as frasesPerque } from './frases.js';
+import { creaAtzar, enter, tria, signe, barreja } from '../motor/atzar.js';
+import { DISTRACTORS_PERQUE, opcionsPerque } from '../motor/exemple.js';
 
-// ---------- Atzar sembrat ----------
-export function creaAtzar(llavor) {
-    let a = llavor >>> 0;
-    return () => {
-        a = (a + 0x6d2b79f5) >>> 0;
-        let t = a;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-}
-const enter = (r, a, b) => a + Math.floor(r() * (b - a + 1));
-const tria = (r, llista) => llista[Math.floor(r() * llista.length)];
-const signe = r => (r() < 0.5 ? -1 : 1);
-function barreja(r, llista) {
-    const a = llista.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(r() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-}
+// ---------- Atzar sembrat (js/motor/atzar.js) ----------
+export { creaAtzar };
 
 // ---------- Racionals ----------
 function mcd(a, b) {
@@ -371,8 +358,6 @@ const llistaTermes = (ts, maj = false) => {
 // Cada regla substitueix el pas `op` (a partir de la línia anterior) per una línia equivocada.
 // Torna { linia, dades } o null si no es pot aplicar.
 const pTx = t => termeTxt(t, true);
-/** «Per què?»: la frase bona i aquests distractors, triats a l'atzar entre els de l'errada (el David, 28/11/2026). */
-export const DISTRACTORS_PERQUE = 2;
 /**
  * Regles (o variants, «REGLA:variant») que el generador no fa servir: les que el professorat va valorar
  * malament a l'enquesta del banc d'errades (dues «No m'agrada» o més; el David, 28/11/2026). El codi es queda:
@@ -775,257 +760,19 @@ export const REGLES = {
         },
     },
 };
-// ---------- «Per què és una errada?»: una frase certa i distractors versemblants ----------
-// Les eines de text que fan servir les situacions de js/equacions/frases.js
+// ---------- «Per què és una errada?» ----------
+// Les frases són les de l'editor del David (js/equacions/frases.js; dades a frases-dades.js). Aquí només hi ha
+// les eines de text que fan servir les situacions per omplir-ne els valors.
 const TX = { sumaTx, pTx, ambSigne, llistaTermes, N };
 /**
- * Les frases de «Per què?» d'una errada: { bona, dolentes }. Les de l'editor del David
- * (js/equacions/frases.js) i, per a les regles que encara no hi són, les de PERQUE.
- * També ho fa servir eines/frases-editor/banc.mjs per refer les frases del banc.
+ * Les frases de «Per què?» d'una errada: { bona, dolentes, sid }. També ho fa servir
+ * eines/frases-editor/banc.mjs per refer les frases del banc.
  */
 export function frasesErrada(id, dades, { op, abans, malF, bonaF, terme }) {
-    return frasesPerque(id, dades, { op, abans, T: TX, linies: { abans: fitxes(abans), mal: malF, bona: bonaF }, terme }) || PERQUE[id](dades);
+    const fr = frasesPerque(id, dades, { op, abans, T: TX, linies: { abans: fitxes(abans), mal: malF, bona: bonaF }, terme });
+    if (!fr) throw new Error(`La regla ${id} no té cap situació a l'editor de frases`);
+    return fr;
 }
-// Cada funció torna { bona, dolentes } amb frases concretes de la línia (mai la línia bona sencera).
-const resta = (B, A) => `${menys(B)} − ${A < 0 ? '(' + menys(A) + ')' : A}`;
-const ambS = n => (n > 0 ? '+' + n : menys(n));
-const PERQUE = {
-    DISTRIBUTIVA(d) {
-        const c = menys(d.t.c),
-            b = menys(d.t.b),
-            x = d.t.m === 1 ? 'la $x$' : `$${d.t.m}x$`;
-        return {
-            bona: `Ha multiplicat el $${c}$ per ${x}, però no pel $${b}$.`,
-            dolentes: [
-                `Ha multiplicat el $${c}$ pel $${b}$, però no per ${x}.`,
-                `El $${c}$ s'havia de sumar a cada terme del parèntesi, i no multiplicar-hi.`,
-                `Ha canviat el signe del $${b}$, i no l'havia de canviar.`,
-            ],
-        };
-    },
-    DIST_SIGNE(d) {
-        const c = menys(d.t.c),
-            b = menys(d.t.b),
-            x = d.t.m === 1 ? 'la $x$' : `$${d.t.m}x$`,
-            delX = d.t.m === 1 ? 'de la $x$' : `del $${d.t.m}x$`;
-        if (d.t.c === -1)
-            return {
-                bona: `El signe $−$ de davant del parèntesi havia de canviar el signe del $${b}$, i no l'ha canviat.`,
-                dolentes: [
-                    `El signe $−$ de davant del parèntesi no ha canviat el signe ${delX}.`,
-                    `El signe $−$ de davant del parèntesi només havia de canviar el signe ${delX}.`,
-                    `Havia de canviar el signe de tots els termes de l'equació.`,
-                ],
-            };
-        return {
-            bona: `Ha multiplicat el $${c}$ pel $${b}$ i s'ha equivocat en el signe del resultat.`,
-            dolentes: [
-                `Ha multiplicat el $${c}$ per ${x} i s'ha equivocat en el signe.`,
-                `No havia de multiplicar el $${b}$: només es multiplica ${x}.`,
-                `Havia de canviar el signe de tots els termes de l'equació.`,
-            ],
-        };
-    },
-    SIGNE_TRANSPOSAR(d) {
-        if (d.tots)
-            return {
-                bona: `Ha passat ${llistaTermes(d.tots)} a l'altre membre sense canviar-los el signe.`,
-                dolentes: [
-                    `Ha canviat el signe dels termes que es quedaven al seu membre.`,
-                    `Els termes havien de passar a l'altre membre dividint.`,
-                    `Havia de passar tots els termes, també els nombres, al membre de l'esquerra.`,
-                    `Havia de sumar els termes de cada membre abans de passar-los a l'altre.`,
-                ],
-            };
-        const t = ambSigne(d.t);
-        const u = d.altres && d.altres[0];
-        return {
-            bona: `Ha passat el $${t}$ a l'altre membre sense canviar-li el signe.`,
-            dolentes: [
-                u
-                    ? `Ha canviat el signe del $${ambSigne(u)}$ en passar-lo a l'altre membre, i no l'havia de canviar.`
-                    : `Ha passat el $${t}$ a l'altre membre, però l'havia de deixar on era.`,
-                `El $${t}$ havia de passar a l'altre membre dividint.`,
-                `Havia de passar tots els termes, també els nombres, al membre de l'esquerra.`,
-                `Havia de sumar els termes de cada membre abans de passar-los a l'altre.`,
-            ],
-        };
-    },
-    SUMA_ABANS_PRODUCTE(d) {
-        const par = `${d.t.m === 1 ? '' : d.t.m}x ${d.t.b < 0 ? '−' : '+'} ${Math.abs(d.t.b)}`;
-        return {
-            bona: `Ha sumat $${d.a} + ${d.t.c}$ abans de multiplicar: el $${d.t.c}$ només multiplica el parèntesi.`,
-            dolentes: [
-                `El $${d.a}$ també s'havia de multiplicar per $(${par})$.`,
-                `Primer s'havia de sumar $${d.a} + ${d.t.c}$ i després multiplicar.`,
-                `Ha multiplicat bé, però s'ha equivocat en un signe.`,
-                `El $${d.t.c}$ s'havia de sumar a cada terme del parèntesi.`,
-            ],
-        };
-    },
-    INVERS_X(d) {
-        const B = d.B < 0 ? '(' + menys(d.B) + ')' : d.B;
-        return {
-            bona: `Ha multiplicat $${menys(d.a)} · ${B}$, però la $x$ era al denominador: havia de dividir $${menys(d.a)} : ${B}$.`,
-            dolentes: [`El $${menys(d.B)}$ havia de passar a l'altre membre restant.`, `Havia de multiplicar el $${menys(d.a)}$ per la $x$.`, `Ha calculat malament $${menys(d.a)} · ${B}$.`],
-        };
-    },
-    CANVI_SIGNE_PARCIAL(d) {
-        return {
-            bona: `Ha canviat el signe de tots els termes menys el del $${ambSigne(d.t)}$.`,
-            dolentes: [`Només s'havien de canviar els signes del membre de l'esquerra.`, `Els termes en $x$ no havien de canviar de signe.`, `Ha passat un terme a l'altre membre sense canviar-li el signe.`],
-        };
-    },
-    DENOMINADORS(d) {
-        const comuns = [`S'ha equivocat en calcular el mínim comú múltiple dels denominadors.`, `Havia de dividir per $${d.M}$, i no multiplicar.`];
-        if (d.variant === 'signe')
-            return { bona: `El $−$ de davant de la fracció no ha canviat el signe del $${menys(d.t.b)}$.`, dolentes: [`No ha multiplicat per $${d.M}$ els termes que no tenen denominador.`, ...comuns] };
-        return { bona: `No ha multiplicat per $${d.M}$ els termes que no tenen denominador.`, dolentes: [`El $−$ de davant d'una fracció havia de canviar el signe de tot el numerador.`, ...comuns] };
-    },
-    DIST_SUMA(d) {
-        const c = menys(d.t.c),
-            b = menys(d.t.b),
-            mx = `${d.t.m}x`;
-        return {
-            bona: `Ha sumat el $${Math.abs(d.t.c)}$ i el $${d.t.m}$ de $${mx}$, i els havia de multiplicar.`,
-            dolentes: [
-                `Ha multiplicat el $${c}$ per $${mx}$, però no pel $${b}$.`,
-                `S'ha equivocat en el signe del terme en $x$.`,
-                `S'ha equivocat multiplicant el $${c}$ pel $${b}$.`,
-                `Havia de sumar el $${c}$ a cada terme del parèntesi.`,
-            ],
-        };
-    },
-    COEFICIENT_U(d) {
-        const neg = d.u.c.n < 0,
-            ux = neg ? '−x' : 'x';
-        return {
-            bona: `No ha comptat la $${ux}$: la $${ux}$ vol dir $${neg ? '−1x' : '1x'}$.`,
-            dolentes: [
-                `Ha calculat $${d.expr}$ i s'ha equivocat en el signe del resultat.`,
-                `Ha sumat termes que no són semblants.`,
-                neg ? `Ha sumat la $x$ en lloc de restar-la.` : `Ha restat la $x$ en lloc de sumar-la.`,
-                `Ha comptat la $${ux}$ dues vegades.`,
-            ],
-        };
-    },
-    SIGNE_COPIAT(d) {
-        if (d.ts && d.ts.length > 1)
-            return {
-                bona: `Ha copiat ${llistaTermes(d.ts)} de la línia de sobre amb el signe canviat.`,
-                dolentes: [
-                    `Ha passat ${llistaTermes(d.ts)} a l'altre membre sense canviar-los el signe.`,
-                    `${llistaTermes(d.ts, true)} havien de canviar de signe, i els ha deixat igual.`,
-                    `S'ha equivocat sumant dos nombres d'aquesta línia.`,
-                ],
-            };
-        const t = ambSigne(d.t);
-        const propi = {
-            exp: `El $${t}$ també quedava multiplicat pel nombre de davant del parèntesi.`,
-            red1: `Ha sumat el $${t}$ amb un terme que no era semblant.`,
-            tra: `El $${t}$ havia de passar a l'altre membre.`,
-        }[d.op];
-        return {
-            bona: `Ha copiat el $${t}$ de la línia de sobre amb el signe canviat.`,
-            dolentes: [
-                `Ha passat el $${t}$ a l'altre membre sense canviar-li el signe.`,
-                `El $${t}$ havia de canviar de signe, i l'ha deixat igual.`,
-                propi,
-                `S'ha equivocat sumant dos nombres d'aquesta línia.`,
-            ],
-        };
-    },
-    TERMES_NO_SEMBLANTS(d) {
-        if (d.tres) {
-            const n = d.ns.length === 1 ? ambSigne(d.ns[0]) : null;
-            return {
-                bona: n ? `Ha sumat el $${n}$ amb els termes en $x$, però el $${n}$ no té $x$.` : `Ha sumat els nombres amb els termes en $x$, però els nombres no tenen $x$.`,
-                dolentes: [
-                    `Ha passat ${n ? `el $${n}$` : 'els nombres'} a l'altre membre sense canviar-${n ? 'li' : 'los'} el signe.`,
-                    `Havia de multiplicar els termes en $x$, i no sumar-los.`,
-                    `Els termes en $x$ no es podien sumar perquè no són l'un al costat de l'altre.`,
-                    `${n ? `El $${n}$` : 'Cada nombre'} s'havia de multiplicar per la $x$.`,
-                ],
-            };
-        }
-        const x = pTx(d.x),
-            n = pTx(d.n),
-            c = d.x.c.n,
-            b = d.n.v.n;
-        return {
-            bona: `Ha sumat $${x}$ i $${n}$ com si fossin termes semblants, però un té $x$ i l'altre no.`,
-            dolentes: [
-                `Ha passat el $${ambSigne(d.n)}$ a l'altre membre sense canviar-li el signe.`,
-                `S'ha equivocat en el càlcul: $${sumaTx([N(c), N(b)])}$ no fa $${menys(c + b)}$.`,
-                `Havia de multiplicar $${x}$ per $${n}$.`,
-            ],
-        };
-    },
-    CALCUL(d) {
-        const frases = {
-            signe: `Ha calculat $${d.expr}$ i s'ha equivocat en el signe del resultat.`,
-            suma: `Els termes $${d.a}$ i $${d.b}$ tenen signes diferents, però els ha sumat com si tinguessin el mateix signe.`,
-            resta: `Els termes $${d.a}$ i $${d.b}$ tenen el mateix signe, però els ha restat com si tinguessin signes diferents.`,
-        };
-        const dolentes = Object.entries(frases)
-            .filter(([k]) => k !== d.tipus)
-            .map(([, f]) => f);
-        dolentes.push(`Ha sumat termes que no són semblants.`, `En lloc de sumar, havia de multiplicar: $${d.expr}$ és un producte.`);
-        for (const a of d.altres || []) dolentes.push(`S'ha equivocat en el càlcul de $${a}$.`);
-        return { bona: frases[d.tipus], dolentes };
-    },
-    OPERACIO_INVERSA(d) {
-        const v = d.v || 'resta';
-        const A = d.A < 0 ? '(' + menys(d.A) + ')' : String(d.A);
-        const fet = {
-            resta: resta(d.B, d.A),
-            inversa: `${menys(d.A)} − ${d.B < 0 ? '(' + menys(d.B) + ')' : d.B}`,
-            producte: `${menys(d.B)} · ${A}`,
-            suma: `${menys(d.B)} + ${A}`,
-        }[v];
-        const W = d.W ?? d.B - d.A;
-        const nom = { resta: 'una resta', inversa: 'una resta', producte: 'un producte', suma: 'una suma' }[v];
-        return {
-            bona: `Ha decidit fer $${fet}$, però hauria d'haver fet ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
-            dolentes: [
-                v === 'suma' ? `Ha decidit fer una suma, però havia de fer una resta.` : `Ha decidit fer ${nom}, però havia de fer una suma.`,
-                `Havia de fer $${fet}$, però el resultat és $${ambS(-W)}$.`,
-                `El resultat és $${Math.abs(d.A)}${Math.abs(d.B)}$.`,
-            ],
-        };
-    },
-    COEFICIENT_OBLIDAT(d) {
-        const A = menys(d.A);
-        return {
-            bona: `Ha tret el $${A}$ de davant de la $x$ sense dividir-hi.`,
-            dolentes: [
-                `Ha dividit al revés: ${'$'}{${A}|${menys(d.B)}}$.`,
-                `Havia de restar el $${A}$ als dos membres.`,
-                `Ha multiplicat el $${menys(d.B)}$ pel $${A}$.`,
-            ],
-        };
-    },
-    DIVISIO_SIGNE(d) {
-        return {
-            bona: `Ha dividit entre $${Math.abs(d.A)}$, però havia de dividir entre $${menys(d.A)}$.`,
-            dolentes: [
-                `Havia de multiplicar per $${menys(d.A)}$, i no dividir.`,
-                `Havia de restar $${menys(d.A)}$ als dos membres.`,
-                `Havia de dividir al revés: ${'$'}{${menys(d.A)}|${menys(d.B)}}$.`,
-            ],
-        };
-    },
-    QUOCIENT_INVERTIT(d) {
-        return {
-            bona: `Ha fet ${'$'}{${menys(d.A)}|${menys(d.B)}}$, però havia de fer ${'$'}{${menys(d.B)}|${menys(d.A)}}$.`,
-            dolentes: [
-                `Havia de fer $${resta(d.B, d.A)}$.`,
-                `Havia de fer $${menys(d.B)} · ${d.A < 0 ? '(' + menys(d.A) + ')' : d.A}$.`,
-                `La divisió està ben plantejada, però s'havia de simplificar abans.`,
-            ],
-        };
-    },
-};
 
 const opsDe = regla => (Array.isArray(regla.op) ? regla.op : [regla.op]);
 
@@ -1403,10 +1150,9 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         // dos termes equivocats (SIGNE_TRANSPOSAR o SIGNE_COPIAT amb dos termes): a la fase del terme valen tots dos
         if (marca) terme = marca[0];
         const termes = marca ? marca : bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
-        // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia. Les frases de l'editor
-        // del David (js/equacions/frases.js); les regles que encara no hi són, les d'aquí (PERQUE).
+        // «Per què?»: la frase certa i DISTRACTORS_PERQUE de falses, triades a l'atzar, concretes d'aquesta línia
         const fr = frasesErrada(c.id, c.res.dades, { op: c.op, abans, malF, bonaF, terme });
-        const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, DISTRACTORS_PERQUE).map(t => [t, false])]);
+        const perque = opcionsPerque(r, fr.bona, fr.dolentes);
         // «Corregeix-la»: la línia bona i dues de dolentes (d'altres regles o retocades)
         const vistes = new Set([text(bona), text(linies[c.j])]);
         const dolentes = [];

@@ -2,23 +2,20 @@
  * ============================================================================
  * PROJECTE: Localitza l'errada (step-quiz/errades)
  * FITXER: js/equacions/nivells.js
- * ROL: Què vol dir cada nivell (N5 amb el retoc de R5, docs/SPEC.md §6): de
- *      quin tipus és l'enunciat, quantes errades té cada exemple, si es diu
- *      quantes n'hi ha (la fase del terme és a tots els nivells).
+ * ROL: El que els nivells tenen de propi a les equacions: l'etiqueta de cada
+ *      nivell (la capçalera de equacions.html) i quins exemples del banc
+ *      (data/banc.json) encaixen amb un nivell (encaixaBanc). Pur.
  * ARQUITECTURA:
- * - parametres(nivell, noerrors, llavor) és pur i determinista: la mateixa
- *   llavor dona el mateix nombre d'errades.
- *   1: una errada anunciada, sense parèntesis (4–6 línies)
- *   2: una errada anunciada, amb parèntesis (6–8 línies)
- *   3: una errada, sense dir quantes n'hi ha
- *   4: dues errades anunciades (a vegades es compensen)
- *   5: una o dues, sense dir-ho (a vegades es compensen)
- *   Amb noerrors=1 (R5): a tots els nivells, més o menys 1 exemple de cada 5
- *   no té cap errada, i la consigna no diu mai quantes n'hi ha.
- * DEPENDÈNCIES: js/equacions/generador.js (creaAtzar).
+ * - Què vol dir cada nivell (forma, errades, si s'anuncia) és comú a les dues
+ *   activitats: js/motor/nivells.js (parametres).
+ * - encaixaBanc mira el nombre d'errades, la forma de l'enunciat (1: sense
+ *   parèntesis, 4–6 línies; 2: amb parèntesis, 6–8 línies) i que cap errada
+ *   no sigui d'una regla desactivada (DESACTIVADES del generador).
+ * - PROPORCIO_BANC: més o menys 1 exemple de cada 3 surt del banc (R6).
+ * DEPENDÈNCIES: js/equacions/generador.js (DESACTIVADES).
  * ============================================================================
  */
-import { creaAtzar, DESACTIVADES } from './generador.js';
+import { DESACTIVADES } from './generador.js';
 
 export const NIVELLS = {
     1: 'una errada, sense parèntesis',
@@ -27,23 +24,6 @@ export const NIVELLS = {
     4: 'dues errades',
     5: 'una o dues errades, sense dir-ho',
 };
-export const PROPORCIO_SENSE_ERRADES = 0.2;
-export const PROPORCIO_COMPENSADES = 0.3;
-
-export function parametres(nivell, noerrors, llavor) {
-    const r = creaAtzar((llavor ^ 0x9e3779b9) >>> 0);
-    const forma = nivell === 1 ? 1 : 2;
-    let errades = 1,
-        compensades = false;
-    if (nivell === 4) errades = 2;
-    if (nivell === 5) errades = r() < 0.5 ? 1 : 2;
-    if (errades === 2) compensades = r() < PROPORCIO_COMPENSADES;
-    if (noerrors && r() < PROPORCIO_SENSE_ERRADES) {
-        errades = 0;
-        compensades = false;
-    }
-    return { forma, errades, compensades, anuncia: !noerrors && nivell !== 3 && nivell !== 5 };
-}
 
 /**
  * Es pot fer servir aquest exemple del banc (data/banc.json) en aquest nivell?
