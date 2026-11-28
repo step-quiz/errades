@@ -50,7 +50,7 @@ for (const v of DIAGNOSI.vistes) {
     }
 }
 DIAGNOSI.actiu = false;
-for (const sid of ['DIST', 'DSIG2', 'ST1', 'ST2', 'SC1', 'SC2', 'TNS1', 'TNS2', 'CU', 'CAL1', 'CAL2', 'CAL3', 'OI1', 'OI3', 'OI4', 'CO', 'DS', 'QI'])
+for (const sid of ['DIST', 'DSIG2', 'ST1', 'ST2', 'SC1', 'SC2', 'TNS1', 'TNS2', 'CU', 'CAL1', 'CAL2', 'CAL3', 'OI1', 'OI3', 'OI4', 'CO', 'DS', 'QI', 'SAP', 'IX', 'DEN1', 'DEN2'])
     ok(vistes[sid] > 0, `el generador fa servir la situació ${sid}`);
 
 // ---- Situacions rares, fetes a mà ----

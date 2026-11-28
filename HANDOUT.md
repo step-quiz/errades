@@ -79,7 +79,13 @@ reserves). **David's rule (Q2, 28/11): never add or move `\bold` in his sentence
 
 ### What is pending, in order
 
-0. **Confirmed by David (28/11):** F25 with `[mal]`, CAL2's new true sentence C01, reserves ST1 F18+F20, CAL1 F51,
+0. **Survey closed (28/11, 8 answers):** situations with ≥ 2 «No m'agrada» are deactivated (`DESACTIVADES`; see
+   `docs/STATE.md` «Department survey closed»). The old item 2 below (survey) is done.
+0b. **New sentence editor on the current account** (David chose it on 28/11):
+   https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`). Readable with
+   `db_list`. It now also has SAP, IX, DEN1, DEN2 (the rules that had no editor sentences). Procedure for «Revisa
+   artifact»: `docs/STATE.md` «New sentence editor on the current account». The old editor `4tvuyfdz…` is history.
+0c. **Confirmed by David (28/11):** F25 with `[mal]`, CAL2's new true sentence C01, reserves ST1 F18+F20, CAL1 F51,
    DSIG1 F08 (`exporta.mjs`, `CANVIS` and `RESERVA`). David tests the published site next.
 1. **Sentence editor follow-up.** The editor artifact was not republished (no access): the repo sources
    (`dades.json`, `plantilla.html`, `index.html`) already know `[costat]`, `[Al membre]`, `[del membre]` and SC1

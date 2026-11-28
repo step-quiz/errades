@@ -1,6 +1,7 @@
 // tests/generador.test.js — el generador d'exemples (docs/SPEC.md §5.3 i §10).
 import fs from 'node:fs';
 import { posaParaula } from '../js/equacions/frases.js';
+import { DESACTIVADES } from '../js/equacions/generador.js';
 import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix, versemblant } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
@@ -40,8 +41,10 @@ for (const nivell of [1, 2]) {
         if (errades) {
             const esperats = nivell === 1
                 ? ['SIGNE_TRANSPOSAR', 'SIGNE_COPIAT', 'TERMES_NO_SEMBLANTS', 'COEFICIENT_U', 'CALCUL', 'OPERACIO_INVERSA', 'DIVISIO_SIGNE', 'QUOCIENT_INVERTIT', 'INVERS_X']
-                : Object.keys(REGLES).filter(t => t !== 'INVERS_X'); // a/x + c = d és de nivell 1
+                : Object.keys(REGLES).filter(t => t !== 'INVERS_X' && !DESACTIVADES.includes(t)); // a/x + c = d és de nivell 1
             for (const t of esperats) ok(vistos[t] > 0, `nivell ${nivell}: no surt mai el tipus ${t}`);
+            // les regles desactivades (enquesta, 28/11/2026) no surten mai
+            for (const t of DESACTIVADES) ok(!vistos[t], `nivell ${nivell}: surt la regla desactivada ${t}`);
             console.log(`  nivell ${nivell}: ${JSON.stringify(vistos)}`);
         }
     }
@@ -160,7 +163,8 @@ igual(aplica('exp', tL([tX(1), T.P(-2, 6, 3)], [tX(3), tN(7)])) && text(aplica('
 {
     const l = tL([tN(3), T.P(2, -4)], [tX(4), tN(-2)]);
     const rs = resultats('SUMA_ABANS_PRODUCTE', l, 'exp', 200).sort();
-    igual(rs, ['5x − 4 = 4x − 2', '5·(x − 4) = 4x − 2'].sort(), 'SUMA_ABANS_PRODUCTE: 3 + 2·(x − 4) → 5·(x − 4) o 5x − 4');
+    // la variant «5x − 4» està desactivada (enquesta, item 4)
+    igual(rs, ['5·(x − 4) = 4x − 2'], 'SUMA_ABANS_PRODUCTE: 3 + 2·(x − 4) → 5·(x − 4), mai 5x − 4');
     igual(resultats('SUMA_ABANS_PRODUCTE', tL([tN(3), T.P(-2, -4)], [tN(1)]), 'exp'), [null], 'SUMA_ABANS_PRODUCTE: no amb un − davant del parèntesi');
     ok(/no vol dir que no es pugui fer/.test(REGLES.QUOCIENT_INVERTIT.expl({ A: 12, B: 3 })), 'QUOCIENT_INVERTIT: explicació del cas bessó (12x = 3 → x = 12/3)');
 }

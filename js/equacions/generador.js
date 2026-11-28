@@ -371,6 +371,12 @@ const llistaTermes = (ts, maj = false) => {
 // Cada regla substitueix el pas `op` (a partir de la línia anterior) per una línia equivocada.
 // Torna { linia, dades } o null si no es pot aplicar.
 const pTx = t => termeTxt(t, true);
+/**
+ * Regles (o variants, «REGLA:variant») que el generador no fa servir: les que el professorat va valorar
+ * malament a l'enquesta del banc d'errades (dues «No m'agrada» o més; el David, 28/11/2026). El codi es queda:
+ * per recuperar-ne una, treu-la d'aquesta llista. Els exemples del banc d'aquests tipus tampoc no surten.
+ */
+export const DESACTIVADES = ['DIST_SUMA', 'CANVI_SIGNE_PARCIAL', 'SUMA_ABANS_PRODUCTE:x'];
 export const REGLES = {
     DISTRIBUTIVA: {
         op: 'exp',
@@ -429,7 +435,8 @@ export const REGLES = {
             const a = l[c][i - 1].v.n,
                 t = l[c][i];
             const s = a + t.c;
-            const variant = r() < 0.65 ? 'parentesi' : 'x';
+            // la variant «5x − 4» està desactivada (enquesta, item 4): l'atzar es consumeix igual
+            const variant = r() < 0.65 || DESACTIVADES.includes('SUMA_ABANS_PRODUCTE:x') ? 'parentesi' : 'x';
             const nou = variant === 'parentesi' ? [P(s, t.b, t.m)] : [X(s * t.m), N(t.b)];
             const ts = [...l[c].slice(0, i - 1), ...nou, ...l[c].slice(i + 1)];
             return { linia: c === 'L' ? linia(ts, l.R) : linia(l.L, ts), dades: { a, t, s, variant } };
@@ -1269,7 +1276,7 @@ function candidates(r, linies, ops, des = 1) {
     for (let j = Math.max(1, des); j < linies.length; j++) {
         const op = ops[j];
         for (const [id, regla] of Object.entries(REGLES)) {
-            if (!opsDe(regla).includes(op)) continue;
+            if (!opsDe(regla).includes(op) || DESACTIVADES.includes(id)) continue;
             if (id === 'TERMES_NO_SEMBLANTS' && jaDistingeix(linies, j)) continue;
             // les línies amb termes nous (a/x, fraccions amb binomi, a·b) només admeten les regles que hi pensen
             if ([...linies[j - 1].L, ...linies[j - 1].R].some(t => 'idm'.includes(t.k)) && !NOVES.includes(id)) continue;
@@ -1402,7 +1409,7 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         const vistes = new Set([text(bona), text(linies[c.j])]);
         const dolentes = [];
         for (const [id, rg] of Object.entries(REGLES)) {
-            if (id === c.id || !opsDe(rg).includes(c.op)) continue;
+            if (id === c.id || !opsDe(rg).includes(c.op) || DESACTIVADES.includes(id)) continue;
             const res = rg.fes(abans, r, c.op);
             if (res && !equivalents(abans, res.linia) && !vistes.has(text(res.linia))) {
                 vistes.add(text(res.linia));

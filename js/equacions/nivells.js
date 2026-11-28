@@ -18,7 +18,7 @@
  * DEPENDÈNCIES: js/equacions/generador.js (creaAtzar).
  * ============================================================================
  */
-import { creaAtzar } from './generador.js';
+import { creaAtzar, DESACTIVADES } from './generador.js';
 
 export const NIVELLS = {
     1: 'una errada, sense parèntesis',
@@ -54,6 +54,8 @@ export function encaixaBanc(ex, nivell, noerrors) {
     // la forma de l'enunciat: la que diu l'exemple (el generador i el banc la porten); si no, amb parèntesis és la 2
     const forma = ex.nivell === 1 || ex.nivell === 2 ? ex.nivell : ex.linies[0].some(t => t.includes('(')) ? 2 : 1;
     if (n === 0) return !!noerrors;
+    // cap exemple amb una regla desactivada (enquesta del banc d'errades, 28/11/2026)
+    if (Object.values(ex.errades).some(e => DESACTIVADES.includes(e.tipus))) return false;
     if (nivell === 1) return forma === 1 && n === 1;
     if (nivell === 2) return forma === 2 && n === 1;
     if (nivell === 3) return n === 1;

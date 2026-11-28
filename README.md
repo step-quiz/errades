@@ -46,7 +46,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `css/pagina.css`, `css/llibreta.css` | Page structure and buttons; the notebook. |
 | `js/comu/punts.js`, `js/comu/seguent.js`, `css/seguent.css`, `LICENSE`, `LLICENCIA.md` | **Shared files** from `step-quiz/step-quiz-commons` (`comuns.json`, web `errades`). Never edit here. |
 | `HANDOUT.md` | Cold-start brief for the next AI session: what was done in the 2026-11-26 session and the open work. |
-| `eines/frases-editor/` | Sources of the claude.ai artifact «Frases de "Per què és una errada?" · Equacions» (slug `1f8b92d4-e6fd-4cd1-82ff-a9ecefd0b335`, on David's other account: the 28/11 session could not read it): `dades.json` (the catalogue: source of truth; `dades.mjs` and `cataleg.mjs` are stale and throw), `plantilla.html` + `dades.json` → `index.html`; `prova*.mjs` (Playwright, mocked `window.claude`). `editor-2026-11-28.txt` = David's «Copia els canvis» export; `exporta.mjs` turns it (plus the approved fixes, in `CANVIS`) into `js/equacions/frases-dades.js`; `banc.mjs` rewrites the «Per què?» sentences of `data/banc.json` with them. Not part of the site. |
+| `eines/frases-editor/` | Sources of the sentence editor. **Current artifact (28/11/2026, this account):** «Frases de «Per què és una errada?» · Equacions (editor nou)», https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys, slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, capabilities `{db:{}, user:{}}`. `dades.json` (catalogue v2, made once by `cataleg-2.mjs` from the sentences of 28/11: the source of truth; deactivated situations carry `desactivada: true` and are hidden; `reserva` lists reserve sentences), `plantilla.html` + `dades.json` → `index.html` (replace `/*DADES*/`, escape `</`); `prova*.mjs` (Playwright, mocked `window.claude`). `exporta.mjs`: `dades.json` + `editor-db.json` (the artifact's db collections `frases` and `situacions`, written by Claude) → `js/equacions/frases-dades.js`; `banc.mjs` rewrites the «Per què?» sentences of `data/banc.json`. History: the old editor (slug `1f8b92d4-…`, other account, unreadable from here) was exported by hand as `editor-2026-11-28.txt`; `cataleg.mjs`/`dades.mjs` are stale and throw. Not part of the site. |
 | `banc-errors.html`, `eines/banc-errors.mjs`, `eines/banc-errors.plantilla.html` | **Teachers' review page** (for David's department): one example per error type of both activities, numbered 1…N (equations first, in `data/errors.json` order, then order of operations), each with the error circled, the correct line and the explanation; buttons «M'agrada molt / M'agrada / No m'agrada» and an optional comment, kept in `localStorage` (`banc-errors-v1`). The fixed top bar's «Copia codi amb les preferències» copies a plain-text code (`BANC-ERRORS v1`, a legend line, one line per example `n MM|M|N|- [ \| comment]`, `FI`) that teachers email to David. No name field (removed by David). After a successful copy the button turns green and reads «Codi copiat» for 5 s. Self-contained (data, CSS, JS and the two fonts in base64). **Generated, never edit by hand:** `node eines/banc-errors.mjs` (equations: the shortest single-error bank example of each type, else the generator; order of operations: the generator). Bump `VERSIO` in the script whenever the set of examples changes, so codes say which version they answer. |
 | `vendor/fonts/` | Kalam (OFL 1.1) and Permanent Marker (Apache 2.0), latin subsets, with their licences. |
 | `tests/` | Node tests (`run-all.js`) and a Playwright smoke test (`navegador/prova.mjs`). |
@@ -101,7 +101,7 @@ differs from the line above. Level 1: naturals, `+ − · :`, ≤ 5 numbers, no 
 | `ESQUERRA_DRETA` | `6 + 5 · 2 → 11 · 2` (a `+`/`−` done before a `·`/`:` because it comes first; also inside brackets) | Tabak (2019): ≈80 % of 240 pupils; Bye et al. (2024) |
 | `SUMA_ABANS_RESTA` | `10 − 3 + 2 → 10 − 5` | the «literal» reading of the acronym (University of Portsmouth study) |
 | `PRODUCTE_ABANS_DIVISIO` | `24 : 2 · 3 → 24 : 6` | same |
-| `PARENTESI_IGNORAT` | `2 · (11 − 1) → 22 − 1` | classic; no source read |
+| `PARENTESI_IGNORAT` | `2 · (11 − 1) → 22 − 1` | classic; no source read **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `POTENCIA_PER_EXPONENT` | `3^2 → 6` (every power of the step: `2·3^2 + 5^2 → 2·6 + 10`) | classic; no source read |
 | `POTENCIA_DESPRES` | `2 · 3^2 → 6^2` | classic; no source read |
 | `RESTA_NEGATIVA` | `15 − 27 → 12` (two positive numbers, the second larger) | parallels `CALCUL` («signe») of the equations |
@@ -139,14 +139,19 @@ Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if 
    not, last line is `x = value`, numbers in range, options well formed, no `undefined`/`NaN`); the generator
    only returns examples that pass.
 
+Deactivated rules: `DESACTIVADES` (in each generator) lists rules, or `RULE:variant`, that the generator never
+uses (neither as the error nor as a «Corregeix-la» option) and whose bank examples `encaixaBanc` skips. Filled after
+the department survey (`docs/enquesta-banc-errors.md`, 28/11/2026): equations `DIST_SUMA`, `CANVI_SIGNE_PARCIAL`,
+`SUMA_ABANS_PRODUCTE:x`; order of operations `PARENTESI_IGNORAT`. Remove an entry to bring the rule back.
+
 Mal-rules (`REGLES`):
 
 | id | Step | Wrong line |
 |---|---|---|
 | `DISTRIBUTIVA` | exp | `2·(x + 4) → 2x + 4` |
 | `DIST_SIGNE` | exp | `−2·(x − 3) → −2x − 6` |
-| `SUMA_ABANS_PRODUCTE` | exp | `3 + 2·(x − 4) = 3x − 2 → 5·(x − 4) = 3x − 2` (65 %) or `→ 5x − 4 = 3x − 2` (adds the number before the bracket to its factor; only `a + c·(…)` with a, c > 0 and a single bracket in the line; form E now has a + sign 40 % of the time so it can appear; David, teachers' review page v1, item 13) |
-| `DIST_SUMA` | exp | `x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7` (outer factor added to the inner x-coefficient: sign(c)·(\|c\| + m); only for `c·(mx + b)` with m ≥ 2, \|c\| ≥ 2; David's real error) |
+| `SUMA_ABANS_PRODUCTE` | exp | `3 + 2·(x − 4) = 3x − 2 → 5·(x − 4) = 3x − 2` (65 %) or `→ 5x − 4 = 3x − 2` (adds the number before the bracket to its factor; only `a + c·(…)` with a, c > 0 and a single bracket in the line; form E now has a + sign 40 % of the time so it can appear; David, teachers' review page v1, item 13) The `5x − 4` variant is **deactivated** (survey 28/11, `SUMA_ABANS_PRODUCTE:x`). |
+| `DIST_SUMA` | exp | `x − 2·(3x + 6) = 3x + 7 → x − 5x − 12 = 3x + 7` (outer factor added to the inner x-coefficient: sign(c)·(\|c\| + m); only for `c·(mx + b)` with m ≥ 2, \|c\| ≥ 2; David's real error) **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `SIGNE_TRANSPOSAR` | tra | `3x − 6 = x + 4 → 3x − x = 4 − 6`; 35 % of the time when ≥ 2 terms move, all keep their sign: `5x + 3 = 2x + 9 → 5x + 2x = 9 + 3` (Erbaş YK26). Errors with two wrong terms store `termes: [i, j]`; the term phase accepts either |
 | `SIGNE_COPIAT` | exp, red1, tra (30 %: two terms when possible) | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` (a term that is only copied in this step loses or gains a visible minus; never the leading positive term, whose sign is not written) |
 | `TERMES_NO_SEMBLANTS` | tra, red1 | tra: `2x + 6 = x + 10 → 8x = x + 10`; red1: `2x + 3 + 4x = 18 → 9x = 18` (side with ≥ 2 x-terms and ≥ 1 number, all numbers \|n\| ≤ 15) |
@@ -157,7 +162,7 @@ Mal-rules (`REGLES`):
 | `DIVISIO_SIGNE` | div | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | div | `2x = 16 → x = 2/16`; the «twin» case `12x = 3 → x = 12/3` (pupil thinks 3 : 12 is impossible) gets its own explanation when \|A\| > \|B\| (David, review page v1, item 12) |
 | `INVERS_X` | inv | `30/x = 5 → x = 30·5` (correct: `5x = 30`). New term kind `I(a)` = a/x (only with numbers around it; `solucio` handles it), product term `M(a, b)` = a·b (simplified by `simp`), new op `inv` (a/x = B → Bx = a); level-1 form I `a/x + c = d` (David, 26/11/2026) |
-| `CANVI_SIGNE_PARCIAL` | neg | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` or `→ 4x + 5 + 3x = −6 + x`: one term keeps its sign. New op `neg` (all signs changed) only when the left side starts with x-terms that are all negative and the right side has an x-term; level-2 form K `−ax + b − cx = d − ex` (David) |
+| `CANVI_SIGNE_PARCIAL` | neg | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` or `→ 4x + 5 + 3x = −6 + x`: one term keeps its sign. New op `neg` (all signs changed) only when the left side starts with x-terms that are all negative and the right side has an x-term; level-2 form K `−ax + b − cx = d − ex` (David) **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `DENOMINADORS` | den | `(3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x` (variant `signe`: the − before a fraction does not change the numerator's second term) or `→ 9x + 15 − 2x + 8 = 5x` (variant `sense`: terms without a denominator not multiplied). New term kind `D(s, m, b, den)` = s·(mx + b)/den, new op `den` (multiply by the lcm, expanded directly); level-2 form L (David) |
 
 Lines containing the new kinds (`i`, `d`, `m`) only accept the three new rules (`NOVES` in `candidates`). With a fixed statement (`e0`) neither line-count limits nor number margins apply. `OPS` is now `den, exp, neg, red1, tra, red2, inv, div, simp`.

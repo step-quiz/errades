@@ -131,8 +131,8 @@ ul.comp li{margin:8px 0}
  <p class="intro">Les que surten en més d'una situació. Es canvien dins de qualsevol de les situacions on surten, i el canvi s'aplica a totes; aquí només hi ha la llista.</p>
  <div id="compartides"></div>
 
- <h2>Frases semblants <small>7 grups</small></h2>
- <p class="intro">No són iguals, però s'hi assemblen. Els tres primers grups diuen el mateix amb paraules diferents: digues si les unifico. Els altres són la mateixa frase en singular i en plural; ho dic perquè, si en canvies una, potser vols canviar també l'altra.</p>
+ <h2 class="ngrups">Frases semblants <small>7 grups</small></h2>
+ <p class="intro ngrups">No són iguals, però s'hi assemblen. Els tres primers grups diuen el mateix amb paraules diferents: digues si les unifico. Els altres són la mateixa frase en singular i en plural; ho dic perquè, si en canvies una, potser vols canviar també l'altra.</p>
  <div id="grups"></div>
 
  <h2>Situacions <small id="nsit"></small></h2>
@@ -162,7 +162,7 @@ ul.comp li{margin:8px 0}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const D=JSON.parse($('#dades').textContent);
-const SIT=D.situacions, SID=Object.fromEntries(SIT.map(s=>[s.id,s]));
+const SIT=D.situacions.filter(s=>!s.desactivada), SID=Object.fromEntries(SIT.map(s=>[s.id,s]));
 // Els termes d'una línia, amb el seu signe: [esquerre, dret]; un parèntesi o una fracció és un sol terme
 function termesLinia(l){
  const parts=String(l).split(' = '),out=[[],[]];
@@ -362,7 +362,7 @@ function pinta(){
 }
 function aplicaFiltre(){document.querySelectorAll('#sits .card').forEach(c=>c.hidden=filtre==="mod"&&c.dataset.mod!=="1");$('#f-tot').setAttribute('aria-pressed',String(filtre==="tot"));$('#f-mod').setAttribute('aria-pressed',String(filtre==="mod"));}
 function compta(){const nf=Object.keys(F).filter(modF).length,ns=SIT.filter(s=>JSON.stringify(U[s.id])!==U0[s.id]).length,ng=Object.values(G).filter(g=>g.decisio).length;
- $('#cnt').textContent=nf+ns+ng?`${nf} frases canviades · ${ns} situacions amb canvis · ${ng} de 3 grups decidits`:'Cap canvi';}
+ $('#cnt').textContent=nf+ns+ng?`${nf} frases canviades · ${ns} situacions amb canvis`+(D.grups.length?` · ${ng} de ${D.grups.length} grups decidits`:''):'Cap canvi';}
 function pintaReps(){
  document.querySelectorAll('[data-r]').forEach(el=>{const r=REP[el.dataset.r];if(r){el.hidden=false;el.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';el.append(b,document.createTextNode(r));}else el.hidden=true;});
  const rg=$('#rep-gen');if(REP.general){rg.hidden=false;rg.textContent='';const b=document.createElement('b');b.textContent='Resposta de Claude';rg.append(b,document.createTextNode(REP.general));}else rg.hidden=true;
@@ -498,6 +498,7 @@ async function initDb(){
   a.collection("rep").onSnapshot(snap=>{snap.docs.forEach(d=>{const x=d.data()||{};REP[d.id]=typeof x.text==="string"?x.text:"";});pintaReps();},()=>{});
  }catch(e){clearTimeout(tm);setMode("local");}
 }
+if(!D.grups.length)document.querySelectorAll('.ngrups,#grups').forEach(e=>e.classList.add('amagat'));
 pinta();
 initDb();
 }

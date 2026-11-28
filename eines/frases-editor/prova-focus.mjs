@@ -16,7 +16,7 @@ await pg.addInitScript(() => {
 });
 await pg.goto(new URL('./index.html', import.meta.url).href);
 await pg.waitForTimeout(400);
-for (const sel of ['#s-ST1 .fr.bona textarea', '#c-CO', '#s-DSUMA .fr[data-rol=dolenta][data-k="1"] textarea']) {
+for (const sel of ['#s-ST1 .fr.bona textarea', '#c-CO', '#s-DIST .fr[data-rol=dolenta][data-k="1"] textarea']) {
   await pg.click(sel);
   await pg.keyboard.press('End');
   await pg.keyboard.type(' prova');

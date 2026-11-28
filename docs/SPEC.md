@@ -142,11 +142,11 @@ Static site, ES modules (needs a local server for testing, like `operacions`). N
 | `COEFICIENT_OBLIDAT` | the coefficient vanishes without dividing | `3x = 12 → x = 12` |
 | `DIVISIO_SIGNE` | divides by the absolute value of a negative coefficient | `−3x = 9 → x = 9/3` |
 | `QUOCIENT_INVERTIT` | divides the wrong way round | `9x = 5 → x = 9/5` |
-| `SUMA_ABANS_PRODUCTE` | number before the bracket added to its factor | `3 + 2·(x − 4) → 5·(x − 4)` or `→ 5x − 4` |
+| `SUMA_ABANS_PRODUCTE` | number before the bracket added to its factor | `3 + 2·(x − 4) → 5·(x − 4)` or `→ 5x − 4` The `5x − 4` variant is **deactivated** (survey 28/11, `SUMA_ABANS_PRODUCTE:x`). |
 | `INVERS_X` | x in the denominator: multiplies instead of dividing | `30/x = 5 → x = 30·5` |
-| `CANVI_SIGNE_PARCIAL` | changing every sign, one term forgotten | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` |
+| `CANVI_SIGNE_PARCIAL` | changing every sign, one term forgotten | `−4x + 5 − 3x = 6 − x → 4x − 5 + 3x = 6 + x` **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `DENOMINADORS` | clearing denominators: sign before a fraction / terms not multiplied | `(3x + 5)/2 − (x − 4)/3 = 5x → 9x + 15 − 2x − 8 = 30x` |
-| `DIST_SUMA` | outer factor added to the inner coefficient | `−2·(3x + 6) → −5x − 12` |
+| `DIST_SUMA` | outer factor added to the inner coefficient | `−2·(3x + 6) → −5x − 12` **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `COEFICIENT_U` | a lone x is not counted | `3x + x + 6x → 9x` |
 | `SIGNE_COPIAT` | a term only copied in this step changes sign | `9x + 7 = 3x − 23 → 9x − 3x = 23 − 7` |
 | `TERMES_NO_SEMBLANTS` | adds unlike terms | `2x + 3 → 5x`; `2x + 3 + 4x → 9x` |
@@ -184,7 +184,7 @@ the README has examples and sources):
 | `ESQUERRA_DRETA` | left to right, ignoring precedence | `6 + 5 · 2 → 11 · 2` |
 | `SUMA_ABANS_RESTA` | addition before a subtraction on its left | `10 − 3 + 2 → 10 − 5` |
 | `PRODUCTE_ABANS_DIVISIO` | multiplication before a division on its left | `24 : 2 · 3 → 24 : 6` |
-| `PARENTESI_IGNORAT` | the factor multiplies only the first number in the bracket | `2 · (11 − 1) → 22 − 1` |
+| `PARENTESI_IGNORAT` | the factor multiplies only the first number in the bracket | `2 · (11 − 1) → 22 − 1` **Deactivated** (survey 28/11, `DESACTIVADES`). |
 | `POTENCIA_PER_EXPONENT` | base times exponent, in every power of the step | `3^2 → 6` |
 | `POTENCIA_DESPRES` | multiplies before the power | `2 · 3^2 → 6^2` |
 | `RESTA_NEGATIVA` | negative difference written positive | `15 − 27 → 12` |

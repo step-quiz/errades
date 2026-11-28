@@ -215,6 +215,12 @@ function aLlista(E, r, f) {
 }
 const opTxt = (a, o, b) => `${a < 0 && MUL.includes(o) ? '(' + menys(a) + ')' : menys(a)} ${o} ${b < 0 ? '(' + menys(b) + ')' : b}`;
 
+/**
+ * Regles que el generador no fa servir: les que el professorat va valorar malament a l'enquesta del banc
+ * d'errades (dues «No m'agrada» o més; el David, 28/11/2026). El codi es queda: per recuperar-ne una, treu-la
+ * d'aquesta llista.
+ */
+export const DESACTIVADES = ['PARENTESI_IGNORAT'];
 export const REGLES = {
     ESQUERRA_DRETA: {
         pes: 5,
@@ -559,7 +565,7 @@ function candidates(r, linies, des, forma) {
         const abans = linies[j - 1],
             v = valor(abans);
         for (const [id, regla] of Object.entries(REGLES)) {
-            if (!versemblant(id, linies, j)) continue;
+            if (DESACTIVADES.includes(id) || !versemblant(id, linies, j)) continue;
             const res = regla.fes(abans, r);
             if (!res) continue;
             const pass = resol(res.E);
@@ -683,7 +689,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
         const vistes = new Set([textLinia(bona), textLinia(linies[c.j])]);
         const dolentes = [];
         for (const [id, rg] of Object.entries(REGLES)) {
-            if (id === c.id) continue;
+            if (id === c.id || DESACTIVADES.includes(id)) continue;
             const res = rg.fes(abans, r);
             if (res && valor(res.E) !== null && valor(res.E) !== valor(abans) && !vistes.has(textLinia(res.E))) {
                 vistes.add(textLinia(res.E));

@@ -1,6 +1,7 @@
 // tests/banc.test.js — els exemples revisats de data/banc.json estan ben formats.
 import fs from 'node:fs';
 import { encaixaBanc } from '../js/equacions/nivells.js';
+import { DESACTIVADES } from '../js/equacions/generador.js';
 import { escrivible, valorFitxa } from '../js/motor/escriure.js';
 import { ok, informe } from './lib.js';
 
@@ -26,7 +27,9 @@ for (const ex of banc) {
         if (escrivible(e, ex.linies[j])) ok(valorFitxa(e.fitxesBona[e.terme]) !== null, `${id}: el terme bo no es pot llegir`);
         ok(!e.expl.includes(e.bona), `${id}: l'explicació no pot dir la línia bona`);
     }
-    ok([1, 2, 3, 4, 5].some(n => encaixaBanc(ex, n, true)), `${id}: no encaixa amb cap nivell`);
+    // els exemples d'una regla desactivada (enquesta, 28/11/2026) no surten a cap nivell; els altres, almenys a un
+    const desactivat = Object.values(ex.errades).some(e => DESACTIVADES.includes(e.tipus));
+    ok([1, 2, 3, 4, 5].some(n => encaixaBanc(ex, n, true)) !== desactivat, `${id}: ${desactivat ? 'és d\'una regla desactivada i encara surt' : 'no encaixa amb cap nivell'}`);
 }
 ok(!/undefined|NaN/.test(JSON.stringify(banc)), 'cap text amb undefined o NaN');
 console.log(`  ${banc.length} exemples al banc`);

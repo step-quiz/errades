@@ -1,5 +1,5 @@
 // tests/prioritat.test.js — el generador de prioritat d'operacions (js/prioritat/generador.js).
-import { generaExemple, valida, perPagina, valor, pas, resol, text, fitxes, REGLES, T, creaAtzar, versemblant } from '../js/prioritat/generador.js';
+import { generaExemple, valida, perPagina, valor, pas, resol, text, fitxes, REGLES, T, creaAtzar, versemblant, DESACTIVADES } from '../js/prioritat/generador.js';
 import { exempleSessio } from '../js/prioritat/pagina.js';
 import { escrivible, valorFitxa } from '../js/motor/escriure.js';
 import { ok, igual, informe } from './lib.js';
@@ -66,7 +66,9 @@ for (const nivell of [1, 2])
             }
         }
 for (const t of ['ESQUERRA_DRETA', 'SUMA_ABANS_RESTA', 'PRODUCTE_ABANS_DIVISIO']) ok(vistos[1][t] > 0, `nivell 1: no surt mai ${t}`);
-for (const t of Object.keys(REGLES)) ok(vistos[2][t] > 0, `nivell 2: no surt mai ${t}`);
+for (const t of Object.keys(REGLES).filter(t => !DESACTIVADES.includes(t))) ok(vistos[2][t] > 0, `nivell 2: no surt mai ${t}`);
+// les regles desactivades (enquesta, 28/11/2026) no surten mai
+for (const t of DESACTIVADES) ok(!vistos[1][t] && !vistos[2][t], `surt la regla desactivada ${t}`);
 console.log(`  nivell 1: ${JSON.stringify(vistos[1])}\n  nivell 2: ${JSON.stringify(vistos[2])}`);
 
 // Compensades i sessions de tots els nivells

@@ -35,12 +35,16 @@ for (const [nom, mida] of [['ordinador', { width: 1280, height: 900 }], ['mòbil
     const w = await pg.evaluate(() => [...document.querySelectorAll('#s-CO .warn')].map(x => x.textContent).filter(Boolean));
     console.log('avís marcador desconegut:', w);
     await pg.click('#s-DIST .fr[data-rol=dolenta] [data-a=bona]');
-    await pg.click('#g-G1 [data-gd=unifica]');
-    await pg.check('#g-G1 input[value=F61]');
+    // (l'editor nou, 28/11/2026, no té grups de frases semblants: estan tots decidits)
+    if (await pg.locator('#g-G1').count()) {
+        await pg.click('#g-G1 [data-gd=unifica]');
+        await pg.check('#g-G1 input[value=F61]');
+    }
+    if (await pg.locator('#s-DSUMA').count()) fallades.push('surt la situació desactivada DSUMA');
     await pg.waitForTimeout(1200);
     const esc = await pg.evaluate(() => window.__escrits.map(e => e[0]));
     console.log('desats:', [...new Set(esc)].join(', '), '| comptador:', await pg.textContent('#cnt'));
-    await pg.screenshot({ path: new URL(`./cap-${mida.width}.png`, import.meta.url).pathname, fullPage: false });
+    await pg.screenshot({ path: process.env.CAPTURES ? process.env.CAPTURES + `/editor-${mida.width}.png` : new URL(`./cap-${mida.width}.png`, import.meta.url).pathname, fullPage: false });
     await pg.close();
 }
 console.log('errors:', fallades);

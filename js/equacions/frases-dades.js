@@ -1,5 +1,5 @@
-// GENERAT per eines/frases-editor/exporta.mjs a partir de l'editor de frases (el David, 28/11/2026).
-// No l'editis a mà: canvia l'editor o exporta.mjs i torna'l a executar.
+// GENERAT per eines/frases-editor/exporta.mjs a partir de l'editor de frases del David.
+// No l'editis a mà: canvia l'editor (o dades.json) i torna a executar exporta.mjs.
 // frases: id → plantilla (llenguatge de plantilles: js/equacions/frases.js).
 // situacions: id → { bona, dolentes: [{ id, cond? }], reserva? }. cond: exp | red1 | tra (el pas),
 // xPositiva | xNegativa (la x sola), AdiferentB (|A| ≠ |B|). Una frase amb un valor que falta no surt.
@@ -65,10 +65,24 @@ export const FRASES = {
   "F68": "Caldria haver fet una \\bold{resta}: $[B menys A]$.",
   "F69": "Caldria haver fet un \\bold{producte}: $[B per A]$.",
   "F70": "La divisió està ben plantejada, però falta \\bold{simplificar}.",
+  "F71": "Ha sumat $[a] + [c]$ abans de multiplicar: el $[c]$ només multiplica el parèntesi.",
+  "F72": "El $[a]$ també s'havia de multiplicar per $[parèntesi]$.",
+  "F73": "Primer s'havia de sumar $[a] + [c]$ i després multiplicar.",
+  "F74": "Ha multiplicat bé, però s'ha equivocat en un signe.",
+  "F75": "El $[c]$ s'havia de sumar a cada terme del parèntesi.",
+  "F76": "Ha multiplicat $[a] · [B]$, però la $x$ era al denominador: havia de dividir $[a] : [B]$.",
+  "F77": "El $[B]$ havia de passar a [l'altre membre] restant.",
+  "F78": "Havia de multiplicar el $[a]$ per la $x$.",
+  "F79": "Ha calculat malament $[a] · [B]$.",
+  "F80": "El $−$ de davant de la fracció no ha canviat el signe del $[b]$.",
+  "F81": "No ha multiplicat per $[M]$ els termes que no tenen denominador.",
+  "F82": "S'ha equivocat en calcular el mínim comú múltiple dels denominadors.",
+  "F83": "Havia de dividir per $[M]$, i no multiplicar.",
+  "F85": "El $−$ de davant d'una fracció havia de canviar el signe de tot el numerador.",
   "C01": "$[a]$ i $[b]$ tenen \\bold{signes diferents}: per tant, s'han de restar els seus valors.",
+  "Nmwyqnmvt9f": "Hauria d'haver sumat en primer lloc $[terme]$ i $[altre terme]$.",
   "Nmwyqe64223t": "Havia de \\bold{sumar} $[c]$ amb $[b]$.",
   "Nmwyqgdd85dv": "En treure el parèntesi, cal canviar el $[altre membre]$ per un $\\oposite{[altre membre]}$.",
-  "Nmwyqnmvt9f": "Hauria d'haver sumat en primer lloc $[terme]$ i $[altre terme]$.",
   "Nmwys4une1qq": "Hi ha un error de càlcul en fer l'operació amb $[a]$ i $[b]$.",
   "Nmwys60j92th": "El resultat de $[suma]$ no és correcte, perquè hauria de ser \\oposite{[escrit]}.",
   "Nmwys7pr52dl": "S'ha equivocat en fer aquest càlcul: $[càlcul]$.",
@@ -77,10 +91,10 @@ export const FRASES = {
   "Nmwyscz912w1": "Hauria d'haver fet aquesta operació: ${[A]|[B]}$.",
   "Nmwysdlcm2lh": "Hauria d'haver \\bold{restat} $[B]$ - $[A]$.",
   "Nmwysf7cz4k7": "Hauria d'haver \\bold{restat} $[A]$ - $[B]$.",
-  "R01TNS1": "Hauria d'haver \\bold{restat} $[n]$ a $[x]$.",
-  "R08CAL1": "Hi ha una errada en fer aquest càlcul: [altre càlcul].",
   "R16SC1": "El $[terme]$ sempre s'ha de multiplicar amb $x$.",
   "R16ST2": "El \\oposite{$[segon terme]$} no és correcte, [al membre] [costat].",
+  "R01TNS1": "Hauria d'haver \\bold{restat} $[n]$ a $[x]$.",
+  "R08CAL1": "Hi ha una errada en fer aquest càlcul: [altre càlcul].",
   "R44DSIG2": "$[operació]$ fa $\\oposite{[escrit]}$: per tant, s'ha \\bold{equivocat en el signe}."
  },
  "situacions": {
@@ -412,6 +426,65 @@ export const FRASES = {
     },
     {
      "id": "F70"
+    }
+   ]
+  },
+  "SAP": {
+   "bona": "F71",
+   "dolentes": [
+    {
+     "id": "F72"
+    },
+    {
+     "id": "F73"
+    },
+    {
+     "id": "F74"
+    },
+    {
+     "id": "F75"
+    }
+   ]
+  },
+  "IX": {
+   "bona": "F76",
+   "dolentes": [
+    {
+     "id": "F77"
+    },
+    {
+     "id": "F78"
+    },
+    {
+     "id": "F79"
+    }
+   ]
+  },
+  "DEN1": {
+   "bona": "F80",
+   "dolentes": [
+    {
+     "id": "F81"
+    },
+    {
+     "id": "F82"
+    },
+    {
+     "id": "F83"
+    }
+   ]
+  },
+  "DEN2": {
+   "bona": "F81",
+   "dolentes": [
+    {
+     "id": "F85"
+    },
+    {
+     "id": "F82"
+    },
+    {
+     "id": "F83"
     }
    ]
   }

@@ -443,3 +443,29 @@ Situations with |A| = |B| (OI, CO, DS) can lose distractors (duplicate texts); `
 the generator picks another. Tests: `tests/frases.test.js`.
 Not done: the editor artifact itself (new markers `[costat]`, `[Al membre]`, `[del membre]`, SC1 `[altre terme]`)
 is updated only in the repo sources (`dades.json`, `plantilla.html`); republishing needs David's other account.
+
+## Department survey closed: four situations deactivated (2026-11-28, David)
+
+8 answers to `BANC-ERRORS v3` (tally, comments and decision in `docs/enquesta-banc-errors.md`). David's rule: drop
+every situation with two or more «No m'agrada» → items 4, 5, 17, 18, 24 (also the only ones with ≤ 2 points).
+Implemented as **deactivation** (`DESACTIVADES` in both generators; `encaixaBanc` skips bank examples of those
+types): equations `DIST_SUMA` (item 5, −22 points), `CANVI_SIGNE_PARCIAL` (items 17, 18) and the `5x − 4` variant of
+`SUMA_ABANS_PRODUCTE` (item 4; the `5·(x − 4)` variant, item 3, stays); order of operations `PARENTESI_IGNORAT`
+(item 24). Code, `data/errors.json` and the sentence editor's DSUMA situation are kept, so a rule comes back by
+removing it from the list. Tests check that deactivated rules never appear. `banc-errors.html` (v3) is unchanged:
+it is the survey record.
+
+## New sentence editor on the current account (2026-11-28, David)
+
+The old editor (`1f8b92d4-…`) belongs to another account and cannot be read or republished from here. David chose a
+new one: https://claude.ai/artifact/9bXYd1w2wk9GsL1mGZj8ys (slug `459b38ba-e06d-4ebd-a5c6-0564025c1fce`, db empty at
+start). Its catalogue (`eines/frases-editor/dades.json`, `versio: 2`, built once by `cataleg-2.mjs`) starts from the
+sentences now on the site (all approved fixes included), so nothing appears «changed» until David writes. Added:
+situations `SAP` (SUMA_ABANS_PRODUCTE, `5·(x − 4)` variant), `IX` (INVERS_X), `DEN1`/`DEN2` (DENOMINADORS signe/sense),
+with the sentences that were in `PERQUE` as starting text; `[costat]` in ST1, ST2, CU, CAL1–3; `[Al membre]`,
+`[del membre]`. `DSUMA` is `desactivada` (hidden). No similar-sentence groups (all decided). `PERQUE` is now used only
+by `CANVI_SIGNE_PARCIAL`, which is deactivated. Renderer: «:» inside a formula is an operator (`30 : (−5)`).
+**When David says «Revisa artifact» on the new editor:** `db_list` collections `frases`, `situacions`, `general`,
+`rep` (and comments); write `frases`/`situacions` as `{ frases: {id: data}, situacions: {id: data} }` to
+`eines/frases-editor/editor-db.json`; answer in `rep/<id>`; run `node eines/frases-editor/exporta.mjs`, then
+`node eines/frases-editor/banc.mjs`, then the tests.

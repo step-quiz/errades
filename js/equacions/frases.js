@@ -24,7 +24,7 @@
  *   [l'altre membre] [el seu membre] [al seu membre] [els dos membres]
  *              la paraula triada a l'índex (membre, costat, banda, part).
  *              Es deixen tal qual i les resol posaParaula() a la pàgina.
- * - Un valor negatiu just després d'un operador (+ − ·) va entre parèntesis:
+ * - Un valor negatiu just després d'un operador (+ − ·, i «:» dins d'una fórmula) va entre parèntesis:
  *   «42 − (−14)».
  * - Una frase amb un valor que en aquest exemple no existeix (p. ex. [altre terme]
  *   quan no ha passat cap altre terme) no surt. Si queden menys de 3 distractors,
@@ -96,9 +96,11 @@ const darrer = s => {
     return '';
 };
 const OPERADOR = new Set(['+', '−', '·']);
-function valor(v, abans) {
+// dins d'una fórmula, «:» també és un operador (fora, és un signe de puntuació)
+function valor(v, abans, dins = false) {
     const t = neteja(v);
-    if (!OPERADOR.has(darrer(abans))) return null;
+    const d = darrer(abans);
+    if (!OPERADOR.has(d) && !(dins && abans.trimEnd().endsWith(':'))) return null;
     if (t[0] === '+') return t.slice(1);
     if (t[0] === '−' && !/ [+−] /.test(t)) return '(' + t + ')';
     return null;
@@ -128,7 +130,7 @@ function posaValors(text, valors) {
                 const s = String(v);
                 if (TEXT.has(n) || s.includes('$')) out += dins ? s.replace(/\$/g, '') : s;
                 else {
-                    const w = valor(s, out) ?? neteja(s);
+                    const w = valor(s, out, dins) ?? neteja(s);
                     out += dins ? w : '$' + w + '$';
                 }
                 i = j;
@@ -162,7 +164,7 @@ function macros(t, dins0 = false) {
             if (m[1] === 'bold') out += '\u0003' + arg.trim() + '\u0004' + (/\s$/.test(arg) ? ' ' : '');
             else {
                 const r0 = m[1] === 'oposite' ? oposat(arg) : m[1] === 'nosign' ? senseSigne(arg) : ambSigne(arg);
-                const r = valor(r0, out) ?? r0;
+                const r = valor(r0, out, dins) ?? r0;
                 out += dins ? r : '$' + r + '$';
             }
             i = k - 1;
@@ -319,6 +321,16 @@ export function situacio(id, d, ctx) {
         case 'DIVISIO_SIGNE':
             if (Math.abs(d.A) !== Math.abs(d.B)) conds.add('AdiferentB');
             return { sid: 'DS', conds, valors: { A: menys(d.A), 'A sense signe': String(Math.abs(d.A)), B: menys(d.B) } };
+        case 'SUMA_ABANS_PRODUCTE': {
+            const t = d.t,
+                dins = `${t.m === 1 ? '' : t.m}x ${t.b < 0 ? '−' : '+'} ${Math.abs(t.b)}`;
+            return { sid: 'SAP', conds, valors: { a: String(d.a), c: String(t.c), suma: String(d.s), parèntesi: `(${dins})` } };
+        }
+        case 'INVERS_X':
+            return { sid: 'IX', conds, valors: { a: menys(d.a), B: menys(d.B) } };
+        case 'DENOMINADORS':
+            if (d.variant === 'signe') return { sid: 'DEN1', conds, valors: { b: menys(d.t.b), M: String(d.M) } };
+            return { sid: 'DEN2', conds, valors: { M: String(d.M) } };
         case 'QUOCIENT_INVERTIT':
             conds.add('AdiferentB');
             return { sid: 'QI', conds, valors: { A: menys(d.A), B: menys(d.B), 'B menys A': `${menys(d.B)} − ${entreP(d.A)}`, 'B per A': `${menys(d.B)} · ${entreP(d.A)}` } };
