@@ -7,7 +7,9 @@ ROL: L'estructura de les pàgines (índex i activitats), els botons i la
 ARQUITECTURA:
 - Regla del David per a tot el que es pot clicar: en passar-hi el ratolí, vora
   negra gruixuda i fons gris clar, sense que res es mogui (la vora gruixuda es
-  fa amb box-shadow, a sobre de la vora d'1,5 px que el botó ja té).
+  fa amb box-shadow, a sobre de la vora d'1,5 px que el botó ja té). Només amb
+  el ratolí: html.tacte (js/motor/llibreta.js) la treu després d'un toc amb el
+  dit o el llapis, perquè no s'enganxi al lloc tocat (auditoria T1).
 - Pensat per a Chromebooks i portàtils; a 360 px no hi ha desplaçament lateral.
 DEPENDÈNCIES: css/tokens.css.
 ============================================================================
@@ -19,6 +21,10 @@ DEPENDÈNCIES: css/tokens.css.
 html,
 body {
     margin: 0;
+}
+/* La barra de desplaçament sempre té el seu lloc: res no es mou quan apareix o desapareix (auditoria B5) */
+html {
+    scrollbar-gutter: stable;
 }
 body {
     background: var(--fons);
@@ -41,6 +47,10 @@ body {
     font-size: 22px;
     line-height: 1.2;
 }
+/* «Nivell 2 · una errada…» i, després, el progrés: el separador només quan ja hi ha el nivell (auditoria B3) */
+#nivell:not(:empty)::after {
+    content: ' · ';
+}
 .barra p {
     margin: 2px 0 0;
     color: var(--text-suau);
@@ -55,7 +65,7 @@ body {
     border: 1.5px solid var(--blau);
     border-radius: 10px;
 }
-.barra a.tornar:hover {
+html:not(.tacte) .barra a.tornar:hover {
     background: var(--hover-fons);
     border-color: var(--hover-vora);
     box-shadow: inset 0 0 0 1.5px var(--hover-vora);
@@ -82,7 +92,7 @@ body {
     justify-content: center;
     touch-action: manipulation;
 }
-.b:hover {
+html:not(.tacte) .b:hover {
     background: var(--hover-fons);
     border-color: var(--hover-vora);
     box-shadow: inset 0 0 0 1.5px var(--hover-vora);
@@ -102,7 +112,7 @@ select:focus-visible {
     color: var(--blau);
     font-weight: 700;
 }
-.b.pri:hover {
+html:not(.tacte) .b.pri:hover {
     border-color: var(--hover-vora);
     box-shadow: inset 0 0 0 1.5px var(--hover-vora);
 }

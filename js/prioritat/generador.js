@@ -435,7 +435,7 @@ const PERQUE = {
 function perQueBona(fets) {
     const parts = fets.map((f, k) => (k === 0 ? `és correcte haver escrit $${menys(f.r)}$` : `també és correcte haver escrit $${menys(f.r)}$`));
     const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `Aquesta línia és correcta, perquè\n${llista}.`;
+    return `Aquesta línia és correcta, perquè ${llista}.`;
 }
 
 // ---------- Enunciats ----------

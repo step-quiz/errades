@@ -18,7 +18,13 @@
  * - Teclat (G6): ↑/↓ i 1–9 trien la línia, Enter = «Comprova», Esc = desfés.
  * - Encerclar amb el dit (R3, cfg.encercla): sobre les línies, un traç marca una
  *   línia (i 1–2 termes); la geometria és a js/motor/llac.js. Un toc curt continua
- *   sent un toc. Mentre es busca, la llibreta no desplaça la pàgina amb el dit.
+ *   sent un toc. Mentre es busca, el dit no desplaça la pàgina sobre les línies; la
+ *   columna de l'esquerra (trama de punts) sí que la desplaça (auditoria T3).
+ * - Res no es mou sol (auditoria del 28/11/2026): els missatges de la fase de buscar
+ *   van a la columna de l'esquerra (pantalles ≥ 1000 px) o a una barra fixa a baix
+ *   (més estretes; al mòbil també «Comprova»), per sobre del contingut (T5).
+ *   Tornar a tocar la línia triada = «Comprova» (C10). Després de pintar, 300 ms
+ *   sense tocs (T2). El «hover», només amb el ratolí (html.tacte, T1).
  * - Dues activitats (cfg.activitat): 'equacions' (cada línia «A = B») i 'prioritat'
  *   (l'enunciat sense «=» i cada línia «= expressió»): parts() separa els membres.
  * - Fórmules: el format de text del generador ({a|b} = fracció; $…$ als textos;
@@ -62,14 +68,31 @@ export const txt = s =>
         .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 const maj = s => s.charAt(0).toUpperCase() + s.slice(1);
 
+// El «hover» només amb el ratolí (auditoria T1): amb el dit o el llapis, el navegador deixa el gris i la vora negra
+// enganxats al lloc tocat, i el botó nou que hi surt semblaria triat. html.tacte = l'últim punter no és un ratolí.
+if (typeof document !== 'undefined' && typeof addEventListener === 'function') {
+    const arrel = document.documentElement;
+    addEventListener('pointerdown', e => arrel.classList.toggle('tacte', e.pointerType !== 'mouse'), true);
+    addEventListener('pointermove', e => e.pointerType === 'mouse' && arrel.classList.remove('tacte'), true);
+}
+const mm = q => (typeof matchMedia === 'function' ? matchMedia(q) : { matches: false, addEventListener() {}, removeEventListener() {} });
+/** Pantalles amples (Chromebook, tablet horitzontal): el missatge de la fase de buscar va a la columna de l'esquerra (T5). */
+const AMPLE = mm('(min-width: 1000px)');
+/** Pantalles estretes (mòbil): «Comprova» va a la barra de baix, perquè no hi ha columna a l'esquerra. */
+const ESTRET = mm('(max-width: 560px)');
+/** Després de pintar, durant aquest temps un toc no compta: un doble toc no respon la pregunta que surt sota el dit (T2). */
+const BLOQUEIG_MS = 300;
+
 export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const S = nouEstat();
     let acabat = false,
         tsel = null, // terme amb el focus del teclat a la fase del terme
-        valorEscrit = ''; // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
+        valorEscrit = '', // el que l'alumne porta escrit a «Corregeix-la» (es conserva en tornar a pintar)
+        bloqueig = 0; // fins quan no compten els tocs (T2)
     const n = errades(ex).length;
     const T = TEXTOS[cfg.activitat] || TEXTOS.equacions;
     let ignoraClic = false; // després d'un traç, el clic que el navegador hi afegeix no compta
+    contenidor.classList.toggle('encercla', !!cfg.encercla);
 
     /**
      * Totes les línies (i les correccions) amb el mateix ample de membre esquerre i de membre dret:
@@ -144,9 +167,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             revisada = S.revisades.includes(i);
         // Les línies es numeren 0, 1, 2…: la 0 és l'enunciat. El número encerclat vol dir «encara pot ser aquí»
         // En acabar, ✓ a totes les línies bones d'abans de la primera errada (el David, 25/11/2026)
+        // Un cop trobada la primera errada, les línies d'abans ja se sap que són bones: ✓ i sense cercle (B4)
         const primera = errades(ex)[0];
-        const bonaFinal = S.fi && i > 0 && !trobada && (primera === undefined || i < primera);
-        const candidata = i > 0 && !trobada && !revisada && !S.fi;
+        const bonaFinal = i > 0 && !trobada && (S.fi ? primera === undefined || i < primera : primera !== undefined && i < primera && S.trobades.includes(primera));
+        const candidata = i > Math.max(0, ...S.trobades) && !revisada && !S.fi;
         let cls = 'ln' + (i === 0 ? ' enunciat' : '') + (candidata ? '' : ' fora');
         if (trobada) cls += ' err';
         if (S.sel === i) cls += ' sel';
@@ -160,13 +184,29 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const ln = seleccionable(S, ex, i)
             ? `<button type="button" class="${cls}" data-l="${i}" aria-pressed="${S.sel === i}" aria-label="Línia ${i}">${dins}</button>`
             : `<div class="${cls}"${i === 0 ? ' title="A l\'enunciat no pot haver-hi cap errada"' : ''}>${dins}</div>`;
-        // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026)
-        const cv = S.sel === i && S.fase === 'busca' && !S.fi ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
+        // «Comprova» només surt quan hi ha una línia triada, just a la seva esquerra (el David, 25/11/2026); al mòbil, a la barra
+        const cv = S.sel === i && S.fase === 'busca' && !S.fi && !ESTRET.matches ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : '';
+        // A les pantalles amples, el missatge de la fase de buscar va en aquesta columna, per sobre de res: no mou cap línia (T5)
+        const msg = filaMsg === i ? `<div class="msg-cv${cv ? ' amb-b' : ''}${i >= ex.linies.length - 2 ? ' baix' : ''}">${msgHTML()}</div>` : '';
         const atenua = S.fase !== 'busca' && S.fase !== 'fi' && !enJoc(i);
-        return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}${trobada ? ' trobada' : ''}" data-i="${i}"><div class="cv">${cv}</div>${ln}</div>`;
+        return `<div class="fila${atenua ? ' atenua' : ''}${cv ? ' amb-cv' : ''}${trobada ? ' trobada' : ''}" data-i="${i}"><div class="cv">${cv}${msg}</div>${ln}</div>`;
     }
 
     const msgHTML = () => `<div class="msg ${S.msg.tipus}" role="status" aria-live="polite">${txt(S.msg.text)}</div>`;
+    /** Un missatge de la fase de buscar (la línia bona, «revisa les de sobre», el traç…): no obre cap fase sota la línia. */
+    const msgBusca = () => !!S.msg && !S.fi && S.fase === 'busca';
+    let filaMsg = null; // la fila on va el missatge, a les pantalles amples (la calcula pinta())
+
+    /** Pantalles estretes (T5): el missatge i, al mòbil, «Comprova», en una barra fixa a baix, que no mou res. */
+    function barraHTML() {
+        const ambCv = S.sel !== null && S.fase === 'busca' && !S.fi && ESTRET.matches;
+        const ambMsg = msgBusca() && !AMPLE.matches;
+        if (!ambCv && !ambMsg) return '';
+        const k = S.msgLinia ?? S.sel;
+        return `<div class="barra-msg">${k !== null ? `<span class="n" aria-label="Línia ${k}">${k}</span>` : ''}<div class="barra-cos">${ambMsg ? msgHTML() : ''}</div>${
+            ambCv ? '<button type="button" class="b pri" data-a="comprova">Comprova</button>' : ''
+        }</div>`;
+    }
 
     function faseHTML() {
         const e = ex.errades[S.actual];
@@ -182,7 +222,7 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (escriuAra(S, ex, cfg))
             return `<div class="fase escriu"><h3>Com hauria de ser el terme encerclat per ser correcte?</h3>${avis}
 <form class="escriu-fila" data-escriu><label class="vh" for="escrit">El terme correcte</label>
-<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'text'}" placeholder="per exemple, ${T.exemple}">
+<input id="escrit" class="escrit" type="text" autocomplete="off" spellcheck="false" inputmode="${matchMedia('(any-pointer: coarse)').matches ? 'none' : 'text'}" placeholder="per exemple, ${T.exemple}">
 <button type="submit" class="b pri">Comprova</button></form>
 <div class="teclat${T.teclat.length === 12 ? ' t12' : ''}" aria-label="Teclat">${T.teclat
                 .map(k => `<button type="button" class="b tk" data-k="${k}">${k}</button>`)
@@ -194,13 +234,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         return '';
     }
 
-    /** Desplaça la finestra el mínim perquè es vegi el bloc [des, fins]; si no hi cap, n'ensenya el començament. */
-    function fesVisible(des, fins) {
+    /** Desplaça la finestra el mínim perquè es vegi el bloc [des, fins] (sense la franja `baix` de sota); si no hi cap, n'ensenya el començament. */
+    function fesVisible(des, fins, baix = 0) {
         if (!des || !fins) return;
         const marge = 12,
             a = des.getBoundingClientRect().top - marge,
             b = fins.getBoundingClientRect().bottom + marge,
-            alt = innerHeight;
+            alt = innerHeight - baix; // baix: el que tapa la barra fixa de baix
         let dy = 0;
         if (b - a > alt || a < 0) dy = a;
         else if (b > alt) dy = b - alt;
@@ -212,15 +252,17 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         const [f1, f2] = consigna();
         let h = `<div class="cap-ex"><div class="fila-ins"><p class="ins">${esc(f1)}</p><div class="chips">`;
         if (cfg.anuncia) h += `<span class="chip">Errades: ${n}</span>`;
-        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies${llacActiu() ? ' llac' : ''}">`;
+        h += `<span class="chip">Localitzades: ${S.trobades.length}</span></div></div><p class="ins">${esc(f2)}</p></div><div class="linies${llacActiu() ? ' llac' : ''}${cfg.encercla ? ' encercla' : ''}">`;
         const arr = inicArrossega();
+        const mb = msgBusca();
+        filaMsg = mb && AMPLE.matches ? (S.msgLinia ?? 1) : null;
         let msgPosat = false;
         for (let i = 0; i < ex.linies.length; i++) {
             if (i === arr) h += '<div class="arrossega">';
             h += liniaHTML(i);
             // El missatge i la fase, just a sota de la línia de què parlen: així la línia anterior, la línia,
-            // el missatge i les opcions queden junts i caben a la pantalla
-            if (S.msg && S.msgLinia === i) {
+            // el missatge i les opcions queden junts i caben a la pantalla. Els de la fase de buscar no hi van (T5).
+            if (S.msg && !mb && S.msgLinia === i) {
                 h += `<div class="sota">${msgHTML()}${S.actual === i ? faseHTML() : ''}</div>`;
                 msgPosat = true;
             }
@@ -228,11 +270,13 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (arr !== null) h += '<span class="parent esq" aria-hidden="true"></span><span class="parent dre" aria-hidden="true"></span></div>';
         if (cfg.encercla) h += `<svg class="traca" aria-hidden="true"><path d="${S.traca ? cami(S.traca) : ''}"/></svg>`;
         h += '</div>';
-        if (S.msg && !msgPosat) h += `<div class="sota sense-linia">${msgHTML()}</div>`;
+        if (S.msg && !mb && !msgPosat) h += `<div class="sota sense-linia">${msgHTML()}</div>`;
         if (!S.fi && S.fase === 'busca' && (n === 0 || !cfg.anuncia))
             h += `<div class="acc"><button type="button" class="b" data-a="cap">${S.trobades.length ? 'No hi ha cap més errada' : 'No hi ha cap errada'}</button></div>`;
         if (S.fi && ex.nota) h += `<div class="msg info">${txt(ex.nota)}</div>`;
+        h += barraHTML();
         contenidor.innerHTML = h;
+        bloqueig = performance.now() + BLOQUEIG_MS;
         alinea();
         const escrit = contenidor.querySelector('#escrit');
         if (escrit) {
@@ -244,9 +288,15 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         }
         // Amb una fase oberta, s'han de veure la línia anterior, la línia equivocada, el missatge i totes les opcions
         const fase = contenidor.querySelector('.fase');
+        const barra = contenidor.querySelector('.barra-msg');
         if (fase) fesVisible(contenidor.querySelector(`.fila[data-i="${Math.max(0, S.actual - 1)}"]`), fase);
-        else if (S.msg && S.msgLinia !== null && !S.fi)
-            fesVisible(contenidor.querySelector(`.fila[data-i="${S.msgLinia}"]`), contenidor.querySelector('.sota'));
+        else if (filaMsg !== null) fesVisible(contenidor.querySelector(`.fila[data-i="${filaMsg}"]`), contenidor.querySelector('.msg-cv'));
+        else if (barra) {
+            // la línia de què parla la barra no pot quedar amagada a sota
+            const k = S.sel ?? S.msgLinia,
+                f = k !== null && contenidor.querySelector(`.fila[data-i="${k}"]`);
+            if (f) fesVisible(f, f, barra.getBoundingClientRect().height + 12);
+        }
         if (S.fi && !acabat) {
             acabat = true;
             if (typeof onAcaba === 'function') onAcaba(punts(S), S);
@@ -258,11 +308,10 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     const cami = pts => 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
     let dib = null; // { lin, r, id, pts, actiu }
     function llacInici(ev) {
-        // amb el dit o el llapis no hi ha «hover»: el gris d'una línia tocada no s'hi ha de quedar enganxat
-        contenidor.classList.toggle('toc', ev.pointerType !== 'mouse');
         if (!llacActiu() || ev.button > 0) return;
         const lin = ev.target.closest('.linies');
-        if (!lin || !contenidor.contains(lin) || ev.target.closest('[data-a]')) return;
+        // el traç comença sobre una línia; la columna de l'esquerra és per desplaçar la pàgina amb el dit (T3)
+        if (!lin || !contenidor.contains(lin) || ev.target.closest('[data-a]') || !ev.target.closest('.ln')) return;
         const r = lin.getBoundingClientRect();
         dib = { lin, r, id: ev.pointerId, pts: [[ev.clientX - r.left, ev.clientY - r.top]], actiu: false };
     }
@@ -330,7 +379,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     }
 
     function clic(ev) {
-        if (ignoraClic) return;
+        // ev.detail = 0: un clic del teclat (Enter, espai), que no es bloqueja
+        if (ignoraClic || (ev.detail > 0 && performance.now() < bloqueig)) return;
         const b = ev.target.closest('button');
         if (!b || !contenidor.contains(b)) return;
         const d = b.dataset;
@@ -344,7 +394,11 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
         if (d.tm !== undefined) {
             tsel = null;
             triaTerme(S, ex, cfg, +d.tm);
-        } else if (d.l !== undefined) selecciona(S, ex, +d.l);
+        } else if (d.l !== undefined) {
+            // tornar a tocar la línia triada també és «Comprova» (auditoria C10)
+            if (S.sel === +d.l && S.fase === 'busca') comprova(S, ex, cfg);
+            else selecciona(S, ex, +d.l);
+        }
         else if (d.pq !== undefined) triaPerque(S, ex, cfg, +d.pq);
         else if (d.co !== undefined) triaCorreccio(S, ex, cfg, +d.co);
         else if (d.a === 'comprova') comprova(S, ex, cfg);
@@ -428,6 +482,9 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
     contenidor.addEventListener('pointercancel', llacCancel);
     // la mida de la lletra canvia amb l'amplada (560px) i quan s'acaben de carregar les lletres
     addEventListener('resize', alinea);
+    // en passar d'una mida de pantalla a una altra, el missatge i «Comprova» canvien de lloc
+    AMPLE.addEventListener('change', pinta);
+    ESTRET.addEventListener('change', pinta);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(alinea);
     pinta();
     return {
@@ -443,6 +500,8 @@ export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {
             contenidor.removeEventListener('pointerup', llacFi);
             contenidor.removeEventListener('pointercancel', llacCancel);
             removeEventListener('resize', alinea);
+            AMPLE.removeEventListener('change', pinta);
+            ESTRET.removeEventListener('change', pinta);
         },
     };
 }

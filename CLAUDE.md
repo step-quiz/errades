@@ -57,7 +57,10 @@ Hard rules (David's, all approved in the review artifact «Localitza l'errada»)
   `vendor/fonts/` (no third-party requests: the students are minors).
 - **Notebook only (P1)**, lines aligned at «=» (R4), line numbers (P2).
 - **Hover rule:** every clickable control gets a thick pure-black border and a light-grey background on hover,
-  with no layout shift (`box-shadow`).
+  with no layout shift (`box-shadow`). Mouse only: `html.tacte` (set after a finger or pen touch) disables it, so it
+  never sticks under a finger (audit T1, 28/11/2026).
+- **Nothing moves by itself (David, audit 28/11/2026):** never let content shift by a few pixels (messages, buttons,
+  scrollbars, term buttons). See README «Nothing moves by itself».
 - Student-facing text: Catalan, second person singular, short; maths in `$…$` with `{a|b}` for fractions.
 - **Shared files** (`js/comu/*`, `css/seguent.css`, `LICENSE`, `LLICENCIA.md`) come from
   `step-quiz/step-quiz-commons` (daily workflow «Fitxers comuns»). Never edit them here.

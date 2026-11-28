@@ -12,7 +12,8 @@
  *   membre (la paraula per als dos costats de l'equació a les frases de «Per què?»:
  *   membre, costat, banda o part; per defecte membre. El David, 27/11/2026).
  * - encerclaDe(par, tactil): R3, encerclar amb el dit per defecte a les pantalles
- *   tàctils i tocar amb el ratolí, tret que l'adreça digui el contrari.
+ *   tàctils (qualsevol, també un Chromebook tàctil en mode portàtil) i tocar amb el
+ *   ratolí, tret que l'adreça digui el contrari.
  * DEPENDÈNCIES: Cap.
  * ============================================================================
  */
@@ -40,7 +41,8 @@ export function llegeixParametres(cerca) {
 
 export const encerclaDe = (par, tactil) => (par.encercla === -1 ? !!tactil : par.encercla === 1);
 
-export const esTactil = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+// any-pointer: un Chromebook tàctil en mode portàtil també ho és (el ratolí tàctil és el punter principal; auditoria T4)
+export const esTactil = () => typeof matchMedia === 'function' && matchMedia('(any-pointer: coarse)').matches;
 
 export const llavorNova = () => {
     try {

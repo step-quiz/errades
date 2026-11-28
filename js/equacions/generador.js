@@ -812,7 +812,7 @@ function perQueBona(op, abans, despres) {
     }
     const parts = escrit.map((e, k) => (k === 0 ? `és correcte haver escrit $${e}$` : `també és correcte haver escrit $${e}$`));
     const llista = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' i ' + parts[parts.length - 1] : parts[0] || 'tot és correcte';
-    return `Aquesta línia és correcta, perquè\n${llista}.`;
+    return `Aquesta línia és correcta, perquè ${llista}.`;
 }
 
 // ---------- Enunciats ----------

@@ -57,6 +57,11 @@ correct step already showed the student can do exactly that — equations `verse
 - «Per què és una errada?»: the true sentence and **2** distractors chosen at random (`DISTRACTORS_PERQUE`); a
   wrong choice costs nothing. «Corregeix-la»: 3 lines, or (`escriu=1`) type the circled term.
 - Compensating pairs: a `.pista` reminds the student to compare with the previous line as written.
+- Touch and stability (UI/UX audit of 28/11/2026, stage 1; README «Nothing moves by itself»): search-phase messages
+  in the left column (≥ 1000 px) or a fixed bottom bar; tap the selected line again = «Comprova»; lines above a
+  found error are ✓ and not selectable; 300 ms click lock after each repaint; hover only with a mouse; dot strip to
+  scroll with the finger when the lasso is on; selected line in blue; level 2 of equations is labelled «equacions més
+  llargues» (form K has no brackets).
 - All fixed interface texts were rewritten by David on 27/11 (they live in `js/motor/*.js`, `js/index.js` and the
   generators). Never change their wording without asking him.
 
@@ -95,15 +100,24 @@ the bank batches 1–3, «Errades documentades a la recerca» and «Versemblanç
 ## Open work
 
 1. David tests the published site with pupils; expect feedback rounds.
-2. Sentence editor: David reviews SAP, IX, DEN1, DEN2 (my starting sentences) whenever he wants; on «Revisa
+2. UI/UX audit (artifact «Auditoria UI/UX · Localitza l'errada», slug `1aa80142-a720-405f-8115-e8a5ce6e7593`, db
+   collections `rep` = David's answers, `respostes` = mine). Stage 1 (touch and stability) done. Stage 2 (feedback
+   and texts: C1 step indicator, C2 one message block, C3 «Intents» chip without «−2 punts», C4 band title
+   «Exercici finalitzat» always, C5-A −1 point per wrong «Per què?»/«Corregeix-la» answer, C6 keep the options with
+   the chosen and the right one marked, C8 lasso demo on the first example remembered in `localStorage`, C9 labels,
+   C11 «Exercici n de N», F2 placeholder) — new texts go to David first. Stage 3 (D1 compact header, D2 progress
+   dots, D3 centred order-of-operations lines, E1 remove «← Activitats» and «Tria una altra activitat», E2 save the
+   session in `sessionStorage`, F1 Patrick Hand instead of Kalam, self-hosted). E3 (final screen) later, modelled on
+   `step-quiz/operacions` and step-quiz.net.
+3. Sentence editor: David reviews SAP, IX, DEN1, DEN2 (my starting sentences) whenever he wants; on «Revisa
    artifact», follow `HANDOUT.md`.
-3. Survey ideas not done: a distributive case with a term before the bracket (`2x + 6(x − 3)`); check item 22's
+4. Survey ideas not done: a distributive case with a term before the bracket (`2x + 6(x − 3)`); check item 22's
    comment (adding all positives, then all negatives).
-4. Open questions for David (dialog): raise the frequency of the newer rules (each ≈1 % of generated errors)?
+5. Open questions for David (dialog): raise the frequency of the newer rules (each ≈1 % of generated errors)?
    Allow single-power statements for `POTENCIA_PER_EXPONENT`? Order-of-operations sentences in an editor?
-5. Research proposals left for later (David): A8 factor subtracted, A9 divide before transposing, C2 more
+6. Research proposals left for later (David): A8 factor subtracted, A9 divide before transposing, C2 more
    arithmetic errors at levels 4–5.
-6. Stages 3, 4, 6 and fractions.
+7. Stages 3, 4, 6 and fractions.
 
 ## Known limits
 

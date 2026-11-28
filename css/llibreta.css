@@ -16,6 +16,9 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
 ============================================================================
 */
 .llibreta {
+    /* La columna de l'esquerra de cada línia: «Comprova», el missatge (pantalles amples) i, amb el traç, la
+       franja on el dit desplaça la pàgina (auditoria T3, T5) */
+    --aside: 7.5rem;
     background-color: var(--paper);
     background-image: linear-gradient(var(--quadricula) 1px, transparent 1px),
         linear-gradient(90deg, var(--quadricula) 1px, transparent 1px);
@@ -55,15 +58,124 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
 }
 /* Cada línia va dins d'una .fila: a l'esquerra, la columna on surt «Comprova» quan la línia està triada */
 .fila {
+    position: relative;
     display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr);
-    column-gap: 8px;
+    grid-template-columns: var(--aside) minmax(0, 1fr);
+    column-gap: min(8px, var(--aside));
     align-items: center;
+}
+.cv {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 .cv .b {
     width: 100%;
+    max-width: 10rem;
     padding-left: 6px;
     padding-right: 6px;
+}
+/* El missatge de la fase de buscar, a la columna de l'esquerra, per sobre de res (no mou cap línia, T5): comença
+   a l'altura de la línia, o a sota de «Comprova»; a les dues últimes línies creix cap amunt */
+.msg-cv {
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    top: 2px;
+}
+.msg-cv.amb-b {
+    top: calc(50% + 28px);
+}
+.msg-cv.baix {
+    top: auto;
+    bottom: 2px;
+}
+.msg-cv.baix.amb-b {
+    bottom: calc(50% + 28px);
+}
+.msg-cv .msg {
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 15px;
+    line-height: 1.4;
+    box-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.35);
+}
+/* Pantalles estretes (T5): el missatge (i, al mòbil, «Comprova») en una barra fixa a baix, per sobre del contingut;
+   la pàgina reserva sempre el seu espai a baix, perquè no tapi les últimes línies */
+.barra-msg {
+    position: fixed;
+    z-index: 50;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    width: min(100% - 20px, 860px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--paper);
+    border: 1.5px solid var(--vora);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.4);
+}
+.barra-msg .n {
+    flex: none;
+    font: 700 14px var(--lletra-ui);
+    color: var(--text-suau);
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    border: 1.5px solid var(--vora);
+    display: grid;
+    place-items: center;
+}
+.barra-cos {
+    flex: 1;
+}
+.barra-cos .msg {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+.barra-msg .b {
+    flex: none;
+}
+.dibuixant .barra-msg .b {
+    visibility: hidden;
+}
+@media (max-width: 999px) {
+    .pagina.activitat {
+        padding-bottom: 160px;
+    }
+}
+@media (min-width: 1000px) {
+    .llibreta {
+        --aside: 15rem;
+    }
+    /* la pàgina s'eixampla el que ocupa la columna de l'esquerra: les línies tenen el mateix lloc que abans */
+    .pagina.activitat {
+        max-width: 1140px;
+    }
+}
+/* Amb el traç: la columna de l'esquerra porta una trama de punts isomètrics, la zona on el dit desplaça la pàgina
+   (sobre les línies, el dit dibuixa; T3). Va per sota de tot (és el primer element de .linies) */
+.linies.encercla::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--aside);
+    border-radius: 10px;
+    background-color: var(--paper);
+    background-image: radial-gradient(circle, var(--punts) 1.2px, transparent 1.7px), radial-gradient(circle, var(--punts) 1.2px, transparent 1.7px);
+    background-size: 14px 24.25px;
+    background-position: 0 0, 7px 12.12px;
+    box-shadow: inset 0 0 0 1px var(--vora);
 }
 /* Esvaïdes al 25 % (el David, 25/11/2026): les que no compten en una fase i les que vénen d'una errada */
 .fila.atenua,
@@ -120,14 +232,14 @@ DEPENDÈNCIES: css/tokens.css, css/pagina.css.
     color: var(--text-suau);
 }
 .sota {
-    margin-left: calc(7.5rem + 8px);
+    margin-left: calc(var(--aside) + min(8px, var(--aside)));
 }
 .sota.sense-linia {
     margin-left: 0;
 }
 .ln {
     display: grid;
-    grid-template-columns: 2.4em minmax(0, 1fr) 8.5rem;
+    grid-template-columns: 2.4em minmax(0, 1fr) 3rem;
     align-items: center;
     gap: 4px 10px;
     width: 100%;
@@ -145,7 +257,8 @@ button.ln {
     cursor: pointer;
     touch-action: manipulation;
 }
-button.ln:hover {
+/* el «hover», només amb el ratolí (html.tacte: l'últim punter ha estat el dit o el llapis; T1) */
+html:not(.tacte) button.ln:hover {
     background: var(--hover-fons);
     border-color: var(--hover-vora);
 }
@@ -177,15 +290,18 @@ button.ln:hover {
     border-color: transparent;
     background: transparent;
 }
-.ln.sel {
-    border: 2px dashed var(--text);
-    background: rgba(30, 34, 48, 0.06);
+/* La línia triada, en blau i més marcada que el «hover» (auditoria C7) */
+.ln.sel,
+html:not(.tacte) button.ln.sel:hover {
+    border: 2px solid var(--blau);
+    background: var(--blau-suau);
 }
-/* Mentre el dit encercla (.dibuixant) cap línia no es veu marcada ni ressaltada: es marca quan s'aixeca el dit.
-   Amb el dit o el llapis (.toc) no hi ha «hover», i el gris no s'ha de quedar enganxat a la línia tocada. */
+html:not(.tacte) button.ln.sel:hover {
+    border-color: var(--hover-vora);
+}
+/* Mentre el dit encercla (.dibuixant) cap línia no es veu marcada ni ressaltada: es marca quan s'aixeca el dit */
 .dibuixant .ln.sel,
-.dibuixant button.ln:hover,
-.toc button.ln:hover:not(.sel) {
+html .dibuixant button.ln:hover {
     border-color: transparent;
     background: transparent;
 }
@@ -198,12 +314,23 @@ button.ln:hover {
 .linies {
     overflow-x: auto;
     position: relative;
+    /* el lloc del parèntesi gran de la dreta (.parent.dre), sempre reservat: no tapa cap terme ni cap marca */
+    padding-right: 16px;
 }
-/* Encerclar amb el dit (R3): mentre es busca, el dit dibuixa i no desplaça la pàgina */
+/* A les pantalles amples tot hi cap, i el missatge de la columna de l'esquerra pot sortir de la seva fila */
+@media (min-width: 1000px) {
+    .linies {
+        overflow: visible;
+    }
+}
+/* Encerclar amb el dit (R3): mentre es busca, sobre les línies el dit dibuixa i no desplaça la pàgina; a la columna
+   de l'esquerra, sí (T3) */
 .linies.llac {
-    touch-action: none;
     -webkit-user-select: none;
     user-select: none;
+}
+.linies.llac .ln {
+    touch-action: none;
 }
 svg.traca {
     position: absolute;
@@ -215,8 +342,8 @@ svg.traca {
 }
 svg.traca path {
     fill: none;
-    stroke: var(--tinta-seleccio, #111);
-    stroke-width: 2.5;
+    stroke: var(--traca);
+    stroke-width: 3.5;
     stroke-dasharray: 7 5;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -283,6 +410,7 @@ sup {
 }
 .parent {
     position: absolute;
+    pointer-events: none;
     top: 4px;
     bottom: 4px;
     width: 20px;
@@ -290,37 +418,54 @@ sup {
 }
 .parent.esq {
     /* just a l'esquerra del número de línia (després de la columna de «Comprova») */
-    left: calc(7.5rem - 14px);
+    left: max(0px, calc(var(--aside) - 14px));
     border-left-width: 3px;
     border-radius: 100% 0 0 100% / 50% 0 0 50%;
 }
 .parent.dre {
-    right: -22px;
+    /* dins de la caixa, al marge que li reserva .linies: fora, feia sortir una barra de desplaçament i no es veia
+       (auditoria B1) */
+    right: 0;
     border-right-width: 3px;
     border-radius: 0 100% 100% 0 / 0 50% 50% 0;
 }
-/* Fase del terme: cada terme de la línia és un botó, a la mateixa mida (R4) */
+/* Fase del terme: cada terme de la línia és un botó, amb la MATEIXA caixa que el terme escrit (marge 0 0.1em, sense
+   vora ni farciment): la línia no es mou gens en passar a botons ni en tornar a text (auditoria B5, T6). La vora
+   discontínua és un contorn (outline), que no ocupa lloc, i la zona tàctil (::after) fa com a mínim 44 × 44 px. */
 .tb {
+    position: relative;
+    display: inline-block;
+    margin: 0 0.1em;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
     font: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
     color: inherit;
+    vertical-align: baseline;
     background: var(--paper);
-    border: 1.5px dashed var(--text-suau);
-    border-radius: 8px;
-    padding: 0 0.22em;
-    margin: 2px 0.06em;
-    min-height: 44px;
+    outline: 1.5px dashed var(--text-suau);
+    outline-offset: 0;
     cursor: pointer;
     touch-action: manipulation;
 }
-.tb:hover {
+.tb::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100% + 8px, 44px);
+    height: max(100% + 8px, 44px);
+    transform: translate(-50%, -50%);
+}
+html:not(.tacte) .tb:hover {
     background: var(--hover-fons);
-    border: 1.5px solid var(--hover-vora);
-    box-shadow: inset 0 0 0 1.5px var(--hover-vora);
+    outline: 3px solid var(--hover-vora);
 }
 .tb.sel,
 .tb:focus-visible {
     outline: 3px solid var(--focus);
-    outline-offset: 2px;
 }
 .tags {
     display: flex;
@@ -426,41 +571,40 @@ i {
         padding: 6px 6px;
         grid-template-columns: 2.1em minmax(0, 1fr);
     }
-    .ln .tags {
-        grid-column: 2;
-        justify-content: flex-start;
+    /* la ✓ o la ✗, enganxada al número com una insígnia: no ocupa cap fila ni cap columna, i la línia no creix quan
+       hi surt (auditoria D4) */
+    .ln {
+        position: relative;
     }
-    .ln .tags:empty {
-        display: none;
+    .ln .tags {
+        position: absolute;
+        left: 1.45em;
+        top: 50%;
+        margin-top: 0.15em;
+        pointer-events: none;
+    }
+    .ln .mk {
+        font-size: 18px;
+    }
+    .linies {
+        padding-right: 10px;
     }
     .corr {
         /* més petita que a l'ordinador: si un membre passa de la meitat, el «=» ja no quedaria alineat */
         font-size: 17px;
     }
-    /* sense la columna de «Comprova»: el botó surt a sota de la línia triada, a l'esquerra */
-    .fila {
-        grid-template-columns: minmax(0, 1fr);
+    /* sense columna a l'esquerra («Comprova» i el missatge van a la barra de baix); amb el traç, una franja estreta
+       de punts per desplaçar la pàgina amb el dit (T3) */
+    .llibreta {
+        --aside: 0px;
     }
-    .cv {
-        order: 2;
-    }
-    .fila:not(.amb-cv) .cv {
-        display: none;
-    }
-    .cv .b {
-        width: auto;
-        padding: 8px 16px;
-        margin: 2px 0 6px;
-    }
-    .sota {
-        margin-left: 0;
+    .llibreta.encercla {
+        --aside: 1.75rem;
     }
     .parent.esq {
-        left: -12px;
         width: 12px;
     }
     .parent.dre {
-        right: -12px;
-        width: 12px;
+        width: 10px;
     }
 }

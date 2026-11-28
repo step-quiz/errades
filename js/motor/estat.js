@@ -47,9 +47,12 @@ export function nouEstat() {
 
 export const punts = S => (S.ajuda.length ? 0 : puntsAmbErrors(S.errors));
 
-/** Es pot assenyalar la línia i? L'enunciat (línia 0) mai: no hi pot haver cap errada (el David, 25/11/2026). */
+/**
+ * Es pot assenyalar la línia i? L'enunciat (línia 0) mai: no hi pot haver cap errada (el David, 25/11/2026).
+ * Les errades es troben de dalt a baix: les línies d'abans de l'última trobada ja no (auditoria B4, 28/11/2026).
+ */
 export const seleccionable = (S, ex, i) =>
-    !S.fi && S.fase === 'busca' && i >= 1 && i < ex.linies.length && !S.trobades.includes(i) && !S.revisades.includes(i);
+    !S.fi && S.fase === 'busca' && i >= 1 && i < ex.linies.length && i > Math.max(0, ...S.trobades) && !S.revisades.includes(i);
 
 export function selecciona(S, ex, i) {
     if (!seleccionable(S, ex, i)) return S;

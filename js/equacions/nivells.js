@@ -19,7 +19,7 @@ import { DESACTIVADES } from './generador.js';
 
 export const NIVELLS = {
     1: 'una errada, sense parèntesis',
-    2: 'una errada, amb parèntesis',
+    2: 'una errada, equacions més llargues', // la forma K no porta parèntesis (auditoria B2, 28/11/2026)
     3: 'una errada, sense dir-ho',
     4: 'dues errades',
     5: 'una o dues errades, sense dir-ho',

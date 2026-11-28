@@ -20,7 +20,7 @@ import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/pa
 
 export const NIVELLS = {
     1: 'una errada, sense parèntesis',
-    2: 'una errada, amb parèntesis i potències',
+    2: 'una errada, amb parèntesis o potències',
     3: 'una errada, sense dir-ho',
     4: 'dues errades',
     5: 'una o dues errades, sense dir-ho',

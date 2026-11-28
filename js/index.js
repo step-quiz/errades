@@ -28,7 +28,7 @@ export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
 export const NIVELLS = {
     equacions: {
         1: 'Una errada',
-        2: 'Una errada. Equació amb parèntesis',
+        2: 'Una errada. Equacions més llargues',
         3: 'Una errada, sense advertir-ho',
         4: 'Dues errades',
         5: 'Una o dues errades, i sense advertir-ho',

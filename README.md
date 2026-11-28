@@ -8,9 +8,11 @@ The real student must:
 
 1. **find** the first line that cannot be deduced from the line above (tap it — or circle it with the finger, R3 —
    then «Comprova»; keyboard:
-   ↑/↓ or the line number 1–9, Enter, Esc). «Comprova» appears only next to the selected line, on its left. Lines are numbered 0, 1, 2…: line 0 is the statement and cannot
-   be selected (not-allowed cursor). A circled number means «the error can still be here»: line 0 and the lines
-   already checked have no circle;
+   ↑/↓ or the line number 1–9, Enter, Esc). «Comprova» appears only next to the selected line, on its left (phones,
+   ≤ 560 px: in the bottom bar); tapping the selected line again is also «Comprova» (audit C10). Lines are numbered
+   0, 1, 2…: line 0 is the statement and cannot be selected (not-allowed cursor). A circled number means «the error
+   can still be here»: line 0, the lines already checked and, once an error is found, every line above it (they are
+   known to be correct: ✓, audit B4) have no circle;
 2. **explain** it («Per què és una errada?», 3 sentences about that very line: one true and two false ones chosen at random from the error's distractors, `DISTRACTORS_PERQUE`);
 3. **fix** it («Com hauria de quedar la línia?», 3 options).
 
@@ -69,23 +71,39 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as the select «Repartiment: Iguals per a tothom»; it generates the seed, there is no free seed field). |
 | `membre` | `membre`, `costat`, `banda`, `part` | `membre` | Equations only (index row «Paraula»). The word for the two sides of the equation in the «Per què?» sentences, with gender and plural handled (`membre`, `costat` masculine; `banda`, `part` feminine): «a la banda de la dreta», «l'altra banda», «les dues bandes». |
 
+## Nothing moves by itself (audit, 28/11/2026)
+
+David's rule: no small layout movements. The left column of every line (`--aside`: 15 rem at ≥ 1000 px, where the
+activity page widens to 1140 px; 7.5 rem below; 0 on phones, 1.75 rem there with the lasso) holds «Comprova» and,
+on wide screens, the messages of the search phase (`.msg-cv`, absolutely positioned: from the line down, or upwards
+on the last two lines). Below 1000 px those messages (and, on phones, «Comprova») go to a fixed bar at the bottom
+(`.barra-msg`, with the line number); the page always reserves its space (`.pagina.activitat`). The phases
+(term, «Per què?», «Corregeix-la») still open under the line. `scrollbar-gutter: stable`; the right bracket of
+`.arrossega` sits in a padding always reserved on `.linies`; on phones the ✓/✗ is a badge on the line number.
+After every repaint, pointer clicks are ignored for 300 ms (`BLOQUEIG_MS`, keyboard clicks are not), so a double
+tap never answers the question that appears under the finger (audit T2). Hover styles apply only with a mouse:
+`html.tacte` (last pointer was a finger or a pen, set in `llibreta.js`) disables them (audit T1). Touch screens are
+detected with `any-pointer: coarse`, so a touch Chromebook in laptop mode also gets the lasso (audit T4).
+
 ## Lasso (R3)
 
-On `.linies`, a pointer stroke longer than 8 px becomes a lasso (`touch-action: none` on the notebook while
-searching, so the finger draws instead of scrolling; shorter strokes are ordinary taps). `llac.avalua`: closed
+On `.linies`, a pointer stroke longer than 8 px that starts on a line becomes a lasso (`touch-action: none` on the
+lines while searching, so the finger draws instead of scrolling; shorter strokes are ordinary taps). The left column
+of the notebook (`--aside`) carries a fine isometric dot pattern whenever the lasso is on (`.linies.encercla::before`):
+there the finger scrolls the page (audit T3, no hint text, David 28/11/2026). `llac.avalua`: closed
 stroke → the terms whose centre is inside the polygon; terms of one line → that line, and 1–2 enclosed terms are
 remembered; terms of several lines, too small, or no clear line → «Has de tornar a marcar-ho, perquè …» (`llacDubtos`).
 An open stroke (underline) or a closed one with no term inside picks the line it covers vertically. The stroke stays
-drawn (dashed, black) until «Comprova». While the finger is still down (class `.dibuixant` on the notebook) no line
-looks selected or hovered and «Comprova» is hidden: the line is marked only when the finger lifts. With touch or pen
-(class `.toc`) the hover grey of a line is not shown (it would stick to the touched line). On a hit (`comprova`):
+drawn (dashed, translucent blue `--traca`, audit F3) until «Comprova». While the finger is still down (class `.dibuixant` on the notebook) no line
+looks selected or hovered and «Comprova» is hidden: the line is marked only when the finger lifts. On a hit (`comprova`):
 if a remembered term is a wrong term, the message is «Molt bé, has localitzat la línia i el terme…» and the term
 phase is skipped; if only correct terms were enclosed, the line counts as found but it is a failed attempt and the
 term phase runs («Has localitzat la línia correctament, però no el terme…»). With no enclosed term (or a tap /
 mouse click) the term phase runs without losing points.
 
-**Term phase (every level, David 26/11/2026).** After the line is found, its terms become buttons in place; the
-student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
+**Term phase (every level, David 26/11/2026).** After the line is found, its terms become buttons in place, with
+exactly the box of the written term (dashed `outline`, no border or padding: nothing moves) and a touch area of at
+least 44 × 44 px (`.tb::after`, audit T6); the student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
 counter with wrong lines (`S.errors`, `maxintents`); when the attempts run out, the wrong term is circled, the
 example is worth 0 and the example goes on to «Per què?».
 
