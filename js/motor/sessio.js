@@ -73,7 +73,7 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         final.innerHTML = `<h2>Has acabat.</h2>
 <p class="nota"><span>Nota</span><strong>${notaTxt(v)}</strong></p>
 <p>${fets} punts de ${PUNTS_MAX * total} possibles.</p>
-<ol class="resum">${resultats.map((p, i) => `<li><span>Exemple ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>
+<ol class="resum">${resultats.map((p, i) => `<li><span>Activitat ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>
 <div class="acc"><button type="button" class="b pri" id="torna">Torna a començar</button><a class="b" href="index.html">Tria una altra activitat</a></div>`;
         final.querySelector('#torna').addEventListener('click', () => {
             resultats.length = 0;

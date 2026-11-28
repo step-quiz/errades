@@ -27,7 +27,7 @@ for (const n of [1, 2, 3, 4, 5]) {
 }
 igual([1, 2, 3, 4, 5].map(n => parametres(n, false, 1).anuncia), [true, true, false, true, false], 'es diu quantes n\'hi ha als nivells 1, 2 i 4');
 ok([1, 2, 3, 4, 5].every(n => !parametres(n, true, 1).anuncia), 'amb noerrors no es diu mai');
-igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, encercla: -1, total: 6, maxIntents: 3, llavor: 7 }, 'paràmetres de l\'adreça');
+igual(llegeixParametres('?nivell=4&noerrors=1&llavor=7'), { nivell: 4, noerrors: true, escriu: false, encercla: -1, total: 6, maxIntents: 3, llavor: 7, membre: 'membre' }, 'paràmetres de l\'adreça');
 ok(llegeixParametres('?escriu=1').escriu === true, 'escriu=1');
 import { encerclaDe } from '../js/motor/parametres.js';
 ok(encerclaDe(llegeixParametres(''), true) && !encerclaDe(llegeixParametres(''), false), 'encercla automàtic: només a les pantalles tàctils');
@@ -45,7 +45,7 @@ for (const nivell of [1, 2, 3, 4, 5])
 // El banc: si n'hi ha exemples que encaixen, en surt més o menys 1 de cada 3
 const delBanc = perPagina(generaExemple({ llavor: 99, nivell: 1, errades: 1 }, TIPUS));
 let delBancN = 0;
-for (let i = 0; i < 600; i++) if (exempleSessio(i, { base: 5, nivell: 1, noerrors: false, tipus: TIPUS, banc: [delBanc] }) === delBanc) delBancN++;
+for (let i = 0; i < 600; i++) if (JSON.stringify(exempleSessio(i, { base: 5, nivell: 1, noerrors: false, tipus: TIPUS, banc: [delBanc] })) === JSON.stringify(delBanc)) delBancN++;
 ok(delBancN > 150 && delBancN < 250, `banc: n'hauria de sortir 1 de cada 3 (${delBancN} de 600)`);
 ok(exempleSessio(0, { base: 5, nivell: 4, noerrors: false, tipus: TIPUS, banc: [delBanc] }) !== delBanc || false, 'un exemple d\'una errada no surt al nivell 4');
 let n4 = 0;

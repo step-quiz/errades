@@ -1,13 +1,25 @@
-# HANDOUT — cold-start brief for the next AI session (updated 2026-11-27, end of session)
+# HANDOUT — cold-start brief for the next AI session (updated 2026-11-28)
 
-## START HERE (2026-11-27) — this section wins over everything below it
+## START HERE (2026-11-28) — this section wins over everything below it
 
-**State of the repo.** The last delivery is the ZIP `errades-frases-2.zip`. It contains everything done on 26–27/11: the term
-phase at every level, a lasso line that is marked only when the finger lifts, interface texts rewritten by David, both
-editors' sources, and this file. If `git log` does not show an «Auto-extract uploaded zip» commit after 27/11 with these
-files, ask David whether he uploaded it. **Never** create branches, commits or merges: David works only with ZIPs
-(he uploads them to `_uploads/`; the `unzip-upload.yml` workflow commits them). Tests: `node tests/run-all.js` (green);
-browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
+**State of the repo.** The last delivery is the ZIP `errades-frases-web.zip` (28/11): David's «Per què?» sentences
+are now on the site. Details: `docs/STATE.md` «"Per què?" sentences from David's editor (2026-11-28)». If
+`git log` does not show an «Auto-extract uploaded zip» commit after 28/11 with `js/equacions/frases.js`, ask David
+whether he uploaded it. **Never** create branches, commits or merges: David works only with ZIPs. Tests:
+`node tests/run-all.js` (green); browser test: `node tests/navegador/prova.mjs` (138 checks; needs Playwright).
+
+**Access problem (28/11).** The claude.ai account used on 28/11 cannot see the two artifacts below (they belong to
+another account or organisation): `get_artifact`/`db_list` answer «not found». David pastes the editor's
+«Copia els canvis» text instead (saved as `eines/frases-editor/editor-2026-11-28.txt`). The review artifact
+«Revisió de les frases» (https://claude.ai/artifact/7MzsaTfGaw1nUxDKz1Rdtm, slug
+`33855f4c-353c-496d-b944-0b66a4bc00aa`, db `respostes/*`, `rep/*`) IS on the current account: closed, all 16
+points answered and replied to.
+
+**How the sentences reach the site now.** `node eines/frases-editor/exporta.mjs` (editor export + `CANVIS`) →
+`js/equacions/frases-dades.js`; `node eines/frases-editor/banc.mjs` → rewrites the «Per què?» of `data/banc.json`.
+After a new editor round: save the new export, point `exporta.mjs` to it, rerun both, run the tests.
+`js/equacions/frases.js` = template renderer + situation/values per rule + choice (conditions, missing markers,
+reserves). **David's rule (Q2, 28/11): never add or move `\bold` in his sentences.**
 
 **The two review artifacts (claude.ai, owned by David, private):**
 
@@ -67,29 +79,12 @@ browser test: `node tests/navegador/prova.mjs` (134 checks; needs Playwright).
 
 ### What is pending, in order
 
-0. **DONE 27/11 (live version `1795770122-4e9b`): one fixed toolbar + abstract term references.** Same buttons in
-   every situation: Format (N, $…$, a/b, −) · Sign (Oposat, + signe, Sense signe) · `[mal]` `[bo]` · a «Membre…»
-   select · a «Valors d'aquesta situació…» select (the old per-situation markers, still valid). Clicking a term in a
-   card's mini-notebook inserts its position reference `[abans|alumne|bona].[esq|dre].n` (1-based; the `alumne` line
-   is `mostra.mal`); `termesLinia()` splits a line at top-level ` + ` / ` − ` (a bracket or a fraction is one term).
-   `[mal]` = the wrongly written term, `[bo]` = what it should have been. In the editor they are derived from the
-   sample, as the first term that differs when both lines have the same number of terms. The generator must supply
-   them as `linies[i][e.terme]` and `e.fitxesBona[e.terme]`. **Integration:** the website renderer must resolve
-   position references from the actual lines of each example. Warn David that positions vary between generated
-   equations of one situation; `[mal]`/`[bo]` and the situation values are the robust ones.
-1. **NEXT JOB — David has finished the sentence editor (27/11/2026, full review done).** First read every db
-   collection (`frases`, `situacions`, `general/notes`, plus any artifact comments). Answer any new comment in
-   `rep/<id>`; Claude has not read his last edits yet, so do not assume there are none. Then integrate it into the
-   website. This is the biggest job:
-   - Export the db: per situation, the `bona` and `dolentes` sentence texts. Copies are new ids, not F01–F70.
-   - Write `data/frases-equacions.json` and make `PERQUE` in `js/equacions/generador.js` render from it with the
-     template language above.
-   - The generator must supply every marker value, including `primer terme`, `segon terme`, `altre càlcul` and
-     `termes en x`, and the conditions `cond` (e.g. «només si el pas és treure parèntesis»).
-   - Add the index parameter for the «membre» word (default `membre`), with README, tests and the index UI.
-   - Rewrite the stored sentences in `data/banc.json`.
-   - Then offer to add to the editor the 4 newer rules (SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
-     DENOMINADORS) and the order-of-operations sentences.
+0. **Confirmed by David (28/11):** F25 with `[mal]`, CAL2's new true sentence C01, reserves ST1 F18+F20, CAL1 F51,
+   DSIG1 F08 (`exporta.mjs`, `CANVIS` and `RESERVA`). David tests the published site next.
+1. **Sentence editor follow-up.** The editor artifact was not republished (no access): the repo sources
+   (`dades.json`, `plantilla.html`, `index.html`) already know `[costat]`, `[Al membre]`, `[del membre]` and SC1
+   `[altre terme]`. Next round: offer to add the 4 newer rules (SUMA_ABANS_PRODUCTE, INVERS_X,
+   CANVI_SIGNE_PARCIAL, DENOMINADORS, still on `PERQUE`) and RESTA_GIRADA / order-of-operations sentences.
 2. **The department's survey (`BANC-ERRORS v3`): 4 of 6 answers received on 27/11, 2 still missing.** The tally,
    comments and raw codes are in [`docs/enquesta-banc-errors.md`](docs/enquesta-banc-errors.md). Main signals:
    - Item 5 is rejected (3 N); item 24 too (2 N + a comment that it is ambiguous).

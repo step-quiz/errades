@@ -1,5 +1,6 @@
 // tests/generador.test.js — el generador d'exemples (docs/SPEC.md §5.3 i §10).
 import fs from 'node:fs';
+import { posaParaula } from '../js/equacions/frases.js';
 import { generaExemple, valida, perPagina, solucio, equivalents, aplica, resol, REGLES, Q, T, text, creaAtzar, jaDistingeix, versemblant } from '../js/equacions/generador.js';
 import { ok, igual, informe } from './lib.js';
 
@@ -69,7 +70,8 @@ for (let s = 1; s <= 300; s++)
         const e = generaExemple({ llavor: s, nivell }, TIPUS);
         for (const v of Object.values(e.errades)) {
             ok(v.perque.length === 4 && v.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb 4 frases i una de certa`);
-            ok(v.perque.every(o => /^[A-ZÀ-Ú]/.test(o[0]) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
+            // (una frase pot començar amb una fórmula: «$+3$ i $−12$ tenen…»)
+            ok(v.perque.every(o => /^[A-ZÀ-Ú$]/.test(posaParaula(o[0])) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
         }
     }
 // Regles afegides després del lot 1 del banc (comentaris del David a B05, B07, B15 i B16)

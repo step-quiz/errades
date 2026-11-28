@@ -52,12 +52,13 @@ const TEXTOS = {
     equacions: { fet: 'ha resolt aquesta equació', on: "que no es pot deduir de l'anterior", ons: 'que, cadascuna, no es pot deduir de la línia anterior', teclat: ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '/', '+', '0', '−'], exemple: '+8' },
     prioritat: { fet: 'ha calculat aquesta expressió', on: "on s'ha equivocat", ons: "on s'ha equivocat", teclat: ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '0'], exemple: '12' },
 };
-/** Un text amb fórmules entre $…$. */
+/** Un text amb fórmules entre $…$ i **negreta** (les frases de «Per què?»). */
 export const txt = s =>
     String(s)
         .split('$')
         .map((p, k) => (k % 2 ? `<span class="fx">${fm(p)}</span>` : esc(p).replace(/\n/g, '<br>')))
-        .join('');
+        .join('')
+        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 const maj = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function creaLlibreta(contenidor, ex, cfg, { onAcaba } = {}) {

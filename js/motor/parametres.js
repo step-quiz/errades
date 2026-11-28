@@ -8,12 +8,17 @@
  * - llegeixParametres(cerca) és pur: nivell (1–5, per defecte 1), noerrors (0/1),
  *   escriu (0/1), encercla (0/1; sense el paràmetre, -1 = automàtic),
  *   totaloperations (1–20, per defecte 6), maxintents (1–5, per defecte 3),
- *   llavor (enter ≥ 0; la mateixa llavor dona els mateixos exemples).
+ *   llavor (enter ≥ 0; la mateixa llavor dona els mateixos exemples),
+ *   membre (la paraula per als dos costats de l'equació a les frases de «Per què?»:
+ *   membre, costat, banda o part; per defecte membre. El David, 27/11/2026).
  * - encerclaDe(par, tactil): R3, encerclar amb el dit per defecte a les pantalles
  *   tàctils i tocar amb el ratolí, tret que l'adreça digui el contrari.
  * DEPENDÈNCIES: Cap.
  * ============================================================================
  */
+/** Les paraules que es poden triar per a «membre» (js/equacions/frases.js en fa el gènere i el plural). */
+export const PARAULES_MEMBRE = ['membre', 'costat', 'banda', 'part'];
+
 export function llegeixParametres(cerca) {
     const p = new URLSearchParams(cerca);
     const ent = (k, def, min, max) => {
@@ -29,6 +34,7 @@ export function llegeixParametres(cerca) {
         total: ent('totaloperations', 6, 1, 20),
         maxIntents: ent('maxintents', 3, 1, 5),
         llavor: Number.isInteger(llavor) && llavor >= 0 ? llavor : null,
+        membre: PARAULES_MEMBRE.includes(p.get('membre')) ? p.get('membre') : 'membre',
     };
 }
 

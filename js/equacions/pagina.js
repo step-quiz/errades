@@ -9,10 +9,13 @@
  * - Què vol dir cada nivell: js/equacions/nivells.js.
  * - Banc (R6): més o menys 1 exemple de cada 3 surt de data/banc.json, si n'hi
  *   ha cap que encaixi amb el nivell; la resta, del generador.
- * DEPENDÈNCIES: generador.js, nivells.js, js/motor/sessio.js, js/motor/estat.js, js/motor/parametres.js.
+ * - «membre» (paràmetre de l'adreça): la paraula de les frases de «Per què?»
+ *   (exempleAmbParaula, frases.js), per als exemples generats i els del banc.
+ * DEPENDÈNCIES: generador.js, frases.js, nivells.js, js/motor/sessio.js, js/motor/estat.js, js/motor/parametres.js.
  * ============================================================================
  */
 import { generaExemple, perPagina, creaAtzar } from './generador.js';
+import { exempleAmbParaula } from './frases.js';
 import { parametres, encaixaBanc, NIVELLS, PROPORCIO_BANC } from './nivells.js';
 import { iniciaSessio } from '../motor/sessio.js';
 import { CONFIG_PER_DEFECTE } from '../motor/estat.js';
@@ -21,7 +24,10 @@ import { llegeixParametres, encerclaDe, esTactil, llavorNova } from '../motor/pa
 export { llegeixParametres };
 
 /** L'exemple i-èsim d'una sessió: del banc o del generador (pur, per a les proves). */
-export function exempleSessio(i, { base, nivell, noerrors, tipus, banc }) {
+export function exempleSessio(i, { base, nivell, noerrors, tipus, banc, membre = 'membre' }) {
+    return exempleAmbParaula(exempleBrut(i, { base, nivell, noerrors, tipus, banc }), membre);
+}
+function exempleBrut(i, { base, nivell, noerrors, tipus, banc }) {
     const llavor = (base + i * 7919) >>> 0;
     const r = creaAtzar((llavor ^ 0x5bd1e995) >>> 0);
     const delBanc = banc.filter(b => encaixaBanc(b, nivell, noerrors));
@@ -63,7 +69,7 @@ async function engega() {
         final: document.getElementById('final'),
         total: par.total,
         cfg,
-        exemple: i => exempleSessio(i, { base, nivell: par.nivell, noerrors: par.noerrors, tipus, banc }),
+        exemple: i => exempleSessio(i, { base, nivell: par.nivell, noerrors: par.noerrors, tipus, banc, membre: par.membre }),
         onNova: () => {
             base = llavorNova();
         },

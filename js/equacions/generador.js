@@ -21,10 +21,13 @@
  * - valida(exemple) comprova totes les condicions de docs/SPEC.md §5.3; el
  *   generador només torna exemples que la passen.
  * - Atzar sembrat (mulberry32): la mateixa llavor dona sempre el mateix exemple.
- * DEPENDÈNCIES: Cap. Els textos genèrics de cada tipus d'errada (data/errors.json)
- *   arriben com a paràmetre (TIPUS).
+ * DEPENDÈNCIES: frases.js (les frases de «Per què?» de l'editor del David). Els
+ *   textos genèrics de cada tipus d'errada (data/errors.json) arriben com a
+ *   paràmetre (TIPUS).
  * ============================================================================
  */
+
+import { perque as frasesPerque } from './frases.js';
 
 // ---------- Atzar sembrat ----------
 export function creaAtzar(llavor) {
@@ -625,7 +628,7 @@ export const REGLES = {
             if (w.zero || k < 0) return null;
             const nou = bo[c].slice();
             nou[k] = X(w);
-            return { linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou), dades: { expr: sumaTx(xs), u, mal: X(w) } };
+            return { linia: c === 'L' ? linia(nou, bo.R) : linia(bo.L, nou), dades: { expr: sumaTx(xs), u, mal: X(w), costat: c } };
         },
         expl(d) {
             const neg = d.u.c.n < 0;
@@ -684,6 +687,7 @@ export const REGLES = {
                     mal: pTx(fet),
                     altres: opcions.filter(o => o !== triada).map(o => sumaTx(o[2])),
                     clau: clauCalcul(k, [v1, v2]),
+                    costat: c,
                 },
             };
         },
@@ -763,6 +767,16 @@ export const REGLES = {
     },
 };
 // ---------- «Per què és una errada?»: una frase certa i distractors versemblants ----------
+// Les eines de text que fan servir les situacions de js/equacions/frases.js
+const TX = { sumaTx, pTx, ambSigne, llistaTermes, N };
+/**
+ * Les frases de «Per què?» d'una errada: { bona, dolentes }. Les de l'editor del David
+ * (js/equacions/frases.js) i, per a les regles que encara no hi són, les de PERQUE.
+ * També ho fa servir eines/frases-editor/banc.mjs per refer les frases del banc.
+ */
+export function frasesErrada(id, dades, { op, abans, malF, bonaF, terme }) {
+    return frasesPerque(id, dades, { op, abans, T: TX, linies: { abans: fitxes(abans), mal: malF, bona: bonaF }, terme }) || PERQUE[id](dades);
+}
 // Cada funció torna { bona, dolentes } amb frases concretes de la línia (mai la línia bona sencera).
 const resta = (B, A) => `${menys(B)} − ${A < 0 ? '(' + menys(A) + ')' : A}`;
 const ambS = n => (n > 0 ? '+' + n : menys(n));
@@ -1380,8 +1394,9 @@ function construeix(r, llavor, nivell, e0, linies, ops, marques, compensades, TI
         // dos termes equivocats (SIGNE_TRANSPOSAR o SIGNE_COPIAT amb dos termes): a la fase del terme valen tots dos
         if (marca) terme = marca[0];
         const termes = marca ? marca : bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
-        // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia
-        const fr = PERQUE[c.id](c.res.dades);
+        // «Per què?»: la frase certa i tres de falses, concretes d'aquesta línia. Les frases de l'editor
+        // del David (js/equacions/frases.js); les regles que encara no hi són, les d'aquí (PERQUE).
+        const fr = frasesErrada(c.id, c.res.dades, { op: c.op, abans, malF, bonaF, terme });
         const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, 3).map(t => [t, false])]);
         // «Corregeix-la»: la línia bona i dues de dolentes (d'altres regles o retocades)
         const vistes = new Set([text(bona), text(linies[c.j])]);

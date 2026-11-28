@@ -9,7 +9,8 @@
  * - enllac(base, valors) i pagina(activitat) són purs (tests/index.test.js).
  * - Paràmetres (els llegeix js/motor/parametres.js): nivell, noerrors, escriu,
  *   encercla (auto = no s'escriu), totaloperations, maxintents, llavor (buida =
- *   no s'escriu). Els valors per defecte no s'escriuen, perquè l'enllaç quedi curt.
+ *   no s'escriu), membre (només equacions: membre, costat, banda o part). Els valors
+ *   per defecte no s'escriuen, perquè l'enllaç quedi curt.
  * - Les etiquetes dels nivells són curtes; només el 2 canvia amb l'activitat.
  * - Fins que no es tria l'activitat, els paràmetres i l'enllaç són amagats.
  * - «Repartiment» (selector) substitueix el camp de la llavor: «Iguals per a
@@ -17,9 +18,9 @@
  * DEPENDÈNCIES: js/motor/parametres.js (llavorNova).
  * ============================================================================
  */
-import { llavorNova } from './motor/parametres.js';
+import { llavorNova, PARAULES_MEMBRE } from './motor/parametres.js';
 
-export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '' };
+export const PER_DEFECTE = { nivell: '1', noerrors: '0', escriu: '0', encercla: 'auto', totaloperations: '6', maxintents: '3', llavor: '', membre: 'membre' };
 const LIMITS = { nivell: [1, 5], noerrors: [0, 1], escriu: [0, 1], encercla: [0, 1], totaloperations: [1, 20], maxintents: [1, 5], llavor: [0, 4294967295] };
 export const PAGINES = { equacions: 'equacions.html', prioritat: 'prioritat.html' };
 export const pagina = activitat => PAGINES[activitat] || PAGINES.equacions;
@@ -45,6 +46,11 @@ export function enllac(base, valors) {
     const p = new URLSearchParams();
     for (const k of Object.keys(PER_DEFECTE)) {
         const brut = valors[k] === undefined ? '' : String(valors[k]).trim();
+        if (k === 'membre') {
+            // una paraula, no un nombre: només si és una de les que es poden triar i no és la de per defecte
+            if (PARAULES_MEMBRE.includes(brut) && brut !== PER_DEFECTE.membre) p.set(k, brut);
+            continue;
+        }
         if ((k === 'encercla' && (brut === 'auto' || brut === '')) || (k === 'llavor' && brut === '')) continue;
         const [mn, mx] = LIMITS[k];
         let v = Number.parseInt(brut, 10);
@@ -66,6 +72,7 @@ if (typeof document !== 'undefined') {
     const obre = document.getElementById('act-obre');
     const avis = document.getElementById('act-copiat');
     const selNivell = document.getElementById('act-nivell');
+    const filaMembre = document.getElementById('fila-membre');
     let activitat = '';
     let llavor = '';
     let nivellsDe = '';
@@ -94,6 +101,9 @@ if (typeof document !== 'undefined') {
             if (llavor === '') llavor = String(llavorNova());
         } else llavor = '';
         valors.llavor = llavor;
+        // la paraula «membre» només té sentit a les equacions
+        filaMembre.hidden = activitat !== 'equacions';
+        if (activitat !== 'equacions') delete valors.membre;
         const url = enllac(new URL(pagina(activitat), location.href).href, valors);
         camp.value = url;
         obre.href = url;

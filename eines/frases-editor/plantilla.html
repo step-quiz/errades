@@ -225,13 +225,15 @@ const MEMBRE={
  'membres':['en plural','els [membres]'],
  'el membre':['amb article','el membre / la banda'],
  'al membre':['«a» + article','al membre / a la banda'],
+ 'Al membre':['a l\'inici de la frase','Al membre / A la banda'],
+ 'del membre':['«de» + article','del membre / de la banda'],
  "l'altre membre":["l'altre / l'altra","l'altre membre / l'altra banda"],
  'el seu membre':['el seu / la seva','el seu membre / la seva banda'],
  'al seu membre':['al seu / a la seva','al seu membre / a la seva banda'],
  'els dos membres':['els dos / les dues','els dos membres / les dues bandes'],
 };
 function formaMembre(n){const w=PARAULES[paraula],m=w.m;
- return {'membre':w.s,'membres':w.p,'el membre':(m?'el ':'la ')+w.s,'al membre':(m?'al ':'a la ')+w.s,"l'altre membre":(m?"l'altre ":"l'altra ")+w.s,'el seu membre':(m?'el seu ':'la seva ')+w.s,'al seu membre':(m?'al seu ':'a la seva ')+w.s,'els dos membres':(m?'els dos ':'les dues ')+w.p}[n];}
+ return {'membre':w.s,'membres':w.p,'el membre':(m?'el ':'la ')+w.s,'al membre':(m?'al ':'a la ')+w.s,'Al membre':(m?'Al ':'A la ')+w.s,'del membre':(m?'del ':'de la ')+w.s,"l'altre membre":(m?"l'altre ":"l'altra ")+w.s,'el seu membre':(m?'el seu ':'la seva ')+w.s,'al seu membre':(m?'al seu ':'a la seva ')+w.s,'els dos membres':(m?'els dos ':'les dues ')+w.p}[n];}
 // substitueix els [valors]; fora d'una fórmula, un valor sense $ s'escriu com a fórmula
 function posaValors(text,valors){
  let out='',dins=false;
@@ -240,7 +242,7 @@ function posaValors(text,valors){
   if(ch==='$'){dins=!dins;out+=ch;continue;}
   if(ch==='['){const j=text.indexOf(']',i);if(j>i){const n=text.slice(i+1,j);
    if(n in MEMBRE){out+=formaMembre(n);i=j;continue;}
-   if(valors&&n in valors){const v=valors[n];out+=(!dins&&!v.includes('$'))?'$'+v+'$':v;}else out+='\u0001'+n+'\u0002';
+   if(valors&&n in valors){const v=valors[n];out+=(!dins&&!v.includes('$')&&n!=='costat')?'$'+v+'$':v;}else out+='\u0001'+n+'\u0002';
    i=j;continue;}}
   out+=ch;}
  return out;

@@ -406,3 +406,40 @@ the subtraction is reversed (value −37 → 37: N1 error on the line `40 − 3`
 with `expl`, a `PERQUE` entry, `data/errors-prioritat.json`, README and SPEC rows and two tests. David gave it
 **10 points** in the survey ranking (it was not in the survey; listed with the order-of-operations items).
 Not filtered by `versemblant()`.
+
+## «Per què?» sentences from David's editor (2026-11-28)
+
+David finished the sentence editor (27/11). This session could not open the editor artifact (`4tvuyfdz…`, other
+account), so David pasted its «Copia els canvis» export: `eines/frases-editor/editor-2026-11-28.txt`. Claude
+checked every sentence against its situation's sample and put 16 points to David in a review artifact
+«Revisió de les frases» (https://claude.ai/artifact/7MzsaTfGaw1nUxDKz1Rdtm, slug
+`33855f4c-353c-496d-b944-0b66a4bc00aa`; answers in db `respostes/<id>`, replies `rep/<id>`). All approved except
+Q2 (bold): **do not add or move `\bold` in David's sentences.** Applied (`CANVIS` in `eines/frases-editor/exporta.mjs`):
+- B1 F40 «Els nombres no es poden sumar…»; B2 R44DSIG2 «[operació] fa \oposite{[escrit]}: per tant, …»;
+  B3 F65 «restat [A sense signe] a [B]»; B5 Nmwyqnmvt9f «sumat en primer lloc [terme] i [altre terme]».
+- B4: distractors whose marker may be missing ([altre terme], [altre càlcul], [terme d'abans]) are skipped when
+  the value does not exist (generic rule, no `cond` needed).
+- B6 new marker `[costat]` = «de l'esquerra» / «de la dreta» (ST1: where the term arrives; ST2: where the second
+  term arrives; CU, CAL: the side of the sum); used in F16, R16ST2, F43, F45.
+- B7 new «membre» markers `[Al membre]`, `[del membre]`. B8 SC1 gets `[altre terme]` (a term that passed
+  correctly, only in the `tra` step); F26 «S'ha equivocat amb el \oposite{[altre terme]}».
+- Q1 R01TNS1 «Hauria d'haver restat [n] a [x]»; Q3 F12 «Hauria d'haver aplicat…»; Q4 typography (no space inside
+  bold, no straight quotes, «tal com», final period); Q5 one id per text; Q6 unused sentences not exported.
+- A1 final screen list says «Activitat 1, Activitat 2…»; A2 the integration below.
+Claude's own fixes, **confirmed by David** (dialog, 28/11):
+- F25 (SC1, true sentence) used `\nosign{[terme]}`, wrong for a positive term (+7 copied as −7 said «escriure 7»):
+  now «És una errada escriure $[mal]$, hauria de ser $[terme]$».
+- CAL2's true sentence was F49 («Hauria d'haver operat [a] i \oposite{[b]}…»), false in CAL2: new C01
+  «[a] i [b] tenen \bold{signes diferents}: per tant, s'han de restar els seus valors.»; F49 dropped from CAL2.
+- Reserves when conditions leave < 3 distractors: ST1 F18, F20 (with `[al membre]`); CAL1 F51; DSIG1 F08.
+
+Integration: `js/equacions/frases.js` (renderer, situations, choice), `js/equacions/frases-dades.js` (generated),
+`frasesErrada()` in the generator (falls back to `PERQUE` for SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
+DENOMINADORS), bold `**…**` in `txt()` (`llibreta.js`), URL parameter `membre` (`parametres.js`, index row
+«Paraula», equations only), `exempleAmbParaula` in `pagina.js` (generated and bank examples). `data/banc.json`:
+38 of 42 «Per què?» rewritten by `eines/frases-editor/banc.mjs`; 4 CALCUL errors with a plain wrong value
+(lot1-B08 line 2, B18 line 4, B19 lines 2 and 4) match no editor situation and keep their old sentences.
+Situations with |A| = |B| (OI, CO, DS) can lose distractors (duplicate texts); `valida()` rejects such examples and
+the generator picks another. Tests: `tests/frases.test.js`.
+Not done: the editor artifact itself (new markers `[costat]`, `[Al membre]`, `[del membre]`, SC1 `[altre terme]`)
+is updated only in the repo sources (`dades.json`, `plantilla.html`); republishing needs David's other account.

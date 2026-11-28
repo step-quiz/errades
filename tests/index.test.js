@@ -16,7 +16,12 @@ igual(pagina('prioritat'), 'prioritat.html', 'la prioritat d\'operacions va a pr
 igual(pagina('res'), 'equacions.html', 'una activitat desconeguda va a les equacions');
 ok([1, 2, 3, 4, 5].every(n => NIVELLS.equacions[n] && NIVELLS.prioritat[n]), 'descripció de cada nivell de les dues activitats');
 // El que escriu l'índex és el que llegeix l'activitat
-const tot = enllac(B, { nivell: '4', noerrors: '1', escriu: '1', encercla: '0', totaloperations: '8', maxintents: '2', llavor: '77' });
-igual(llegeixParametres(new URL(tot).search), { nivell: 4, noerrors: true, escriu: true, encercla: 0, total: 8, maxIntents: 2, llavor: 77 }, "l'activitat llegeix tots els paràmetres de l'índex");
-ok(Object.keys(PER_DEFECTE).length === 7, 'set paràmetres');
+igual(enllac(B, { membre: 'membre' }), B, 'la paraula «membre» per defecte no surt');
+igual(enllac(B, { membre: 'banda' }), B + '?membre=banda', 'la paraula «banda»');
+igual(enllac(B, { membre: 'costats' }), B, 'una paraula que no es pot triar no surt');
+igual(llegeixParametres('?membre=part').membre, 'part', "l'activitat llegeix la paraula");
+igual(llegeixParametres('?membre=xyz').membre, 'membre', 'una paraula desconeguda és «membre»');
+const tot = enllac(B, { nivell: '4', noerrors: '1', escriu: '1', encercla: '0', totaloperations: '8', maxintents: '2', llavor: '77', membre: 'costat' });
+igual(llegeixParametres(new URL(tot).search), { nivell: 4, noerrors: true, escriu: true, encercla: 0, total: 8, maxIntents: 2, llavor: 77, membre: 'costat' }, "l'activitat llegeix tots els paràmetres de l'índex");
+ok(Object.keys(PER_DEFECTE).length === 8, 'vuit paràmetres');
 informe('index');

@@ -169,6 +169,25 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         await pg.waitForSelector('#llibreta .ln');
         await pg.screenshot({ path: path.join(process.env.CAPTURES, `nivell2-${mida.width}.png`), fullPage: true });
     }
+    // «Per què?» amb la paraula de l'índex (membre=banda) i la negreta de les frases del David
+    {
+        const [ll, e] = (() => {
+            for (let s = 1; s < 3000; s++) {
+                const ex = sessio(s);
+                const j = primera(ex);
+                if (ex.errades[j].perque.some(([t]) => /\bmembres?\b/.test(t)) && ex.errades[j].perque.some(([t]) => t.includes('**'))) return [s, j];
+            }
+        })();
+        await pg.goto(BASE + `equacions.html?totaloperations=1&llavor=${ll}&membre=banda`);
+        await pg.waitForSelector('#llibreta .ln');
+        await clica(`#llibreta [data-l="${e}"]`);
+        await clica('#llibreta [data-a=comprova]');
+        await tocaTerme(sessio(ll), e);
+        const fase = await pg.textContent('#llibreta .fase');
+        ok(/banda/.test(fase) && !/\[|membre/.test(fase), `«Per què?» amb «banda» i cap marcador: ${fase}`);
+        ok((await pg.locator('#llibreta .fase b').count()) > 0 && !/\*\*/.test(fase), '«Per què?»: la negreta es veu com a negreta');
+        if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `perque-${mida.width}.png`), fullPage: true });
+    }
     // ✓ a totes les línies bones d'abans de l'errada, en acabar (exemple amb l'errada a la línia LT)
     await pg.goto(BASE + `equacions.html?llavor=${LT_LLAVOR}`);
     await pg.waitForSelector('#llibreta .ln');
