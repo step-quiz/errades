@@ -37,7 +37,7 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `js/motor/nivells.js` | What each level means in both activities (`parametres`: statement form, number of errors, compensating pairs, announced or not). Pure. |
 | `js/motor/atzar.js`, `js/motor/exemple.js` | Shared by both generators: the seeded randomness (`creaAtzar`, `enter`, `tria`, `barreja`, `signe`) and the «Per què?» options (`DISTRACTORS_PERQUE` = 2, `opcionsPerque`). Pure. |
 | `js/equacions/nivells.js` | Equations only: level labels (`NIVELLS`), which bank examples fit a level (`encaixaBanc`, skips deactivated rules), `PROPORCIO_BANC`. Pure. |
-| `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format, each with `banc: "lot1-B05"` (batch and card id of the review artifact); about 1 example in 3 comes from here when one fits the level. `tests/banc.test.js` checks their structure. |
+| `data/banc.json` | Curated examples approved by David (R6), in `perPagina()` format, each with `banc: "lot1-B05"` (batch and card id of the review artifact); about 1 example in 3 comes from here when one fits the level. Within a session the bank examples are dealt from a seeded shuffled deck (`delBancSessio` in `js/equacions/pagina.js`: no repeats until the deck runs out), and the «Per què?» sentences and «Corregeix-la» options of each bank example are shuffled with the example's own seed (audit 2, E1). `tests/banc.test.js` checks their structure. |
 | `js/equacions/generador.js` | **Pure, seeded generator** of erroneous examples (exact rationals, the pupil's procedure, mal-rules, explanations and correct-line texts, `valida()`). The «Per què?» sentences come from `frases.js` (`frasesErrada`). |
 | `js/equacions/frases.js` | Pure: the «Per què?» sentences of David's sentence editor. Template renderer (`render`: markers, `$…$`, fractions, `\bold`, `\oposite`, `\signe`, `\nosign`, position references, `[mal]`/`[bo]`, a negative value after an operator in brackets), the situation and marker values of each rule (`situacio`), sentence choice with conditions and reserves (`perque`), and the «membre» word (`posaParaula`, `exempleAmbParaula`). |
 | `js/equacions/frases-dades.js` | **Generated** by `node eines/frases-editor/exporta.mjs` (never edit by hand): sentence templates and, per situation, the true sentence, the distractors (optional `cond`) and reserves. |
@@ -65,11 +65,12 @@ errors, announced or not, compensating pairs, error-free examples with `noerrors
 | `nivell` | 1–5 | 1 | 1: one error, no brackets (4–6 lines). 2: one error, brackets (6–8 lines). 3: one error, count not announced. 4: two errors, announced, ≈30 % compensating. 5: one or two, not announced, ≈30 % of the two-error ones compensating. Every level asks for the wrong term after the line. |
 | `escriu` | 0, 1 | 0 | 1: in «Corregeix-la» the student types the circled term, corrected (on-page keypad: digits, x, +, −, /), instead of choosing the line. Any writing with the same value is accepted (10/2 = 5). Errors that change the line's structure (`TERMES_NO_SEMBLANTS`) still use the 3 options. |
 | `encercla` | 0, 1 | (absent = auto) | R3. 1: the student circles the line with the finger or by dragging the mouse (a short tap still selects); 0: tap only; absent: circle on touch screens (`pointer: coarse`), tap with a mouse. |
-| `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No n'hi ha cap més»). |
+| `noerrors` | 0, 1 | 0 | 1: at every level ≈1 example in 5 has no error, and the count is never announced (button «No hi ha cap errada» / «No hi ha cap més errada»). |
 | `totaloperations` | 1–20 | 6 | Examples per session. |
 | `maxintents` | 1–5 | 3 | Attempts per example: 1st miss explains the tapped line, 2nd adds the direction, the last one shows the error (0 points). |
 | `llavor` | integer ≥ 0 | random | Seed: the same seed gives the same examples (the index offers it as the select «Repartiment: Iguals per a tothom»; it generates the seed, there is no free seed field). |
 | `membre` | `membre`, `costat`, `banda`, `part` | `membre` | Equations only (index row «Paraula»). The word for the two sides of the equation in the «Per què?» sentences, with gender and plural handled (`membre`, `costat` masculine; `banda`, `part` feminine): «a la banda de la dreta», «l'altra banda», «les dues bandes». |
+| `nota` | 0, 1 | 1 | Index row «Nota final». 0: the final screen and the «Informe» show only the points, no mark out of 10 and no 🏆 (`cfg.nota === false`; audit 2, P10). |
 
 ## Header and layout (audit, stage 3)
 
@@ -135,7 +136,27 @@ mouse click) the term phase runs without losing points.
 exactly the box of the written term (dashed `outline`, no border or padding: nothing moves) and a touch area of at
 least 44 × 44 px (`.tb::after`, audit T6); the student taps the wrong term (keyboard: ←/→, Enter). Each correct term chosen is a failed attempt and shares the
 counter with wrong lines (`S.errors`, `maxintents`); when the attempts run out, the wrong term is circled, the
-example is worth 0 and the example goes on to «Per què?».
+example is worth 0 and the example goes on to «Per què?». If the line has only one candidate term (tokens other than «=» and «x», `termeUnic(ex, i)` in `estat.js`), the term phase is skipped: the message is «Molt bé, en aquesta línia hi ha una errada.» and «Per què?» follows (audit 2, P6).
+
+## Audit 2 (28/11/2026), stage 1
+
+Review artifact «Auditoria · Localitza l'errada» (slug `01cf84b6-1c0f-4a64-bb8a-f2eeb8e7bd24`; db collections
+`respostes` = David's answers, `rep` = Claude's replies). Done in stage 1:
+- **E1** bank: no repeats within a session, shuffled sentences and options (see `data/banc.json` row).
+- **E2** a correct «No hi ha cap errada» / «No hi ha cap més errada» (`capMes`) replaces the previous message with
+  «Molt bé…», unless that message is the one naming an error that was shown (`S.ajuda`).
+- **E3** focus ring 2 px, `--focus: #3d5bd6` (`css/tokens.css`), only on `:focus-visible` (keyboard); David: focus
+  helps when used sparingly, never as decoration. Screen readers: `llegible(s)` in `llibreta.js` reads lines in words («partit per», «elevat a», «per»,
+  «entre», «igual a», «més», «menys») for the `aria-label`s of lines, terms and the correction; one persistent
+  live region `#anunci-llibreta` (`.vh`, `aria-live="polite"`) announces each message (`anuncia()` in `pinta`).
+- **P6** single-term lines skip the term phase (see «Term phase»).
+- **P9** final screen texts: «Amb 10 punts (n)», «Per repassar (n)», «Encara cap exercici amb 10 punts.»,
+  «Res per repassar: partida perfecta 🎉»; the instruction says «…, però ha comès una errada.» / «dues errades.».
+- **P10** URL parameter `nota` (table above).
+- **P11** 8 more first names in both generators' `NOMS`.
+- **C5** docs match the code: Patrick Hand (R2), 1-point penalty in «Per què?»/«Corregeix-la» (E2/E5), button
+  «No hi ha cap més errada»; `tests/docs.test.js` checks the button labels.
+Not done, by David's decision: P8, W3. Stages 2–4 are listed in `docs/STATE.md` «Open work».
 
 ## Order of operations (`js/prioritat/generador.js`)
 
@@ -163,7 +184,7 @@ Weights `pes`, in table order: 5, 3, 2, 3, 4, 3, 2, 3, 2. «Corregeix-la» distr
 `retoca()` (one result of the correct step computed with another operation, never 0 or invented negatives).
 
 Points per example (both activities, `punts()` in `js/motor/estat.js`): 10, minus 2 per failed attempt (a correct
-line marked as wrong, a correct term chosen, «No n'hi ha cap més» too early; `puntsAmbErrors` of the shared
+line marked as wrong, a correct term chosen, «No hi ha cap més errada» too early; `puntsAmbErrors` of the shared
 `punts.js`), minus 1 per wrong answer in «Per què?» or «Corregeix-la», typed attempts included (`S.fallades`,
 `PUNTS_PER_FALLADA`; audit C5-A, David 28/11/2026), floor 0; 0 if the error had to be shown. Final mark out of 10.
 No verification code yet (stage 3).

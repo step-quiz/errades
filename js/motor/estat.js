@@ -4,7 +4,7 @@
  * FITXER: js/motor/estat.js
  * ROL: La màquina d'estats pura (sense DOM) d'un exemple: seleccionar una
  *      línia, «Comprova», l'escala d'intents, les fases «Per què?» i
- *      «Corregeix-la», «No n'hi ha cap més» i els punts.
+ *      «Corregeix-la», «No hi ha cap més errada» i els punts.
  * ARQUITECTURA:
  * - Les funcions reben l'estat S, l'exemple ex (el de js/equacions/generador.js)
  *   i la configuració cfg, i modifiquen S (i el tornen).
@@ -15,7 +15,7 @@
  *   terme bo triat (també el que s'ha encerclat amb la línia) és un intent fallat; a
  *   cfg.maxIntents s'ensenya el terme, l'exemple val 0 i es continua (el David,
  *   26/11/2026). Amb cfg.anuncia, s'acaba sol quan s'han trobat totes; si no,
- *   l'alumne ha de prémer «No n'hi ha cap més» / «No hi ha cap errada».
+ *   l'alumne ha de prémer «No hi ha cap més errada» / «No hi ha cap errada».
  * - Escala (docs/SPEC.md §2, F1/F2/F3): cada línia bona assenyalada s'explica
  *   i queda marcada (revisades); des del segon error s'hi afegeix cap on és
  *   l'errada; a cfg.maxIntents errors s'ensenya l'errada i l'exemple val 0.
@@ -293,7 +293,7 @@ function despres(S, ex, cfg) {
     return S;
 }
 
-/** «No hi ha cap errada» / «No n'hi ha cap més» (quan no es diu quantes n'hi ha). */
+/** «No hi ha cap errada» / «No hi ha cap més errada» (quan no es diu quantes n'hi ha). */
 export function capMes(S, ex, cfg = CONFIG_PER_DEFECTE) {
     if (S.fase !== 'busca' || S.fi) return S;
     S.sel = null;

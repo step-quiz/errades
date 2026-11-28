@@ -46,10 +46,10 @@ de l'anterior, encercla-la; si no n'hi ha cap, indica-ho.» (`js/motor/llibreta.
 | G6 | Keyboard always on: ↑/↓ and 1–9 select a line, Enter = Comprova, Esc = clear; ←/→ in the term phase. aria-live for messages. |
 | G7 | Circle with the finger: David wants to try it → R3 (prototype exists). |
 | E1 | Mark the found error, but **separate two colour layers** → R1. |
-| E2 | Phase «Per què?»: **3 sentences about that very line** (one true and two plausible false ones picked at random from all the error's distractors — David, 28/11/2026; it was 4 before; built from its numbers; David's model, 2026-11-25); a wrong choice costs nothing and shows the explanation. |
+| E2 | Phase «Per què?»: **3 sentences about that very line** (one true and two plausible false ones picked at random from all the error's distractors — David, 28/11/2026; it was 4 before; built from its numbers; David's model, 2026-11-25); a wrong choice costs 1 point (`PUNTS_PER_FALLADA`, audit C5-A, 28/11/2026) and shows the explanation. |
 | E3 | Phase «Corregeix-la»: choose among 3, or (teacher's checkbox, `escriu=1`) type **only the circled term**, corrected, with the page's own keypad (David, 2026-11-25). The wrong side is crossed out and the correct line is written below in the teacher's hand. |
 | E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 25 % between two big black parentheses (STATE.md). During «Per què?»/«Corregeix-la» only the wrong line and the one above stay unfaded, and they, the message and the options are kept on screen. |
-| E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
+| E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. Each wrong answer in «Per què?» or «Corregeix-la» costs 1 more point (audit C5-A, 28/11/2026; before, they did not count). Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |
 | G8 | Lines are numbered **0, 1, 2…**; line 0 is the statement: no circle, not-allowed cursor, cannot be selected. A circled number = still a candidate; checked lines lose the circle (2026-11-25). |
 | F1 | Wrong tap on a correct line → «Aquesta línia és correcta, perquè» (wording since 2026-11-27, see STATE) + new line + «és correcte haver escrit $+7x$ i també és correcte haver escrit $−8$.» (what was newly written); mark it ✓ (layer C), lock it. Selecting another line clears the message. |
 | F2/F3 | Ladder: 1st miss = F1; 2nd miss = F1 + direction («L'errada és més amunt/avall», or «Hi ha dues errades: una més amunt i l'altra més avall»); at `maxintents` = show the (next) error («L'errada era a la línia k.»), example worth 0 (the «amb ajuda» mark was removed on 2026-11-27). `maxintents` default **3** here (operacions default is 4); wrong terms in the term phase count too. |
@@ -75,7 +75,7 @@ de l'anterior, encercla-la; si no n'hi ha cap, indica-ho.» (`js/motor/llibreta.
 | ID | Decision |
 |---|---|
 | R1 | Two colour layers. **Notebook:** E (error) = teacher's red pen (ellipse around the wrong term, ✗ in the margin, correction text); C (correct line) = grey pencil ✓. **Student:** right = **lilac**, wrong = **grey** (David's choice); never red/green; always with text. Selection before «Comprova» is neutral (black dashed). Code names: `errada`/`correcta` vs `encert`/`noEncert`. |
-| R2 | Pupil: Kalam (blue ink). Teacher's correction: **Permanent Marker**. Both self-hosted. |
+| R2 | Pupil: Patrick Hand (blue ink; Kalam until the audit of 28/11/2026, F1). Teacher's correction: **Permanent Marker**. Both self-hosted. |
 | R3 | Lasso approved (closed stroke → term centres inside the polygon; one line → select it and remember 1–2 terms; ≥ 2 lines, too small or unclear → «Has de tornar a marcar-ho, perquè …»; open underline accepted over one line; then «Comprova»). Default gesture on touch devices; tap for mouse/keyboard. **Stage 5.** |
 | R4 | All lines aligned at «=» (grid `1fr auto 1fr`), always. Term phase (no zoom, previous line shaded «compara-la amb aquesta»): at every level since 26/11/2026 (STATE, «Term phase at every level»). |
 | R5 | `noerrors=1`: absent → every example has ≥ 1 error and the count is announced; present → ≈ 1 in 5 error-free, count not announced, button «No hi ha cap errada». Checkbox in the link generator. Stage 2. |
@@ -98,7 +98,7 @@ errades/
 ├── js/comu/punts.js  seguent.js  css/seguent.css ← from step-quiz-commons (never edit here)
 ├── css/tokens.css  pagina.css  llibreta.css
 ├── data/errors.json                              ← taxonomy (C4)
-├── vendor/fonts/                                 ← Kalam, Permanent Marker (+ licences)
+├── vendor/fonts/                                 ← Patrick Hand, Kalam (bank page only), Permanent Marker (+ licences)
 ├── tests/  run-all.js  *.test.js  navegador/prova.mjs
 ├── docs/  SPEC.md  STATE.md  workflows/          ← workflows are pasted into .github/ via the GitHub web
 └── CLAUDE.md  README.md  _headers  package.json  _uploads/
@@ -215,13 +215,13 @@ word used in the «Per què?» sentences). Not yet: `totalsessions`, `fixed`, ve
   line, is a failed attempt; at `maxintents` the term is shown and the example is worth 0.
 - Hit with a lasso that enclosed exactly the wrong term: «Molt bé, has localitzat la línia i el terme on hi ha l'errada.» (all fixed texts were rewritten by David on 2026-11-27; they live in the code)
 - After the last error (announced count): band «Molt bé!» or «T'he ensenyat l'errada» with the points, and «Següent» (Enter).
-  With unannounced count the student must press «No n'hi ha cap més» / «No hi ha cap errada».
+  With unannounced count the student must press «No hi ha cap més errada» / «No hi ha cap errada».
 - Messages: second person singular, Catalan, short, with TeX for maths (David's caption rules in
   `pau/procediments/INSIGHTS.md` §3).
 
 ## 8. Visual rules
 
-- Notebook only (P1): squared paper, pupil ink blue, Kalam; lines aligned at «=» (R4); line numbers (P2).
+- Notebook only (P1): squared paper, pupil ink blue, Patrick Hand; lines aligned at «=» (R4); line numbers (P2).
 - Teacher layer (R1/R2): red, correction typeface; pencil-grey ✓ for confirmed correct lines.
 - Student layer (R1): palette from R1 for messages, chips and the final band; never red/green alone.
 - Hover rule on every clickable control (David): black thick border + light grey background, no shift.

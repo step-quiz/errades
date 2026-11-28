@@ -25,4 +25,12 @@ for (const f of ['js/comu/punts.js', 'js/comu/seguent.js', 'css/seguent.css']) o
 ok(/<!-- regles-comunes:inici -->[\s\S]*<!-- regles-comunes:fi -->/.test(llegeix('CLAUDE.md')), 'CLAUDE.md no té el bloc de regles comunes');
 // Cap petició a tercers a les pàgines (els enllaços <a href="https://…"> no són peticions)
 for (const f of ['index.html', 'equacions.html', 'prioritat.html', 'banc-errors.html', 'css/tokens.css']) ok(!/(?<!href=")https?:\/\/(?!errades\.step-quiz)/.test(llegeix(f).replace(/<!--[\s\S]*?-->/g, '')), `${f} fa peticions a un altre domini`);
+// Els textos dels botons que diuen els documents són els de la llibreta (auditoria C5)
+const llibreta = llegeix('js/motor/llibreta.js');
+for (const b of ['No hi ha cap errada', 'No hi ha cap més errada', 'Per què?', 'Corregeix-la']) {
+    ok(llibreta.includes(b), `js/motor/llibreta.js no té el botó «${b}»`);
+    ok(readme.includes('«' + b + '»') || spec.includes('«' + b + '»'), `cap document no esmenta el botó «${b}»`);
+}
+ok(!/«No n'hi ha cap més»/.test(readme + spec), "README/SPEC encara diuen «No n'hi ha cap més»");
+ok(!/Pupil: Kalam/.test(spec), 'SPEC R2 encara diu Kalam per a l\'alumne');
 informe('docs');
