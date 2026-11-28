@@ -122,7 +122,7 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
         return { dins: a.top >= 0 && b.bottom <= innerHeight && f.top >= 0 && f.bottom <= innerHeight, atenuades, n: document.querySelectorAll('#llibreta .fila').length, opcions: document.querySelectorAll('#llibreta .fase .b').length };
     }, errada);
     ok(vista.dins, 'la línia anterior, la línia equivocada i les opcions es veuen a la pantalla');
-    ok(vista.opcions === 4, '«Per què?» amb 4 opcions');
+    ok(vista.opcions === 3, '«Per què?» amb 3 opcions');
     ok(vista.atenuades.length === vista.n - 2 && !vista.atenuades.includes(errada) && !vista.atenuades.includes(errada - 1), 'les altres línies queden esvaïdes');
     await clica('#llibreta [data-pq="0"]');
     await clica('#llibreta [data-co="0"]');

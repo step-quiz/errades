@@ -62,6 +62,7 @@ for (const nivell of [1, 2])
             for (const [j, e] of Object.entries(ex.errades)) {
                 vistos[nivell][e.tipus] = (vistos[nivell][e.tipus] || 0) + 1;
                 ok(e.perque.every(o => /^[A-ZÀ-Ú$]/.test(o[0]) && o[0].endsWith('.')), `llavor ${s}: frases amb majúscula i punt`);
+                ok(e.perque.length === 3 && e.perque.filter(o => o[1]).length === 1, `llavor ${s}: «Per què?» amb 3 frases i una de certa`);
                 if (escrivible(e, ex.linies[j])) ok(valorFitxa(e.fitxesBona[e.terme]) !== null, `llavor ${s}: terme per escriure llegible`);
             }
         }

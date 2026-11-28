@@ -57,15 +57,11 @@
      ],
      "perque": [
       [
-       "Hauria d'haver escrit $+1$, en lloc d'escriure $−1$.",
+       "Havia de **sumar** $4$ amb $−1$.",
        false
       ],
       [
        "No hauria d'haver multiplicat $4$ per $x$.",
-       false
-      ],
-      [
-       "Havia de **sumar** $4$ amb $−1$.",
        false
       ],
       [
@@ -151,19 +147,15 @@
      ],
      "perque": [
       [
+       "No hauria d'haver multiplicat $6$ per $x$.",
+       false
+      ],
+      [
        "Ha oblidat multiplicar $6$ per $−3$.",
        true
       ],
       [
-       "Hauria d'haver escrit $+3$, en lloc d'escriure $−3$.",
-       false
-      ],
-      [
        "Havia de **sumar** $6$ amb $−3$.",
-       false
-      ],
-      [
-       "No hauria d'haver multiplicat $6$ per $x$.",
        false
       ]
      ],
@@ -259,20 +251,16 @@
      ],
      "perque": [
       [
-       "Hauria d'haver deixat el $7$ tal qual, sense multiplicar-lo per $−2$.",
-       false
-      ],
-      [
-       "$(−2) · 7$ fa $−14$: per tant, s'ha **equivocat en el signe**.",
-       true
-      ],
-      [
        "Hauria d'haver escrit $**+2x**$, en lloc d'escriure $−2x$.",
        false
       ],
       [
        "Hauria d'haver sumat en primer lloc el $x$ amb $7$.",
        false
+      ],
+      [
+       "$(−2) · 7$ fa $−14$: per tant, s'ha **equivocat en el signe**.",
+       true
       ]
      ],
      "opcions": [
@@ -368,20 +356,16 @@
      ],
      "perque": [
       [
-       "Hauria d'haver deixat el $3$ tal qual, sense multiplicar-lo per $−3$.",
+       "Hauria d'haver sumat en primer lloc el $x$ amb $3$.",
        false
       ],
       [
-       "Hauria d'haver escrit $**+3x**$, en lloc d'escriure $−3x$.",
+       "Hauria d'haver deixat el $3$ tal qual, sense multiplicar-lo per $−3$.",
        false
       ],
       [
        "$(−3) · 3$ fa $−9$: per tant, s'ha **equivocat en el signe**.",
        true
-      ],
-      [
-       "Hauria d'haver sumat en primer lloc el $x$ amb $3$.",
-       false
       ]
      ],
      "opcions": [
@@ -461,20 +445,16 @@
      ],
      "perque": [
       [
+       "Hauria d'haver sumat en primer lloc $+3x$ i $+7$.",
+       false
+      ],
+      [
        "El $+3x$ havia de passar a [l'altre membre] **dividint**.",
        false
       ],
       [
        "L'errada és que [al membre] de l'esquerra hi hauria d'haver $−3x$.",
        true
-      ],
-      [
-       "El $−7$ és incorrecte tal com està escrit a [l'altre membre].",
-       false
-      ],
-      [
-       "Hauria d'haver sumat en primer lloc $+3x$ i $+7$.",
-       false
       ]
      ],
      "opcions": [
@@ -548,10 +528,6 @@
       "− 4"
      ],
      "perque": [
-      [
-       "Tots els termes, també els nombres, s'han de passar [al membre] de l'esquerra.",
-       false
-      ],
       [
        "L'errada és que [al membre] de la dreta hi hauria d'haver $−4$.",
        true
@@ -637,10 +613,6 @@
      "perque": [
       [
        "Només s'ha equivocat en el signe del resultat.",
-       false
-      ],
-      [
-       "Ha sumat termes que no són semblants.",
        false
       ],
       [
@@ -735,20 +707,16 @@
      ],
      "perque": [
       [
+       "Per aïllar la incògnita, hauria d'haver fet ${2|10}$.",
+       false
+      ],
+      [
        "S'ha equivocat, perquè el resultat és $−8$.",
        false
       ],
       [
        "Per aïllar la incògnita, hauria d'haver fet ${10|2}$.",
        true
-      ],
-      [
-       "Ha decidit fer una resta, però havia de fer una suma.",
-       false
-      ],
-      [
-       "Per aïllar la incògnita, hauria d'haver fet ${2|10}$.",
-       false
       ]
      ],
      "opcions": [
@@ -823,10 +791,6 @@
       ],
       [
        "Per aïllar la incògnita, hauria d'haver fet ${4|−24}$.",
-       false
-      ],
-      [
-       "S'ha equivocat, perquè el resultat és $28$.",
        false
       ],
       [
@@ -921,7 +885,7 @@
      ],
      "perque": [
       [
-       "Hauria d'haver **multiplicat** $−21$ per $−7$.",
+       "Hauria d'haver aïllat d'aquesta manera: ${−7|−21}$.",
        false
       ],
       [
@@ -929,11 +893,7 @@
        true
       ],
       [
-       "Hauria d'haver aïllat d'aquesta manera: ${−7|−21}$.",
-       false
-      ],
-      [
-       "Hauria d'haver **restat** $7$ a $−21$.",
+       "Hauria d'haver **multiplicat** $−21$ per $−7$.",
        false
       ]
      ],
@@ -1018,19 +978,15 @@
      ],
      "perque": [
       [
+       "Hauria d'haver **multiplicat** $21$ per $−7$.",
+       false
+      ],
+      [
        "El coeficient és $−7$: per tant, s'ha d'escriure ${21|−7}$.",
        true
       ],
       [
-       "Hauria d'haver **restat** $7$ a $21$.",
-       false
-      ],
-      [
        "Hauria d'haver aïllat d'aquesta manera: ${−7|21}$.",
-       false
-      ],
-      [
-       "Hauria d'haver **multiplicat** $21$ per $−7$.",
        false
       ]
      ],
@@ -1106,20 +1062,16 @@
      ],
      "perque": [
       [
-       "Caldria haver fet un **producte**: $4 · 2$.",
-       false
-      ],
-      [
-       "És una errada escriure ${2|4}$, el valor **correcte** és ${4|2}$.",
-       true
-      ],
-      [
        "Caldria haver fet una **resta**: $4 − 2$.",
        false
       ],
       [
        "La divisió està ben plantejada, però falta **simplificar**.",
        false
+      ],
+      [
+       "És una errada escriure ${2|4}$, el valor **correcte** és ${4|2}$.",
+       true
       ]
      ],
      "opcions": [
@@ -1198,19 +1150,15 @@
      ],
      "perque": [
       [
-       "La divisió està ben plantejada, però falta **simplificar**.",
-       false
-      ],
-      [
        "És una errada escriure ${2|−12}$, el valor **correcte** és ${−12|2}$.",
        true
       ],
       [
-       "Caldria haver fet un **producte**: $−12 · 2$.",
+       "La divisió està ben plantejada, però falta **simplificar**.",
        false
       ],
       [
-       "Caldria haver fet una **resta**: $−12 − 2$.",
+       "Caldria haver fet un **producte**: $−12 · 2$.",
        false
       ]
      ],
@@ -1314,10 +1262,6 @@
        false
       ],
       [
-       "Caldria haver **multiplicat** $−3x$ per $−8$.",
-       false
-      ],
-      [
        "Hauria d'haver **restat** $−8$ a $−3x$.",
        false
       ],
@@ -1397,10 +1341,6 @@
       [
        "$3x$ i $−11$ **no són termes semblants**: per tant, no es poden sumar.",
        true
-      ],
-      [
-       "Caldria haver **multiplicat** $3x$ per $−11$.",
-       false
       ],
       [
        "S'ha equivocat en el signe, quan ha fet l'operació amb $3x$ i $−11$.",
@@ -1500,10 +1440,6 @@
        true
       ],
       [
-       "Havia de **sumar** $−3$ amb $5$.",
-       false
-      ],
-      [
        "No hauria d'haver multiplicat $−3$ per $x$.",
        false
       ],
@@ -1539,20 +1475,16 @@
      ],
      "perque": [
       [
-       "S'ha equivocat, perquè el resultat és $20$.",
+       "Ha decidit fer una resta, però havia de fer una suma.",
        false
       ],
       [
-       "Ha decidit fer una resta, però havia de fer una suma.",
+       "S'ha equivocat, perquè el resultat és $20$.",
        false
       ],
       [
        "Per aïllar la incògnita, hauria d'haver fet ${−32|−12}$.",
        true
-      ],
-      [
-       "Per aïllar la incògnita, hauria d'haver fet ${−12|−32}$.",
-       false
       ]
      ],
      "opcions": [
@@ -1646,19 +1578,15 @@
      ],
      "perque": [
       [
-       "Hauria d'haver escrit $−2$, en lloc d'escriure $2$.",
-       false
-      ],
-      [
        "Ha oblidat multiplicar $−3$ per $2$.",
        true
       ],
       [
-       "Havia de **sumar** $−3$ amb $2$.",
+       "Hauria d'haver escrit $−2$, en lloc d'escriure $2$.",
        false
       ],
       [
-       "No hauria d'haver multiplicat $−3$ per $x$.",
+       "Havia de **sumar** $−3$ amb $2$.",
        false
       ]
      ],
@@ -1688,10 +1616,6 @@
       "16"
      ],
      "perque": [
-      [
-       "En lloc de sumar, havia de multiplicar: $−3x − 3x$ és un producte.",
-       false
-      ],
       [
        "Ha sumat termes que no són semblants.",
        false
@@ -1796,10 +1720,6 @@
      ],
      "perque": [
       [
-       "Ha sumat termes que no són semblants.",
-       false
-      ],
-      [
        "Ha calculat $3x − 4x$ i no fa $−2x$.",
        true
       ],
@@ -1838,10 +1758,6 @@
       "12"
      ],
      "perque": [
-      [
-       "Només s'ha equivocat en el signe del resultat.",
-       false
-      ],
       [
        "Ha calculat $30 − 18$ i no fa $10$.",
        true
@@ -1942,11 +1858,7 @@
      ],
      "perque": [
       [
-       "Hauria d'haver deixat el $8$ tal qual, sense multiplicar-lo per $−4$.",
-       false
-      ],
-      [
-       "Hauria d'haver sumat en primer lloc el $x$ amb $8$.",
+       "Hauria d'haver escrit $**+4x**$, en lloc d'escriure $−4x$.",
        false
       ],
       [
@@ -1954,7 +1866,7 @@
        true
       ],
       [
-       "Hauria d'haver escrit $**+4x**$, en lloc d'escriure $−4x$.",
+       "Hauria d'haver deixat el $8$ tal qual, sense multiplicar-lo per $−4$.",
        false
       ]
      ],
@@ -1985,20 +1897,16 @@
      ],
      "perque": [
       [
-       "Per aïllar la incògnita, hauria d'haver fet ${−16|−12}$.",
-       true
+       "Ha decidit fer una resta, però havia de fer una suma.",
+       false
       ],
       [
        "Per aïllar la incògnita, hauria d'haver fet ${−12|−16}$.",
        false
       ],
       [
-       "Ha decidit fer una resta, però havia de fer una suma.",
-       false
-      ],
-      [
-       "S'ha equivocat, perquè el resultat és $4$.",
-       false
+       "Per aïllar la incògnita, hauria d'haver fet ${−16|−12}$.",
+       true
       ]
      ],
      "opcions": [
@@ -2147,10 +2055,6 @@
       [
        "Hauria d'haver operat $−3$ i $−15$, en lloc de $−3$ i $+15$.",
        false
-      ],
-      [
-       "$−3 + 15$ és un **producte**: per tant, s'ha de multiplicar.",
-       false
       ]
      ],
      "opcions": [
@@ -2227,10 +2131,6 @@
      "perque": [
       [
        "$−3 + 15$ és un **producte**: per tant, s'ha de multiplicar.",
-       false
-      ],
-      [
-       "L'errada és que els termes [del membre] de la dreta no es poden sumar.",
        false
       ],
       [
@@ -2313,15 +2213,11 @@
      ],
      "perque": [
       [
-       "$−4 + 2$ és un **producte**: per tant, s'ha de multiplicar.",
-       false
-      ],
-      [
        "L'errada és que els termes [del membre] de la dreta no es poden sumar.",
        false
       ],
       [
-       "El resultat de $−4 + 2$ no és correcte, perquè s'ha equivocat en el signe.",
+       "$−4 + 2$ és un **producte**: per tant, s'ha de multiplicar.",
        false
       ],
       [
@@ -2417,19 +2313,15 @@
      ],
      "perque": [
       [
-       "Hauria d'haver operat $−5x$ i $+8x$, en lloc de $−5x$ i $−8x$.",
-       false
-      ],
-      [
        "Hi ha un error de càlcul en fer l'operació amb $−5x$ i $−8x$.",
        true
       ],
       [
-       "El resultat de $−5x − 8x$ no és correcte, perquè hauria de ser $+3x$.",
+       "L'errada és que els termes [del membre] de l'esquerra no es poden sumar.",
        false
       ],
       [
-       "L'errada és que els termes [del membre] de l'esquerra no es poden sumar.",
+       "Hauria d'haver operat $−5x$ i $+8x$, en lloc de $−5x$ i $−8x$.",
        false
       ]
      ],
@@ -2510,20 +2402,16 @@
      ],
      "perque": [
       [
+       "S'ha equivocat sumant dos nombres.",
+       false
+      ],
+      [
        "S'ha equivocat amb el $−7$.",
        false
       ],
       [
        "És una errada escriure $23$, hauria de ser $−23$.",
        true
-      ],
-      [
-       "El $−23$ sempre s'ha de multiplicar amb $x$.",
-       false
-      ],
-      [
-       "S'ha equivocat sumant dos nombres.",
-       false
       ]
      ],
      "opcions": [
@@ -2616,20 +2504,16 @@
      ],
      "perque": [
       [
+       "S'ha equivocat sumant dos nombres.",
+       false
+      ],
+      [
        "L'errada és que ha sumat el $−8$ amb un terme que no es pot sumar.",
        false
       ],
       [
        "És una errada escriure $+8$, hauria de ser $−8$.",
        true
-      ],
-      [
-       "El $−8$ sempre s'ha de multiplicar amb $x$.",
-       false
-      ],
-      [
-       "S'ha equivocat sumant dos nombres.",
-       false
       ]
      ],
      "opcions": [
@@ -2725,20 +2609,16 @@
      ],
      "perque": [
       [
+       "S'ha equivocat sumant dos nombres.",
+       false
+      ],
+      [
        "El nombre que hi ha davant del parèntesi també ha de multiplicar el $−x$.",
        false
       ],
       [
        "És una errada escriure $+x$, hauria de ser $−x$.",
        true
-      ],
-      [
-       "El $−x$ sempre s'ha de multiplicar amb $x$.",
-       false
-      ],
-      [
-       "S'ha equivocat sumant dos nombres.",
-       false
       ]
      ],
      "opcions": [
@@ -2830,10 +2710,6 @@
        false
       ],
       [
-       "El $−4x$ sempre s'ha de multiplicar amb $x$.",
-       false
-      ],
-      [
        "S'ha equivocat amb el $−8$.",
        false
       ]
@@ -2906,20 +2782,16 @@
      ],
      "perque": [
       [
+       "El $+3$ s'hauria d'haver **multiplicat** per $x$.",
+       false
+      ],
+      [
        "Els termes $2x$ i $4x$ no es poden sumar.",
        false
       ],
       [
        "El $+3$ **no es pot sumar** amb els termes que contenen $x$.",
        true
-      ],
-      [
-       "Caldria haver **multiplicat** els termes en $x$, en lloc de sumar-los.",
-       false
-      ],
-      [
-       "El $+3$ s'hauria d'haver **multiplicat** per $x$.",
-       false
       ]
      ],
      "opcions": [
@@ -2988,20 +2860,16 @@
      ],
      "perque": [
       [
-       "El $−13$ **no es pot sumar** amb els termes que contenen $x$.",
-       true
-      ],
-      [
        "El $−13$ s'hauria d'haver **multiplicat** per $x$.",
-       false
-      ],
-      [
-       "Els termes $9x$ i $−6x$ no es poden sumar.",
        false
       ],
       [
        "Caldria haver **multiplicat** els termes en $x$, en lloc de sumar-los.",
        false
+      ],
+      [
+       "El $−13$ **no es pot sumar** amb els termes que contenen $x$.",
+       true
       ]
      ],
      "opcions": [
@@ -3081,15 +2949,11 @@
      ],
      "perque": [
       [
-       "Caldria haver fet una **resta**: $−12 − (−2)$.",
-       false
-      ],
-      [
-       "Caldria haver fet un **producte**: $−12 · (−2)$.",
-       false
-      ],
-      [
        "La divisió està ben plantejada, però falta **simplificar**.",
+       false
+      ],
+      [
+       "Caldria haver fet una **resta**: $−12 − (−2)$.",
        false
       ],
       [
@@ -3165,20 +3029,16 @@
      ],
      "perque": [
       [
+       "El $−5$ s'hauria d'haver **multiplicat** per $x$.",
+       false
+      ],
+      [
        "Els termes $3x$ i $4x$ no es poden sumar.",
        false
       ],
       [
        "El $−5$ **no es pot sumar** amb els termes que contenen $x$.",
        true
-      ],
-      [
-       "Caldria haver **multiplicat** els termes en $x$, en lloc de sumar-los.",
-       false
-      ],
-      [
-       "El $−5$ s'hauria d'haver **multiplicat** per $x$.",
-       false
       ]
      ],
      "opcions": [
@@ -3255,20 +3115,16 @@
      ],
      "perque": [
       [
+       "La $x$ s'ha comptat **dues vegades**.",
+       false
+      ],
+      [
        "Hauria d'haver **sumat** la $x$, en lloc de restar-la.",
        false
       ],
       [
        "[Al membre] de l'esquerra **falta sumar** una $x$.",
        true
-      ],
-      [
-       "El resultat de $3x + x + 6x$ no és correcte, perquè s'ha equivocat en el signe.",
-       false
-      ],
-      [
-       "La $x$ s'ha comptat **dues vegades**.",
-       false
       ]
      ],
      "opcions": [
@@ -3350,15 +3206,11 @@
      ],
      "perque": [
       [
-       "El resultat de $6x + x$ no és correcte, perquè s'ha equivocat en el signe.",
-       false
-      ],
-      [
        "La $x$ s'ha comptat **dues vegades**.",
        false
       ],
       [
-       "Hauria d'haver **sumat** la $x$, en lloc de restar-la.",
+       "El resultat de $6x + x$ no és correcte, perquè s'ha equivocat en el signe.",
        false
       ],
       [
@@ -3457,19 +3309,15 @@
      ],
      "perque": [
       [
+       "La $x$ s'ha comptat **dues vegades**.",
+       false
+      ],
+      [
        "[Al membre] de l'esquerra **falta sumar** una $x$.",
        true
       ],
       [
        "El resultat de $x − 8x$ no és correcte, perquè s'ha equivocat en el signe.",
-       false
-      ],
-      [
-       "La $x$ s'ha comptat **dues vegades**.",
-       false
-      ],
-      [
-       "Hauria d'haver **sumat** la $x$, en lloc de restar-la.",
        false
       ]
      ],
@@ -3566,20 +3414,16 @@
      ],
      "perque": [
       [
+       "$(−2) · 6$ **no dona** $−12$.",
+       false
+      ],
+      [
        "Hauria d'haver escrit $+5x$, en lloc d'escriure $−5x$.",
        false
       ],
       [
        "Hauria d'haver aplicat la propietat distributiva, i multiplicat $−2$ per $3x$.",
        true
-      ],
-      [
-       "Ha oblidat multiplicar $−2$ per $6$.",
-       false
-      ],
-      [
-       "$(−2) · 6$ **no dona** $−12$.",
-       false
       ]
      ],
      "opcions": [
@@ -3677,10 +3521,6 @@
       [
        "Hauria d'haver aplicat la propietat distributiva, i multiplicat $4$ per $3x$.",
        true
-      ],
-      [
-       "$4 · (−1)$ **no dona** $−4$.",
-       false
       ],
       [
        "Ha oblidat multiplicar $4$ per $−1$.",
@@ -3788,15 +3628,11 @@
        false
       ],
       [
-       "Ha oblidat multiplicar $−5$ per $3$.",
-       false
-      ],
-      [
        "Hauria d'haver aplicat la propietat distributiva, i multiplicat $−5$ per $2x$.",
        true
       ],
       [
-       "Hauria d'haver escrit $+7x$, en lloc d'escriure $−7x$.",
+       "Ha oblidat multiplicar $−5$ per $3$.",
        false
       ]
      ],
@@ -3893,19 +3729,15 @@
      ],
      "perque": [
       [
-       "Hauria d'haver deixat el $−7$ tal qual, sense multiplicar-lo per $−4$.",
-       false
-      ],
-      [
        "$(−4) · (−7)$ fa $+28$: per tant, s'ha **equivocat en el signe**.",
        true
       ],
       [
-       "Hauria d'haver sumat en primer lloc el $2x$ amb $−7$.",
+       "Hauria d'haver escrit $**+8x**$, en lloc d'escriure $−8x$.",
        false
       ],
       [
-       "Hauria d'haver escrit $**+8x**$, en lloc d'escriure $−8x$.",
+       "Hauria d'haver deixat el $−7$ tal qual, sense multiplicar-lo per $−4$.",
        false
       ]
      ],

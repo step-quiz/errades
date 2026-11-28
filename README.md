@@ -11,7 +11,7 @@ The real student must:
    ↑/↓ or the line number 1–9, Enter, Esc). «Comprova» appears only next to the selected line, on its left. Lines are numbered 0, 1, 2…: line 0 is the statement and cannot
    be selected (not-allowed cursor). A circled number means «the error can still be here»: line 0 and the lines
    already checked have no circle;
-2. **explain** it («Per què és una errada?», 4 sentences about that very line: one true, three false);
+2. **explain** it («Per què és una errada?», 3 sentences about that very line: one true and two false ones chosen at random from the error's distractors, `DISTRACTORS_PERQUE`);
 3. **fix** it («Com hauria de quedar la línia?», 3 options).
 
 Status: stages 1, 2 and 5 (lasso) and the order-of-operations part of stage 7 done (see
@@ -122,13 +122,14 @@ Points per example: 10, minus 2 per correct line marked as wrong, floor 0; 0 if 
    (`x = b/a` written as a fraction), `simp` (simplify).
 3. One step is replaced by a **mal-rule** applied to the previous line; every later line is recomputed
    correctly from the wrong one. A wrong line must have a different solution from the line above.
-4. Texts: the explanation of the error (never the correct line: it comes before «Corregeix-la»), 4 «Per què?»
-   sentences built from the line's own numbers (one true, three false). They come from David's sentence editor
+4. Texts: the explanation of the error (never the correct line: it comes before «Corregeix-la»), 3 «Per què?»
+   sentences built from the line's own numbers (one true and `DISTRACTORS_PERQUE` = 2 false ones, picked at random
+   from all the distractors that apply; David, 28/11/2026). They come from David's sentence editor
    (`js/equacions/frases.js`, data in `frases-dades.js`): each rule maps to a *situation* (e.g. `DIST_SIGNE` with
    `−(x + b)` → `DSIG1`, otherwise `DSIG2`; `CALCUL` → `CAL1`/`CAL2`/`CAL3` by type; `OPERACIO_INVERSA` → `OI1`
    (resta and inversa), `OI3`, `OI4`) with its marker values; a distractor whose `cond` does not hold (`exp`,
    `red1`, `tra`, `xPositiva`, `xNegativa`, `AdiferentB`) or whose marker has no value in this example
-   (`[altre terme]`, `[altre càlcul]`, `[terme d'abans]`) is skipped; with fewer than 3 left, the situation's
+   (`[altre terme]`, `[altre càlcul]`, `[terme d'abans]`) is skipped; with fewer than 2 left, the situation's
    `reserva` fills in (an example that still has fewer is discarded by `valida()`). Bold is written `**…**` and
    drawn by `txt()` in `llibreta.js`. The «membre» markers stay in the example and the page resolves them
    (`exempleAmbParaula`, URL `membre`). The rules not yet in the editor (`SUMA_ABANS_PRODUCTE`, `INVERS_X`,

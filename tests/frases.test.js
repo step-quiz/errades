@@ -36,7 +36,7 @@ igual(ex0.errades[2].perque[0][0], 'El $+3$ ha canviat de [membre].', "exempleAm
 for (const [sid, s] of Object.entries(FRASES.situacions))
     for (const id of [s.bona, ...s.dolentes.map(d => d.id), ...(s.reserva || [])]) ok(typeof FRASES.frases[id] === 'string', `${sid}: falta la frase ${id}`);
 
-// ---- Molts exemples: cada «Per què?» té 4 frases diferents i cap marcador sense resoldre ----
+// ---- Molts exemples: cada «Per què?» té frases diferents i cap marcador sense resoldre ----
 DIAGNOSI.actiu = true;
 for (const nivell of [1, 2, 3, 4, 5]) for (const errades of [1, 2]) for (let s = 1; s <= 150; s++) generaExemple({ llavor: s, nivell, errades }, TIPUS);
 const vistes = {};
@@ -67,11 +67,11 @@ const amb = (id, l, op, r = () => 0.1) => {
 const d1 = amb('DIST_SIGNE', linia([X(5), P(-1, 3)], [N(9)]), 'exp');
 igual(d1.sid, 'DSIG1', '−(x + 3) és la situació DSIG1');
 ok(d1.bona.includes('$+3$') && d1.bona.includes('$**−3**$'), `DSIG1, frase bona: ${d1.bona}`);
-ok(d1.dolentes.length >= 3, `DSIG1: tres distractors (${d1.dolentes.length})`);
+ok(d1.dolentes.length >= 2, `DSIG1: almenys dos distractors (${d1.dolentes.length})`);
 ok(d1.dolentes.some(t => t.includes('$5x$')), 'DSIG1: el terme de davant del parèntesi');
 // DSIG1 sense terme davant: −(x + 3) = 9 → el distractor del terme d'abans no surt, i n'hi ha prou amb la reserva
 const d1b = amb('DIST_SIGNE', linia([P(-1, 3)], [N(9)]), 'exp');
-ok(d1b.dolentes.length >= 3 && !d1b.dolentes.some(t => t.includes("encara hi ha")), `DSIG1 sense terme d'abans: ${d1b.dolentes.join(' | ')}`);
+ok(d1b.dolentes.length >= 2 && !d1b.dolentes.some(t => t.includes("encara hi ha")), `DSIG1 sense terme d'abans: ${d1b.dolentes.join(' | ')}`);
 
 // ---- El banc: les frases desades tampoc no tenen res per resoldre (fora de «membre») ----
 const banc = JSON.parse(fs.readFileSync(new URL('../data/banc.json', import.meta.url), 'utf8')).exemples;

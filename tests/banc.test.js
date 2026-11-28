@@ -20,7 +20,7 @@ for (const ex of banc) {
         if (!errs.includes(i)) ok(/^Aquesta línia és correcta, perquè\n/.test(ex.correctes[i] || ''), `${id}: falta el text de la línia ${i}`);
     for (const [j, e] of Object.entries(ex.errades)) {
         ok(tipus.includes(e.tipus), `${id}: tipus desconegut ${e.tipus}`);
-        ok(e.perque.length === 4 && e.perque.filter(o => o[1]).length === 1, `${id}: «Per què?» amb 4 frases i una de certa`);
+        ok(e.perque.length === 3 && e.perque.filter(o => o[1]).length === 1, `${id}: «Per què?» amb 3 frases i una de certa`);
         ok(e.opcions.length === 3 && e.opcions.filter(o => o[1]).length === 1 && e.opcions.find(o => o[1])[0] === e.bona, `${id}: «Corregeix-la» amb la bona entre 3`);
         ok(e.terme >= 0 && ex.linies[j][e.terme] !== '=', `${id}: terme equivocat fora de lloc`);
         ok(Array.isArray(e.fitxesBona), `${id}: falten les fitxes de la línia bona`);

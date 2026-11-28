@@ -431,7 +431,7 @@ Claude's own fixes, **confirmed by David** (dialog, 28/11):
   now «És una errada escriure $[mal]$, hauria de ser $[terme]$».
 - CAL2's true sentence was F49 («Hauria d'haver operat [a] i \oposite{[b]}…»), false in CAL2: new C01
   «[a] i [b] tenen \bold{signes diferents}: per tant, s'han de restar els seus valors.»; F49 dropped from CAL2.
-- Reserves when conditions leave < 3 distractors: ST1 F18, F20 (with `[al membre]`); CAL1 F51; DSIG1 F08.
+- Reserves when conditions leave < 3 distractors (since the 3-option change: < 2): ST1 F18, F20 (with `[al membre]`); CAL1 F51; DSIG1 F08.
 
 Integration: `js/equacions/frases.js` (renderer, situations, choice), `js/equacions/frases-dades.js` (generated),
 `frasesErrada()` in the generator (falls back to `PERQUE` for SUMA_ABANS_PRODUCTE, INVERS_X, CANVI_SIGNE_PARCIAL,
@@ -469,3 +469,10 @@ by `CANVI_SIGNE_PARCIAL`, which is deactivated. Renderer: «:» inside a formula
 `rep` (and comments); write `frases`/`situacions` as `{ frases: {id: data}, situacions: {id: data} }` to
 `eines/frases-editor/editor-db.json`; answer in `rep/<id>`; run `node eines/frases-editor/exporta.mjs`, then
 `node eines/frases-editor/banc.mjs`, then the tests.
+
+## «Per què?» with 3 options (2026-11-28, David)
+
+Both activities: the true sentence plus **2** distractors chosen at random among all those that apply to the error
+(`DISTRACTORS_PERQUE = 2` in each generator; `valida()` checks 3 options). Reserves fill in only below 2. The bank
+(`data/banc.json`) was rebuilt with `banc.mjs`; the 4 CALCUL errors with old sentences keep the true one and 2 random
+distractors. The editor says «la bona i dos distractors» and warns below 2.

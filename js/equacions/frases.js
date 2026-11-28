@@ -27,7 +27,7 @@
  * - Un valor negatiu just després d'un operador (+ − ·, i «:» dins d'una fórmula) va entre parèntesis:
  *   «42 − (−14)».
  * - Una frase amb un valor que en aquest exemple no existeix (p. ex. [altre terme]
- *   quan no ha passat cap altre terme) no surt. Si queden menys de 3 distractors,
+ *   quan no ha passat cap altre terme) no surt. Si queden menys de 2 distractors,
  *   s'afegeixen els de la reserva de la situació.
  * DEPENDÈNCIES: frases-dades.js.
  * ============================================================================
@@ -373,7 +373,7 @@ export function perque(id, d, ctx) {
         }
     };
     for (const x of S.dolentes) if (!x.cond || s.conds.has(x.cond)) posa(x.id);
-    for (const id of S.reserva || []) if (dolentes.length < 3) posa(id);
+    for (const id of S.reserva || []) if (dolentes.length < 2) posa(id);
     if (DIAGNOSI.actiu) DIAGNOSI.vistes.push({ sid: s.sid, id, bona, dolentes, valors: v });
     return { bona, dolentes, sid: s.sid };
 }

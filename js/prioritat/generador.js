@@ -215,6 +215,8 @@ function aLlista(E, r, f) {
 }
 const opTxt = (a, o, b) => `${a < 0 && MUL.includes(o) ? '(' + menys(a) + ')' : menys(a)} ${o} ${b < 0 ? '(' + menys(b) + ')' : b}`;
 
+/** «Per què?»: la frase bona i aquests distractors, triats a l'atzar entre els de l'errada (el David, 28/11/2026). */
+export const DISTRACTORS_PERQUE = 2;
 /**
  * Regles que el generador no fa servir: les que el professorat va valorar malament a l'enquesta del banc
  * d'errades (dues «No m'agrada» o més; el David, 28/11/2026). El codi es queda: per recuperar-ne una, treu-la
@@ -685,7 +687,7 @@ function construeix(r, llavor, nivell, e0, linies, marques, compensades) {
         if (terme < 0) terme = malF.findIndex(t => t !== '=');
         const termes = bonaF.length === malF.length ? malF.map((t, i) => (t !== '=' && t !== bonaF[i] ? i : -1)).filter(i => i >= 0) : [terme];
         const fr = PERQUE[c.id](c.res.dades);
-        const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, 3).map(t => [t, false])]);
+        const perque = barreja(r, [[fr.bona, true], ...barreja(r, fr.dolentes).slice(0, DISTRACTORS_PERQUE).map(t => [t, false])]);
         const vistes = new Set([textLinia(bona), textLinia(linies[c.j])]);
         const dolentes = [];
         for (const [id, rg] of Object.entries(REGLES)) {
@@ -740,8 +742,8 @@ export function valida(ex) {
     }
     if (etapa(ls[ls.length - 1]) !== null) p.push("l'última línia no és un sol nombre");
     for (const [j, e] of Object.entries(ex.errades)) {
-        if (e.perque.length !== 4 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir 4 opcions i una de bona`);
-        if (new Set(e.perque.map(o => o[0])).size !== 4) p.push(`errada ${j}: opcions de «Per què?» repetides`);
+        if (e.perque.length !== DISTRACTORS_PERQUE + 1 || e.perque.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Per què?» ha de tenir ${DISTRACTORS_PERQUE + 1} opcions i una de bona`);
+        if (new Set(e.perque.map(o => o[0])).size !== DISTRACTORS_PERQUE + 1) p.push(`errada ${j}: opcions de «Per què?» repetides`);
         if (e.opcions.length !== 3 || e.opcions.filter(o => o[1]).length !== 1) p.push(`errada ${j}: «Corregeix-la» ha de tenir 3 opcions i una de bona`);
         if (new Set(e.opcions.map(o => o[0])).size !== 3) p.push(`errada ${j}: opcions de «Corregeix-la» repetides`);
         if (e.opcions.find(o => o[1])?.[0] !== e.bona) p.push(`errada ${j}: l'opció bona no és la línia bona`);

@@ -45,7 +45,7 @@ l'anterior, toca-la; si no n'hi ha cap, digues-ho.»).
 | G6 | Keyboard always on: ↑/↓ and 1–9 select a line, Enter = Comprova, Esc = clear; ←/→ in the term phase. aria-live for messages. |
 | G7 | Circle with the finger: David wants to try it → R3 (prototype exists). |
 | E1 | Mark the found error, but **separate two colour layers** → R1. |
-| E2 | Phase «Per què?»: **4 sentences about that very line** (one true, three plausible false ones, built from its numbers; David's model, 2026-11-25); a wrong choice costs nothing and shows the explanation. |
+| E2 | Phase «Per què?»: **3 sentences about that very line** (one true and two plausible false ones picked at random from all the error's distractors — David, 28/11/2026; it was 4 before; built from its numbers; David's model, 2026-11-25); a wrong choice costs nothing and shows the explanation. |
 | E3 | Phase «Corregeix-la»: choose among 3, or (teacher's checkbox, `escriu=1`) type **only the circled term**, corrected, with the page's own keypad (David, 2026-11-25). The wrong side is crossed out and the correct line is written below in the teacher's hand. |
 | E4 | No final correct chain. **Changed 2026-11-25:** once the error is corrected, the lines that follow are faded to 25 % between two big black parentheses (STATE.md). During «Per què?»/«Corregeix-la» only the wrong line and the one above stay unfaded, and they, the message and the options are kept on screen. |
 | E5 | 10 points per example, −2 per correct line marked as wrong, floor 0; 0 if the error had to be shown. «Per què?» and «Corregeix-la» do not count. Same rule as `operacions/js/punts.js` (`puntsAmbErrors`) and the «Següent» band. |

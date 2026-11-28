@@ -114,7 +114,7 @@ ul.comp li{margin:8px 0}
  <div class="avis" id="avis" role="status">No puc desar els canvis en aquest artifact: es queden només en aquest navegador. Quan acabis, prem «Copia els canvis» (a baix de tot) i enganxa'ls al xat.</div>
 
  <ul class="com">
-  <li>Cada situació té una <b>frase bona</b> i uns quants <b>distractors</b>. Si en té més de tres, l'alumne en veu tres a l'atzar, sempre amb la bona.</li>
+  <li>Cada situació té una <b>frase bona</b> i uns quants <b>distractors</b>. L'alumne veu la bona i dos distractors triats a l'atzar entre tots els de la situació.</li>
   <li>Les paraules entre claudàtors, com <span class="mk">[c]</span> o <span class="mk">[terme]</span>, són els valors de cada exemple. A cada situació hi ha què vol dir cada una i un valor d'exemple. Si n'hi poses una que la situació no té, surt un avís en groc.</li>
   <li>Les fórmules van entre <span class="mk">$…$</span>; una fracció s'escriu <span class="mk">${a|b}$</span>. Un valor entre claudàtors ja surt com a fórmula encara que no li posis els <span class="mk">$</span>, i un guionet davant d'un nombre o d'una x surt com a signe menys. Sota cada frase veus com la llegirà l'alumne amb els nombres de l'exemple.</li>
   <li>Sobre cada frase tens una barra d'eines: <b>N</b> o <b>Ctrl+B</b> (<b>⌘B</b> al Mac) posa en negreta el que hagis seleccionat (<span class="mk">\bold{…}</span>), «Oposat» escriu el valor amb el signe canviat, de $−1$ a $+1$ (<span class="mk">\oposite{…}</span>), «+ signe» escriu el valor amb el signe a la vista, de $3$ a $+3$ (<span class="mk">\signe{…}</span>), i els botons amb claudàtors insereixen els valors de la situació.</li>
@@ -321,7 +321,7 @@ ${Object.keys(s.marcadors).length?`<div class="mks">${Object.entries(s.marcadors
 <div class="rol">Frase bona</div>${editor(u.bona,{sid:s.id,rol:'bona'})}
 <div class="rol">Distractors (${n}${n>3?', l\'alumne en veu 3 a l\'atzar':''})</div>
 ${u.dolentes.map((d,k)=>editor(d.id,{sid:s.id,rol:'dolenta',k,cond:d.cond})).join('')}
-${n<3?'<div class="warn">Calen almenys tres distractors.</div>':''}
+${n<2?'<div class="warn">Calen almenys dos distractors.</div>':''}
 <div class="afeg"><select data-a="afegeix" aria-label="Afegeix un distractor"><option value="">Afegeix un distractor…</option><option value="__nova">Una frase nova, en blanc</option><optgroup label="Una frase que ja existeix">${opts.map(id=>`<option value="${id}">${esc(F[id].text.length>90?F[id].text.slice(0,88)+'…':F[id].text)}</option>`).join('')}</optgroup></select>${JSON.stringify(u)!==U0[s.id]?'<button class="b" data-a="restauraS">Torna a les frases d\'abans</button>':''}</div>
 <label class="cl" for="c-${s.id}">Comentari</label><textarea id="c-${s.id}" data-c="${s.id}" rows="2" placeholder="Si vols explicar-me alguna cosa d'aquesta situació">${esc(u.comentari||'')}</textarea>
 <span class="st" data-st="${s.id}" aria-live="polite"></span>
