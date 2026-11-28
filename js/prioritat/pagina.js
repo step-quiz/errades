@@ -40,6 +40,11 @@ export function exempleSessio(i, { base, nivell, noerrors }) {
 
 function engega() {
     const par = llegeixParametres(location.search);
+    let noms = {};
+    fetch('data/errors-prioritat.json')
+        .then(r => r.json())
+        .then(j => (noms = j))
+        .catch(() => {});
     // una sessió desada d'aquesta mateixa adreça continua on era, amb la mateixa llavor (auditoria E2)
     const clau = clauSessio(),
         desat = llegeixDesat(clau);
@@ -67,6 +72,8 @@ function engega() {
         clau,
         llavor: () => base,
         desat,
+        // el nom de cada tipus d'errada, per a l'informe de la pantalla final (E3; es carrega mentre es treballa)
+        nomTipus: t => (noms[t] && noms[t].nom) || '',
     });
 }
 

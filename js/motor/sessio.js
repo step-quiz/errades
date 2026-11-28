@@ -19,12 +19,19 @@
  *   paràmetres de l'adreça), vàlids 12 hores. En tornar a obrir la mateixa adreça
  *   (recarregar, pestanya descartada o tancada), es continua on era; també la
  *   pantalla final. «Torna a començar» l'esborra. Cap dada personal.
- * - Al final, només «Torna a començar» (E1: l'índex és del professorat).
+ * - Pantalla final com la d'operacions (auditoria E3, el David, 28/11/2026): «Resum»,
+ *   una línia per exercici amb els punts, «La nota és: 7,5 / 10», el trofeu i els
+ *   botons «📋 Informe» i «🔄 Tornar a jugar» (amb confirmació). L'informe: els
+ *   encerts (10 punts) i les errades, cada exercici amb l'enunciat i, de cada errada,
+ *   el tipus (nomTipus), la línia equivocada i la bona. Colors R1: lila i gris, mai
+ *   verd ni vermell; la línia bona, amb la lletra i el bolígraf del professor. Sense
+ *   «Copiar codi» (el codi de verificació és l'etapa 3 del projecte). Cap enllaç a
+ *   l'índex (E1: és del professorat).
  * - Sense codi de verificació (etapa 3).
  * DEPENDÈNCIES: js/motor/llibreta.js, js/comu/seguent.js, js/comu/punts.js.
  * ============================================================================
  */
-import { creaLlibreta } from './llibreta.js';
+import { creaLlibreta, fm } from './llibreta.js';
 import { mostraSeguent, amagaSeguent, textPunts } from '../comu/seguent.js';
 import { PUNTS_MAX } from '../comu/punts.js';
 
@@ -65,7 +72,7 @@ function esborra(clau) {
  * clau: on es desa la sessió (null: no es desa); llavor(): la llavor dels exemples, que també es desa;
  * desat: la sessió desada que s'ha de continuar (llegeixDesat), o null.
  */
-export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, onNova, clau = null, llavor = () => null, desat = null }) {
+export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, onNova, clau = null, llavor = () => null, desat = null, nomTipus = () => '' }) {
     const resultats = desat ? desat.resultats.slice(0, total) : [];
     let actual = null,
         index = 0;
@@ -115,6 +122,57 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         }
     }
 
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const lin = L => (Array.isArray(L) ? L.join(' ') : String(L));
+
+    /** «Tornar a jugar», com a operacions: amb confirmació (la sessió desada s'esborra). */
+    function tornaAJugar() {
+        if (typeof confirm === 'function' && !confirm('Segur que vols tornar a començar?')) return;
+        resultats.length = 0;
+        esborra(clau);
+        if (typeof onNova === 'function') onNova();
+        obre(0);
+    }
+    const botons = (ambInforme = true) =>
+        `<div class="acc final-acc">${ambInforme ? '<button type="button" class="b pri" id="informe">📋 Informe</button>' : ''}<button type="button" class="b" id="torna">🔄 Tornar a jugar</button></div>`;
+    function lligaBotons() {
+        const inf = final.querySelector('#informe');
+        if (inf) inf.addEventListener('click', informe);
+        final.querySelector('#torna').addEventListener('click', tornaAJugar);
+    }
+
+    /** Un exercici a l'informe: l'enunciat i, de cada errada, el tipus, la línia equivocada i la bona. */
+    function itemInforme(i) {
+        const ex = exemple(i),
+            p = resultats[i],
+            ks = Object.keys(ex.errades || {})
+                .map(Number)
+                .sort((a, b) => a - b);
+        const errs = ks.length
+            ? ks
+                  .map(k => {
+                      const e = ex.errades[k],
+                          nom = nomTipus(e.tipus);
+                      return `<div class="inf-e"><div class="inf-l">Línia ${k}${nom ? ` · ${esc(nom)}` : ''}</div><div class="inf-ll"><span class="inf-mal">${fm(lin(ex.linies[k]))}</span><span class="inf-fl" aria-hidden="true">→</span><span class="inf-bona">${fm(e.bona)}</span></div></div>`;
+                  })
+                  .join('')
+            : '<div class="inf-l">No hi havia cap errada.</div>';
+        return `<li class="inf-i ${p === PUNTS_MAX ? 'ok' : 'ko'}"><div class="inf-cap"><b>Exercici ${i + 1}</b><span>${textPunts(p).replace('+', '')}</span></div><div class="inf-enunciat">${fm(lin(ex.linies[0]))}</div>${errs}</li>`;
+    }
+
+    /** L'informe (el botó «📋 Informe»): els encerts i les errades, com a operacions. */
+    function informe() {
+        const ok = [],
+            ko = [];
+        resultats.forEach((p, i) => (p === PUNTS_MAX ? ok : ko).push(itemInforme(i)));
+        final.innerHTML = `<div class="informe"><h2>Resum de les teves respostes</h2>
+<h3 class="inf-t ok">Encerts (${ok.length})</h3><ul class="inf-llista">${ok.join('') || '<li class="inf-buit">Cap encert en aquesta partida.</li>'}</ul>
+<h3 class="inf-t ko">Errades (${ko.length})</h3><ul class="inf-llista">${ko.join('') || '<li class="inf-buit">Cap errada! Partida perfecta 🎉</li>'}</ul>
+${botons(false)}</div>`;
+        lligaBotons();
+        final.scrollIntoView({ block: 'start' });
+    }
+
     function acaba() {
         if (actual) actual.destrueix();
         actual = null;
@@ -125,18 +183,15 @@ export function iniciaSessio({ llibreta, progres, final, total, exemple, cfg, on
         posaProgres(true);
         desa(clau, { llavor: llavor(), fi: true, resultats });
         final.hidden = false;
-        final.innerHTML = `<h2>Has acabat.</h2>
-<p class="nota"><span>Nota</span><strong>${notaTxt(v)}</strong></p>
-<p>${fets} punts de ${PUNTS_MAX * total} possibles.</p>
-<ol class="resum">${resultats.map((p, i) => `<li><span>Exercici ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`).join('')}</ol>
-<div class="acc"><button type="button" class="b pri" id="torna">Torna a començar</button></div>`;
-        final.querySelector('#torna').addEventListener('click', () => {
-            resultats.length = 0;
-            esborra(clau);
-            if (typeof onNova === 'function') onNova();
-            obre(0);
-        });
-        final.querySelector('#torna').focus({ preventScroll: true });
+        final.innerHTML = `<div class="resum-final"><h2>Resum</h2>
+<div class="final-layout"><div class="final-summary"><ol class="resum">${resultats
+            .map((p, i) => `<li><span>Exercici ${i + 1}</span><span>${textPunts(p).replace('+', '')}</span></li>`)
+            .join('')}</ol>
+<div class="nota"><div class="nota-t">La nota és:</div><div class="nota-v">${notaTxt(v)} / 10</div></div></div>
+<div class="trofeu" aria-hidden="true">🏆</div></div>
+${botons()}</div>`;
+        lligaBotons();
+        final.querySelector('#informe').focus({ preventScroll: true });
     }
 
     if (desat && (desat.fi || resultats.length >= total)) acaba();

@@ -58,7 +58,8 @@ correct step already showed the student can do exactly that — equations `verse
   wrong answer there or in «Corregeix-la» costs 1 point (audit C5-A, 28/11/2026; it used to cost nothing, E5). «Corregeix-la»: 3 lines, or (`escriu=1`) type the circled term.
 - Compensating pairs: a `.pista` reminds the student to compare with the previous line as written.
 - Header, progress and session (audit stage 3; README «Header and layout», `sessio.js` row): one-line sticky header
-  with progress dots, no way back to the teachers' index, the session continues after a reload (12 h), Patrick Hand.
+  with progress dots, no way back to the teachers' index, the session continues after a reload (12 h), Patrick Hand;
+  final screen «Resum» + «📋 Informe» + «🔄 Tornar a jugar» (with confirmation), like `operacions`.
 - Feedback (audit stage 2; README «Feedback»): «Trobades» and «Intents» chips, steps of each error, instruction of
   the current phase, one block under the line with the answered questions kept in view, labels, lasso demo once per browser,
   «Exercici n de N», band «Exercici finalitzat».
@@ -111,8 +112,8 @@ the bank batches 1–3, «Errades documentades a la recerca» and «Versemblanç
    «too full» warning: one «Trobades» chip, two options in answered questions, plain-text steps, lighter dots) done.
    Stage 3 done: D1 compact sticky header, D2 progress dots replacing the text, D3 centred order-of-operations lines,
    E1 no «← Activitats» nor «Tria una altra activitat», E2 session saved in `localStorage` for 12 h (David asked to
-   save as much as possible: it also survives closing the tab), F1 Patrick Hand. Left: E3 (final screen), modelled
-   on `step-quiz/operacions` and step-quiz.net.
+   save as much as possible: it also survives closing the tab), F1 Patrick Hand. E3 done too: final screen and «Informe»
+   like `operacions` (README, `sessio.js` row). The audit is complete.
 3. Sentence editor: David reviews SAP, IX, DEN1, DEN2 (my starting sentences) whenever he wants; on «Revisa
    artifact», follow `HANDOUT.md`.
 4. Survey ideas not done: a distributive case with a term before the bracket (`2x + 6(x − 3)`); check item 22's

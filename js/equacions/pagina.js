@@ -80,6 +80,8 @@ async function engega() {
         clau,
         llavor: () => base,
         desat,
+        // el nom de cada tipus d'errada, per a l'informe de la pantalla final (E3)
+        nomTipus: t => (tipus && tipus[t] && tipus[t].nom) || '',
     });
 }
 

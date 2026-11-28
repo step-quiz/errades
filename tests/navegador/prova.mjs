@@ -217,14 +217,22 @@ for (const [nom, mida, tactil] of [['ordinador', { width: 1366, height: 768 }, f
     ok(await pg.isVisible('.franja-final'), 'teclat: franja a la vista');
     await pg.keyboard.press('Enter'); // «Veure resultats»
     await pg.waitForSelector('#final:not([hidden])');
-    ok(/Has acabat/.test(await pg.textContent('#final')) && (await pg.locator('#final .resum li').count()) === 2, 'pantalla final amb 2 exemples');
-    ok(/Nota/.test(await pg.textContent('#final .nota')), 'pantalla final amb la nota');
-    ok((await pg.locator('#final a, #final .b').count()) === 1, 'E1: al final, només «Torna a començar»');
+    ok(/Resum/.test(await pg.textContent('#final h2')) && (await pg.locator('#final .resum li').count()) === 2, 'E3: pantalla final «Resum» amb 2 exercicis');
+    ok(/La nota és:/.test(await pg.textContent('#final .nota')) && /\/ 10/.test(await pg.textContent('#final .nota-v')), 'E3: «La nota és: … / 10»');
+    ok((await pg.locator('#final a').count()) === 0 && (await pg.locator('#final #informe').count()) === 1 && (await pg.locator('#final #torna').count()) === 1, 'E1/E3: «📋 Informe» i «🔄 Tornar a jugar», cap enllaç a l\'índex');
+    await clica('#informe');
+    ok((await pg.locator('#final .inf-i').count()) === 2 && (await pg.locator('#final .inf-t').count()) === 2 && (await pg.locator('#final .inf-bona').count()) >= 1, 'E3: l\'informe, amb els encerts, les errades i la línia bona de cada errada');
+    ok(/\S/.test(await pg.textContent('#final .inf-l')) && !/undefined/.test(await pg.textContent('#final')), 'E3: l\'informe diu el tipus de cada errada');
     // E2: la pantalla final també es desa: en recarregar, hi torna
     await pg.reload();
     await pg.waitForSelector('#final:not([hidden])');
-    ok(/Has acabat/.test(await pg.textContent('#final')) && (await pg.locator('#final .resum li').count()) === 2, 'E2: recarregar la pàgina acabada torna a la pantalla final');
+    ok(/Resum/.test(await pg.textContent('#final h2')) && (await pg.locator('#final .resum li').count()) === 2, 'E2: recarregar la pàgina acabada torna a la pantalla final');
     if (process.env.CAPTURES) await pg.screenshot({ path: path.join(process.env.CAPTURES, `final-${mida.width}.png`) });
+    // «Tornar a jugar» demana confirmació, com a operacions: primer «Cancel·la» (no passa res), després «D'acord»
+    pg.once('dialog', d => d.dismiss());
+    await clica('#torna');
+    ok(await pg.isVisible('#final'), 'E3: «Tornar a jugar» cancel·lat: es queda a la pantalla final');
+    pg.once('dialog', d => d.accept());
     await clica('#torna');
     await pg.waitForSelector('#llibreta .ln');
     ok(await pg.isHidden('#final'), '«Torna a començar» torna a la llibreta');
